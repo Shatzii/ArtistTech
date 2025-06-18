@@ -1,0 +1,156 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(60, 4.8%, 95.9%);
+  --secondary-foreground: hsl(24, 9.8%, 10%);
+  --accent: hsl(60, 4.8%, 95.9%);
+  --accent-foreground: hsl(24, 9.8%, 10%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(20, 14.3%, 4.1%);
+  --radius: 0.5rem;
+
+  /* Studio theme colors */
+  --studio-bg: hsl(0, 0%, 10.2%);
+  --studio-panel: hsl(0, 0%, 17.6%);
+  --studio-border: hsl(0, 0%, 25.1%);
+  --studio-inactive: hsl(0, 0%, 37.6%);
+  --studio-accent: hsl(194, 100%, 50%);
+  --studio-live: hsl(15, 100%, 60%);
+}
+
+.dark {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(240, 3.7%, 15.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(240, 3.7%, 15.9%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .studio-bg {
+    background-color: var(--studio-bg);
+  }
+
+  .studio-panel {
+    background-color: var(--studio-panel);
+  }
+
+  .studio-border {
+    border-color: var(--studio-border);
+  }
+
+  .studio-accent {
+    color: var(--studio-accent);
+  }
+
+  .studio-live {
+    color: var(--studio-live);
+  }
+
+  .waveform-canvas {
+    background: linear-gradient(90deg, var(--studio-panel) 0%, var(--studio-border) 50%, var(--studio-panel) 100%);
+  }
+  
+  .knob {
+    background: radial-gradient(circle at 30% 30%, var(--studio-border), var(--studio-panel));
+    border: 2px solid var(--studio-inactive);
+  }
+  
+  .fader-track {
+    background: linear-gradient(to bottom, var(--studio-border) 0%, var(--studio-panel) 50%, var(--studio-border) 100%);
+  }
+  
+  .timeline-ruler {
+    background: repeating-linear-gradient(
+      to right,
+      var(--studio-border) 0px,
+      var(--studio-border) 1px,
+      transparent 1px,
+      transparent 20px
+    );
+  }
+  
+  .spectrum-analyzer {
+    background: linear-gradient(to top, var(--studio-accent) 0%, transparent 70%);
+  }
+
+  .track-clip {
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    cursor: grab;
+    user-select: none;
+  }
+
+  .track-clip:active {
+    cursor: grabbing;
+  }
+
+  .track-clip.selected {
+    box-shadow: 0 0 0 2px var(--studio-accent);
+  }
+
+  .timeline-track {
+    border-bottom: 1px solid var(--studio-border);
+    min-height: 64px;
+    position: relative;
+  }
+
+  .playhead {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    background-color: var(--studio-accent);
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .level-meter {
+    background: linear-gradient(to top, 
+      hsl(120, 100%, 50%) 0%, 
+      hsl(120, 100%, 50%) 70%, 
+      hsl(60, 100%, 50%) 85%, 
+      hsl(0, 100%, 50%) 100%
+    );
+  }
+}
