@@ -7,6 +7,7 @@ interface KnobProps {
   size?: number;
   className?: string;
   disabled?: boolean;
+  label?: string;
   min?: number;
   max?: number;
 }
@@ -14,67 +15,124 @@ interface KnobProps {
 export default function Knob({ 
   value, 
   onChange, 
-  size = 48, 
-  className = "",
+  size = 40, 
+  className, 
   disabled = false,
+  label,
   min = 0,
   max = 1
 }: KnobProps) {
   const [isDragging, setIsDragging] = useState(false);
-  const [startY, setStartY] = useState(0);
-  const [startValue, setStartValue] = useState(0);
   const knobRef = useRef<HTMLDivElement>(null);
+  const startAngleRef = useRef<number>(0);
+  const startValueRef = useRef<number>(0);
 
   const normalizedValue = (value - min) / (max - min);
-  const rotation = (normalizedValue * 270) - 135; // -135° to +135°
+  const angle = -135 + (normalizedValue * 270); // -135° to +135° (270° range)
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (disabled) return;
     
     setIsDragging(true);
-    setStartY(e.clientY);
-    setStartValue(value);
+    startValueRef.current = value;
     
-    const handleMouseMove = (e: MouseEvent) => {
-      const deltaY = startY - e.clientY; // Inverted for natural feel
-      const sensitivity = 0.01;
-      const newValue = Math.max(min, Math.min(max, startValue + (deltaY * sensitivity)));
+    const rect = knobRef.current?.getBoundingClientRect();
+    if (rect) {
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      startAngleRef.current = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+    }
+
+    e.preventDefault();
+  }, [disabled, value]);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDragging || disabled) return;
+
+    const rect = knobRef.current?.getBoundingClientRect();
+    if (rect) {
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const currentAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+      
+      const angleDiff = currentAngle - startAngleRef.current;
+      const sensitivity = 0.5;
+      const deltaValue = (angleDiff * sensitivity) / (2 * Math.PI);
+      
+      const newValue = Math.max(min, Math.min(max, startValueRef.current + deltaValue * (max - min)));
       onChange(newValue);
-    };
+    }
+  }, [isDragging, disabled, onChange, min, max]);
 
-    const handleMouseUp = () => {
-      setIsDragging(false);
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  }, [disabled, value, startY, startValue, min, max, onChange]);
+  // Mouse event listeners
+  useState(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => handleMouseMove(e);
+    const handleGlobalMouseUp = () => handleMouseUp();
+
+    if (isDragging) {
+      document.addEventListener('mousemove', handleGlobalMouseMove);
+      document.addEventListener('mouseup', handleGlobalMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleGlobalMouseMove);
+      document.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+  });
 
   return (
-    <div
-      ref={knobRef}
-      className={cn(
-        "knob rounded-full relative cursor-pointer select-none transition-transform",
-        isDragging && "scale-95",
-        disabled && "opacity-50 cursor-not-allowed",
-        className
-      )}
-      style={{ width: size, height: size }}
-      onMouseDown={handleMouseDown}
-    >
-      <div className="absolute inset-2 bg-[var(--studio-accent)] bg-opacity-20 rounded-full" />
+    <div className={cn("flex flex-col items-center", className)}>
       <div
-        className="absolute w-1 bg-[var(--studio-accent)] rounded-full transition-transform"
-        style={{
-          height: size * 0.3,
-          left: '50%',
-          top: '50%',
-          transformOrigin: 'center bottom',
-          transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
-        }}
-      />
+        ref={knobRef}
+        className={cn(
+          "relative rounded-full border-2 border-gray-600 bg-gray-800 cursor-pointer select-none transition-all",
+          isDragging && "scale-105 border-blue-500",
+          disabled && "opacity-50 cursor-not-allowed"
+        )}
+        style={{ width: size, height: size }}
+        onMouseDown={handleMouseDown}
+      >
+        {/* Knob body */}
+        <div 
+          className="absolute inset-1 rounded-full bg-gradient-to-br from-gray-300 to-gray-600"
+          style={{
+            transform: `rotate(${angle}deg)`
+          }}
+        >
+          {/* Indicator line */}
+          <div 
+            className="absolute w-0.5 bg-white rounded-full"
+            style={{
+              height: size * 0.3,
+              left: '50%',
+              top: size * 0.1,
+              transform: 'translateX(-50%)'
+            }}
+          />
+        </div>
+
+        {/* Center dot */}
+        <div 
+          className="absolute bg-gray-800 rounded-full"
+          style={{
+            width: size * 0.2,
+            height: size * 0.2,
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)'
+          }}
+        />
+      </div>
+      
+      {label && (
+        <div className="text-xs text-gray-400 mt-1 text-center">
+          {label}
+        </div>
+      )}
     </div>
   );
 }

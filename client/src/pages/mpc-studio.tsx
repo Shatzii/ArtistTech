@@ -456,7 +456,7 @@ export default function MPCStudio() {
           </Card>
 
           {/* Sample Library */}
-          <MPCSampleLibrary onSampleSelect={(sample) => console.log('Sample selected:', sample)} />
+          <MPCSampleLibrary onSampleSelect={(sample: any) => console.log('Sample selected:', sample)} />
         </div>
 
         {/* Center Panel - Main Interface */}
@@ -475,7 +475,7 @@ export default function MPCStudio() {
               }))}
               selectedPad={selectedPad}
               onPadSelect={setSelectedPad}
-              onPadTrigger={(padId) => {
+              onPadTrigger={(padId: string) => {
                 const track = tracks.find(t => t.id === padId);
                 if (track && audioContextRef.current) {
                   playSound(track.sound, audioContextRef.current.currentTime);
@@ -499,7 +499,7 @@ export default function MPCStudio() {
         <div className="w-80 bg-gray-800 border-l border-gray-700 flex flex-col">
           <MPCMixer
             tracks={tracks}
-            onTrackUpdate={(trackId, updates) => {
+            onTrackUpdate={(trackId: string, updates: any) => {
               setTracks(prev => prev.map(track => 
                 track.id === trackId ? { ...track, ...updates } : track
               ));
