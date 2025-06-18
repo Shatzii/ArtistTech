@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, jsonb, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, jsonb, timestamp, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -37,6 +37,99 @@ export const videoFiles = pgTable("video_files", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Educational system tables
+export const teachers = pgTable("teachers", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").unique().notNull(),
+  profileImageUrl: text("profile_image_url"),
+  bio: text("bio"),
+  specialization: text("specialization"), // piano, guitar, vocals, etc.
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const students = pgTable("students", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").unique().notNull(),
+  age: integer("age"),
+  parentEmail: text("parent_email"),
+  level: text("level").notNull().default("beginner"), // beginner, intermediate, advanced
+  instrument: text("instrument"), // preferred instrument
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const lessons = pgTable("lessons", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  teacherId: integer("teacher_id").notNull(),
+  studentId: integer("student_id").notNull(),
+  scheduledAt: timestamp("scheduled_at").notNull(),
+  duration: integer("duration").notNull().default(30), // minutes
+  status: text("status").notNull().default("scheduled"), // scheduled, in_progress, completed, cancelled
+  recordingPath: text("recording_path"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const voiceCommands = pgTable("voice_commands", {
+  id: serial("id").primaryKey(),
+  lessonId: integer("lesson_id").notNull(),
+  timestamp: timestamp("timestamp").notNull(),
+  command: text("command").notNull(),
+  recognized: text("recognized"),
+  confidence: integer("confidence"), // 0-100
+  executed: boolean("executed").default(false),
+  result: text("result"),
+});
+
+export const lessonRecordings = pgTable("lesson_recordings", {
+  id: serial("id").primaryKey(),
+  lessonId: integer("lesson_id").notNull(),
+  type: text("type").notNull(), // video, audio, screen
+  path: text("path").notNull(),
+  startTime: timestamp("start_time").notNull(),
+  endTime: timestamp("end_time"),
+  size: integer("size").notNull(),
+  metadata: jsonb("metadata"), // resolution, fps, etc.
+});
+
+export const exercises = pgTable("exercises", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  difficulty: text("difficulty").notNull(), // easy, medium, hard
+  instrument: text("instrument").notNull(),
+  audioPath: text("audio_path"),
+  sheetMusicPath: text("sheet_music_path"),
+  instructions: text("instructions"),
+  voiceCommands: text("voice_commands").array(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const studentProgress = pgTable("student_progress", {
+  id: serial("id").primaryKey(),
+  studentId: integer("student_id").notNull(),
+  exerciseId: integer("exercise_id").notNull(),
+  completed: boolean("completed").default(false),
+  score: integer("score"), // 0-100
+  attempts: integer("attempts").default(0),
+  timeSpent: integer("time_spent"), // minutes
+  lastAttempt: timestamp("last_attempt"),
+  feedback: text("feedback"),
+});
+
+export const chatMessages = pgTable("chat_messages", {
+  id: serial("id").primaryKey(),
+  lessonId: integer("lesson_id").notNull(),
+  senderId: integer("sender_id").notNull(),
+  senderType: text("sender_type").notNull(), // teacher, student
+  message: text("message").notNull(),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+  type: text("type").default("text"), // text, emoji, voice_note
+});
+
 export const insertProjectSchema = createInsertSchema(projects).omit({
   id: true,
   createdAt: true,
@@ -53,12 +146,58 @@ export const insertVideoFileSchema = createInsertSchema(videoFiles).omit({
   createdAt: true,
 });
 
+// Insert schemas for educational system
+export const insertTeacherSchema = createInsertSchema(teachers).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertStudentSchema = createInsertSchema(students).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertLessonSchema = createInsertSchema(lessons).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertExerciseSchema = createInsertSchema(exercises).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertVoiceCommandSchema = createInsertSchema(voiceCommands).omit({
+  id: true,
+});
+
+export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({
+  id: true,
+  timestamp: true,
+});
+
+// Type exports
 export type InsertProject = z.infer<typeof insertProjectSchema>;
 export type Project = typeof projects.$inferSelect;
 export type InsertAudioFile = z.infer<typeof insertAudioFileSchema>;
 export type AudioFile = typeof audioFiles.$inferSelect;
 export type InsertVideoFile = z.infer<typeof insertVideoFileSchema>;
 export type VideoFile = typeof videoFiles.$inferSelect;
+
+export type Teacher = typeof teachers.$inferSelect;
+export type InsertTeacher = z.infer<typeof insertTeacherSchema>;
+export type Student = typeof students.$inferSelect;
+export type InsertStudent = z.infer<typeof insertStudentSchema>;
+export type Lesson = typeof lessons.$inferSelect;
+export type InsertLesson = z.infer<typeof insertLessonSchema>;
+export type Exercise = typeof exercises.$inferSelect;
+export type InsertExercise = z.infer<typeof insertExerciseSchema>;
+export type VoiceCommand = typeof voiceCommands.$inferSelect;
+export type InsertVoiceCommand = z.infer<typeof insertVoiceCommandSchema>;
+export type ChatMessage = typeof chatMessages.$inferSelect;
+export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
+export type LessonRecording = typeof lessonRecordings.$inferSelect;
+export type StudentProgress = typeof studentProgress.$inferSelect;
 
 // Project data schemas
 export const trackSchema = z.object({
