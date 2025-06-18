@@ -292,7 +292,7 @@ export default function ExercisePanel({ currentExercise, onExerciseSelect }: Exe
                           {exercise.score}%
                         </div>
                       )}
-                      {exercise.timeSpent > 0 && (
+                      {exercise.timeSpent && exercise.timeSpent > 0 && (
                         <div className="flex items-center">
                           <Clock size={10} className="mr-1" />
                           {formatTime(exercise.timeSpent * 60)}

@@ -7,7 +7,6 @@ import {
   Video, 
   Eye, 
   Camera, 
-  Record, 
   StopCircle,
   Download,
   AlertTriangle,
