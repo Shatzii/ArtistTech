@@ -508,7 +508,7 @@ export default function MPCStudio() {
           
           <MPCEffectsRack
             selectedTrack={tracks.find(t => t.id === selectedPad)}
-            onEffectChange={(effectId, value) => {
+            onEffectChange={(effectId: string, value: number) => {
               console.log(`Effect ${effectId} changed to ${value}`);
             }}
           />
