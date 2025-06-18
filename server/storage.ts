@@ -287,6 +287,9 @@ export class MemStorage implements IStorage {
     const teacher: Teacher = {
       ...insertTeacher,
       id,
+      profileImageUrl: insertTeacher.profileImageUrl ?? null,
+      bio: insertTeacher.bio ?? null,
+      specialization: insertTeacher.specialization ?? null,
       createdAt: new Date(),
     };
     this.teachers.set(id, teacher);
@@ -323,6 +326,10 @@ export class MemStorage implements IStorage {
     const student: Student = {
       ...insertStudent,
       id,
+      age: insertStudent.age ?? null,
+      parentEmail: insertStudent.parentEmail ?? null,
+      level: insertStudent.level ?? "beginner",
+      instrument: insertStudent.instrument ?? null,
       createdAt: new Date(),
     };
     this.students.set(id, student);
@@ -367,6 +374,11 @@ export class MemStorage implements IStorage {
     const lesson: Lesson = {
       ...insertLesson,
       id,
+      status: insertLesson.status ?? "scheduled",
+      duration: insertLesson.duration ?? 30,
+      description: insertLesson.description ?? null,
+      recordingPath: insertLesson.recordingPath ?? null,
+      notes: insertLesson.notes ?? null,
       createdAt: new Date(),
     };
     this.lessons.set(id, lesson);
@@ -407,6 +419,11 @@ export class MemStorage implements IStorage {
     const exercise: Exercise = {
       ...insertExercise,
       id,
+      description: insertExercise.description ?? null,
+      audioPath: insertExercise.audioPath ?? null,
+      sheetMusicPath: insertExercise.sheetMusicPath ?? null,
+      instructions: insertExercise.instructions ?? null,
+      voiceCommands: insertExercise.voiceCommands ?? null,
       createdAt: new Date(),
     };
     this.exercises.set(id, exercise);
@@ -439,6 +456,10 @@ export class MemStorage implements IStorage {
     const command: VoiceCommand = {
       ...insertCommand,
       id,
+      recognized: insertCommand.recognized ?? null,
+      confidence: insertCommand.confidence ?? null,
+      executed: insertCommand.executed ?? false,
+      result: insertCommand.result ?? null,
     };
     this.voiceCommands.set(id, command);
     return command;
@@ -454,6 +475,7 @@ export class MemStorage implements IStorage {
     const message: ChatMessage = {
       ...insertMessage,
       id,
+      type: insertMessage.type ?? "text",
       timestamp: new Date(),
     };
     this.chatMessages.set(id, message);
