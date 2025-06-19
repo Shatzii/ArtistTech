@@ -4,7 +4,7 @@ import { AudioEngineType } from "@/hooks/useAudioEngine";
 import { useProjects } from "@/hooks/useProjects";
 import WaveformCanvas from "./WaveformCanvas";
 import { Button } from "@/components/ui/button";
-import { Archive, Mic, Play } from "lucide-react";
+import { Archive, Mic, Play, Video } from "lucide-react";
 
 interface Track {
   id: string;
@@ -150,7 +150,7 @@ export default function MainTimeline({ mode, projectId, audioEngine }: MainTimel
     return (
       <div className="flex-1 studio-bg border-b studio-border flex items-center justify-center">
         <div className="text-center text-gray-400">
-          <Film className="mx-auto mb-4" size={48} />
+          <Video className="mx-auto mb-4" size={48} />
           <p>Video timeline coming soon...</p>
         </div>
       </div>

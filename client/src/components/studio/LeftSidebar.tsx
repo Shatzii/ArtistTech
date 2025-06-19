@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
-import { Waves, Disc, Film, Music, Folder, Upload, Keyboard, Drum, Guitar } from "lucide-react";
+import { Waves, Music, Folder, Upload, Keyboard, Drum, Guitar, Video, Volume2 } from "lucide-react";
 import { useAudioFiles } from "@/hooks/useAudioFile";
 import { StudioMode } from "@/pages/studio";
 
@@ -65,7 +65,7 @@ export default function LeftSidebar({ mode, onModeChange }: LeftSidebarProps) {
           }`}
           onClick={() => onModeChange('dj')}
         >
-          <Disc className="mr-2" size={16} />
+          <Volume2 className="mr-2" size={16} />
           DJ
         </Button>
         
@@ -78,7 +78,7 @@ export default function LeftSidebar({ mode, onModeChange }: LeftSidebarProps) {
           }`}
           onClick={() => onModeChange('video')}
         >
-          <Film className="mr-2" size={16} />
+          <Video className="mr-2" size={16} />
           Video
         </Button>
       </div>

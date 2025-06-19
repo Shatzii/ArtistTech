@@ -4,7 +4,7 @@ import { AudioEngineType } from "@/hooks/useAudioEngine";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Download, Film, Save, Power } from "lucide-react";
+import { Download, Video, Save, Power } from "lucide-react";
 import Knob from "./Knob";
 import Fader from "./Fader";
 
@@ -204,7 +204,7 @@ export default function RightSidebar({ mode, projectId, audioEngine }: RightSide
               disabled={!projectId}
               className="w-full bg-[var(--studio-accent)] bg-opacity-20 text-[var(--studio-accent)] py-2 px-4 hover:bg-opacity-30 text-sm"
             >
-              <Film className="mr-2" size={16} />
+              <Video className="mr-2" size={16} />
               Export Video
             </Button>
             
