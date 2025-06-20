@@ -6,6 +6,11 @@ import { registerUser, loginUser, authenticateToken, type AuthRequest } from "./
 import { createCheckoutSession, handleWebhook, getSubscriptionStatus } from "./payments";
 import { selfHostedMusicAI } from "./self-hosted-ai";
 import { selfHostedVideoAI } from "./ai-video-generation";
+import { neuralAudioEngine } from "./neural-audio-engine";
+import { motionCaptureEngine } from "./motion-capture-engine";
+import { immersiveMediaEngine } from "./immersive-media-engine";
+import { adaptiveLearningEngine } from "./adaptive-learning-engine";
+import { enterprisePlatformEngine } from "./enterprise-platform-engine";
 import { insertProjectSchema, insertAudioFileSchema, insertVideoFileSchema } from "@shared/schema";
 import multer from "multer";
 import path from "path";
@@ -154,6 +159,164 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const models = await selfHostedVideoAI.listAvailableModels();
       res.json({ models });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Neural Audio Engine routes
+  app.post("/api/neural-audio/generate", async (req, res) => {
+    try {
+      const result = await neuralAudioEngine.generateMusic(req.body);
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/neural-audio/clone-voice", async (req, res) => {
+    try {
+      const result = await neuralAudioEngine.cloneVoice(req.body);
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/neural-audio/master", async (req, res) => {
+    try {
+      const { audioPath } = req.body;
+      const masteredPath = await neuralAudioEngine.masterAudio(audioPath);
+      res.json({ masteredAudioUrl: `/uploads/${masteredPath}` });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/neural-audio/status", async (req, res) => {
+    try {
+      const status = neuralAudioEngine.getEngineStatus();
+      res.json(status);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Motion Capture Engine routes
+  app.get("/api/motion-capture/status", async (req, res) => {
+    try {
+      const status = motionCaptureEngine.getEngineStatus();
+      res.json(status);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/motion-capture/virtual-performer", async (req, res) => {
+    try {
+      const performer = await motionCaptureEngine.createVirtualPerformer(req.body);
+      res.json(performer);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/motion-capture/export/:sessionId", async (req, res) => {
+    try {
+      const { sessionId } = req.params;
+      const data = await motionCaptureEngine.exportPerformanceData(sessionId);
+      res.json(data);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Immersive Media Engine routes
+  app.post("/api/immersive/360-video", async (req, res) => {
+    try {
+      const { sourceVideos, outputPath, resolution, stereoscopic } = req.body;
+      const result = await immersiveMediaEngine.create360Video({
+        sourceVideos,
+        outputPath,
+        resolution,
+        stereoscopic
+      });
+      res.json({ videoUrl: result });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/immersive/spatial-audio", async (req, res) => {
+    try {
+      const { config, audioFiles } = req.body;
+      const result = await immersiveMediaEngine.createSpatialAudio(config, audioFiles);
+      res.json({ audioUrl: result });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/immersive/start-stream", async (req, res) => {
+    try {
+      const streamId = await immersiveMediaEngine.startProfessionalStream(req.body);
+      res.json({ streamId });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/immersive/ar-overlay", async (req, res) => {
+    try {
+      const result = await immersiveMediaEngine.createAROverlay(req.body);
+      res.json({ videoUrl: result });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/immersive/status", async (req, res) => {
+    try {
+      const status = immersiveMediaEngine.getEngineStatus();
+      res.json(status);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Adaptive Learning Engine routes
+  app.post("/api/adaptive-learning/create-profile", async (req, res) => {
+    try {
+      const { studentId, initialAssessment } = req.body;
+      const profile = await adaptiveLearningEngine.createStudentProfile(studentId, initialAssessment);
+      res.json(profile);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/adaptive-learning/status", async (req, res) => {
+    try {
+      const status = adaptiveLearningEngine.getEngineStatus();
+      res.json(status);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Unified AI Platform Status
+  app.get("/api/ai-platform/status", async (req, res) => {
+    try {
+      const platformStatus = {
+        musicAI: selfHostedMusicAI.getModelStatus(),
+        videoAI: await selfHostedVideoAI.listAvailableModels(),
+        neuralAudio: neuralAudioEngine.getEngineStatus(),
+        motionCapture: motionCaptureEngine.getEngineStatus(),
+        immersiveMedia: immersiveMediaEngine.getEngineStatus(),
+        adaptiveLearning: adaptiveLearningEngine.getEngineStatus(),
+        timestamp: new Date().toISOString()
+      };
+      res.json(platformStatus);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
