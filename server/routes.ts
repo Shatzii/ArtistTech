@@ -11,6 +11,7 @@ import { motionCaptureEngine } from "./motion-capture-engine";
 import { immersiveMediaEngine } from "./immersive-media-engine";
 import { adaptiveLearningEngine } from "./adaptive-learning-engine";
 import { enterprisePlatformEngine } from "./enterprise-platform-engine";
+import { midiControllerEngine } from "./midi-controller-engine";
 import { insertProjectSchema, insertAudioFileSchema, insertVideoFileSchema } from "@shared/schema";
 import multer from "multer";
 import path from "path";
@@ -343,6 +344,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // MIDI Controller Engine routes
+  app.get("/api/midi/devices", async (req, res) => {
+    try {
+      const devices = await midiControllerEngine.getConnectedDevices();
+      res.json(devices);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/midi/profiles", async (req, res) => {
+    try {
+      const profiles = await midiControllerEngine.getAvailableProfiles();
+      res.json(profiles);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/midi/mappings/export", async (req, res) => {
+    try {
+      const { deviceId } = req.body;
+      const mappings = await midiControllerEngine.exportMappings(deviceId);
+      res.json(mappings);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/midi/mappings/import", async (req, res) => {
+    try {
+      const { mappings } = req.body;
+      await midiControllerEngine.importMappings(mappings);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/midi/status", async (req, res) => {
+    try {
+      const status = midiControllerEngine.getEngineStatus();
+      res.json(status);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Unified AI Platform Status
   app.get("/api/ai-platform/status", async (req, res) => {
     try {
@@ -354,6 +403,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         immersiveMedia: immersiveMediaEngine.getEngineStatus(),
         adaptiveLearning: adaptiveLearningEngine.getEngineStatus(),
         enterprise: enterprisePlatformEngine.getEngineStatus(),
+        midiController: midiControllerEngine.getEngineStatus(),
         timestamp: new Date().toISOString(),
         totalCapabilities: [
           'Self-Hosted AI Music & Video Generation',
@@ -363,7 +413,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           'Adaptive Learning with Biometric Analysis',
           'White-Label Business Platform Generation',
           'Automated Marketing & Content Creation',
-          'Advanced Business Intelligence & Analytics'
+          'Advanced Business Intelligence & Analytics',
+          'Professional MIDI Controller Integration'
         ]
       };
       res.json(platformStatus);

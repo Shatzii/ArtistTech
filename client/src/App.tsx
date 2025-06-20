@@ -8,6 +8,7 @@ import Lesson from "@/pages/lesson";
 import Curriculum from "@/pages/curriculum";
 import MPCStudio from "@/pages/mpc-studio";
 import DJStudio from "@/pages/dj-studio";
+import MIDIController from "@/pages/midi-controller";
 import AuthPage from "@/pages/auth";
 import NotFound from "@/pages/not-found";
 
@@ -22,6 +23,7 @@ function Router() {
       <Route path="/studio" component={Studio} />
       <Route path="/mpc" component={MPCStudio} />
       <Route path="/dj" component={DJStudio} />
+      <Route path="/midi" component={MIDIController} />
       <Route path="/lesson" component={Lesson} />
       <Route path="/curriculum" component={Curriculum} />
       <Route path="/auth" component={AuthPage} />
