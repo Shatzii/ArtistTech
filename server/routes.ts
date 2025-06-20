@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { LiveStreamingService } from "./websocket";
 import { registerUser, loginUser, authenticateToken, type AuthRequest } from "./auth";
 import { createCheckoutSession, handleWebhook, getSubscriptionStatus } from "./payments";
+import { aiMusicDean } from "./ai-dean";
 import { insertProjectSchema, insertAudioFileSchema, insertVideoFileSchema } from "@shared/schema";
 import multer from "multer";
 import path from "path";
@@ -46,6 +47,102 @@ export async function registerRoutes(app: Express): Promise<Server> {
   };
 
   // Authentication routes
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const result = await registerUser(req.body);
+      res.json(result);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      const result = await loginUser(email, password);
+      res.json(result);
+    } catch (error: any) {
+      res.status(401).json({ error: error.message });
+    }
+  });
+
+  // Payment routes
+  app.post("/api/payments/create-checkout", createCheckoutSession);
+  app.post("/api/payments/webhook", handleWebhook);
+  app.get("/api/payments/subscription/:customerId", getSubscriptionStatus);
+
+  // AI Music Dean routes
+  app.post("/api/ai-dean/analyze/:studentId", async (req, res) => {
+    try {
+      const { studentId } = req.params;
+      const analysis = await aiMusicDean.analyzeStudentProgress(studentId);
+      res.json(analysis);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/ai-dean/chat", async (req, res) => {
+    try {
+      const { studentId, message } = req.body;
+      const response = await aiMusicDean.generateResponse(studentId, message);
+      res.json(response);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/ai-dean/lesson-plan", async (req, res) => {
+    try {
+      const { studentId, topic, duration } = req.body;
+      const lessonPlan = await aiMusicDean.generateLessonPlan(studentId, topic, duration);
+      res.json(lessonPlan);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/ai-dean/collaboration/:studentId", async (req, res) => {
+    try {
+      const { studentId } = req.params;
+      const suggestions = await aiMusicDean.suggestCollaboration(studentId);
+      res.json(suggestions);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/ai-dean/motivation/:studentId", async (req, res) => {
+    try {
+      const { studentId } = req.params;
+      const content = await aiMusicDean.generateMotivationalContent(studentId);
+      res.json(content);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/ai-dean/social-post", async (req, res) => {
+    try {
+      const { studentId, achievement } = req.body;
+      const post = await aiMusicDean.createSocialPost(studentId, achievement);
+      res.json(post);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/ai-dean/autonomous-check/:studentId", async (req, res) => {
+    try {
+      const { studentId } = req.params;
+      const check = await aiMusicDean.autonomousCheck(studentId);
+      res.json(check);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Demo authentication for existing routes
   app.post("/api/auth/teacher/login", async (req, res) => {
     try {
       const { email, password } = req.body;
