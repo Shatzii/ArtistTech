@@ -25,7 +25,12 @@ import {
   Eye,
   Target,
   Sliders,
-  Sparkles
+  Sparkles,
+  Wand2,
+  Camera,
+  Film,
+  Clapperboard,
+  Wand2 as Magic
 } from "lucide-react";
 
 interface VideoClip {
@@ -42,6 +47,9 @@ interface VideoClip {
   volume: number;
   fadeIn: number;
   fadeOut: number;
+  isAIGenerated?: boolean;
+  generationPrompt?: string;
+  generationStyle?: 'cinematic' | 'realistic' | 'artistic' | 'documentary';
 }
 
 interface VideoEffect {
@@ -85,6 +93,10 @@ export default function VideoStudio() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [activeTab, setActiveTab] = useState('timeline');
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [generationStyle, setGenerationStyle] = useState<'cinematic' | 'realistic' | 'artistic' | 'documentary'>('cinematic');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationProgress, setGenerationProgress] = useState(0);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -264,6 +276,73 @@ export default function VideoStudio() {
     if (videoRef.current) {
       videoRef.current.currentTime = time;
       setCurrentTime(time);
+    }
+  };
+
+  const generateAIVideo = async () => {
+    if (!aiPrompt.trim()) return;
+
+    setIsGenerating(true);
+    setGenerationProgress(0);
+
+    try {
+      // Simulate progress
+      const progressInterval = setInterval(() => {
+        setGenerationProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + Math.random() * 10;
+        });
+      }, 500);
+
+      const response = await fetch('/api/ai-video/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: aiPrompt,
+          style: generationStyle,
+          duration: 10, // 10 seconds
+          resolution: '1920x1080',
+          fps: 24
+        })
+      });
+
+      const result = await response.json();
+      
+      clearInterval(progressInterval);
+      setGenerationProgress(100);
+
+      // Add generated video to timeline
+      const newClip: VideoClip = {
+        id: `ai_clip_${Date.now()}`,
+        name: `AI: ${aiPrompt.substring(0, 30)}...`,
+        duration: 10,
+        startTime: 0,
+        endTime: 10,
+        position: clips.reduce((max, clip) => Math.max(max, clip.position + clip.duration), 0),
+        videoUrl: result.videoUrl || '/videos/ai-generated-sample.mp4',
+        thumbnailUrl: result.thumbnailUrl || '/thumbnails/ai-generated-sample.jpg',
+        effects: [],
+        colorCorrection: { ...defaultColorCorrection },
+        volume: 0,
+        fadeIn: 0,
+        fadeOut: 0,
+        isAIGenerated: true,
+        generationPrompt: aiPrompt,
+        generationStyle: generationStyle
+      };
+
+      setClips(prev => [...prev, newClip]);
+      setDuration(prev => prev + 10);
+      setAiPrompt('');
+      
+    } catch (error) {
+      console.error('AI video generation failed:', error);
+    } finally {
+      setIsGenerating(false);
+      setGenerationProgress(0);
     }
   };
 
@@ -652,7 +731,11 @@ export default function VideoStudio() {
         {/* Right Panel */}
         <div className="w-80 bg-gray-800 border-l border-gray-700">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-            <TabsList className="grid w-full grid-cols-3 bg-gray-700">
+            <TabsList className="grid w-full grid-cols-4 bg-gray-700">
+              <TabsTrigger value="ai-gen" className="text-xs">
+                <Magic size={14} className="mr-1" />
+                AI Video
+              </TabsTrigger>
               <TabsTrigger value="color" className="text-xs">
                 <Palette size={14} className="mr-1" />
                 Color
@@ -668,6 +751,146 @@ export default function VideoStudio() {
             </TabsList>
             
             <div className="flex-1 overflow-hidden">
+              <TabsContent value="ai-gen" className="h-full m-0">
+                <ScrollArea className="h-full p-4">
+                  <div className="space-y-4">
+                    <div className="text-sm font-semibold text-orange-400 mb-4">AI VIDEO GENERATION</div>
+                    
+                    {/* Generation Style Selection */}
+                    <div className="space-y-2">
+                      <div className="text-xs text-gray-400 font-medium">CINEMATIC STYLE</div>
+                      <Select value={generationStyle} onValueChange={(value) => setGenerationStyle(value as any)}>
+                        <SelectTrigger className="w-full bg-gray-800 border-gray-600">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="cinematic">Cinematic - Film-quality visuals</SelectItem>
+                          <SelectItem value="realistic">Realistic - Photorealistic footage</SelectItem>
+                          <SelectItem value="artistic">Artistic - Stylized creative look</SelectItem>
+                          <SelectItem value="documentary">Documentary - Natural lighting</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Prompt Input */}
+                    <div className="space-y-2">
+                      <div className="text-xs text-gray-400 font-medium">SCENE DESCRIPTION</div>
+                      <textarea
+                        value={aiPrompt}
+                        onChange={(e) => setAiPrompt(e.target.value)}
+                        placeholder="Describe your scene in detail: A majestic golden eagle soaring over snow-capped mountains at sunset, with dramatic lighting and cinematic camera movement..."
+                        className="w-full h-24 p-3 bg-gray-800 border border-gray-600 rounded text-white text-sm resize-none"
+                        disabled={isGenerating}
+                      />
+                    </div>
+
+                    {/* Preset Prompts */}
+                    <div className="space-y-2">
+                      <div className="text-xs text-gray-400 font-medium">PRESET SCENES</div>
+                      <div className="grid grid-cols-1 gap-2">
+                        {[
+                          "A bustling city street at night with neon lights reflecting on wet pavement",
+                          "Ocean waves crashing against rocky cliffs during a storm",
+                          "A serene forest with morning sunlight filtering through trees",
+                          "Futuristic cityscape with flying cars and holographic billboards",
+                          "Time-lapse of clouds moving over a mountain landscape"
+                        ].map((preset, index) => (
+                          <Button
+                            key={index}
+                            variant="outline"
+                            size="sm"
+                            className="justify-start text-xs h-auto p-2 text-left"
+                            onClick={() => setAiPrompt(preset)}
+                            disabled={isGenerating}
+                          >
+                            {preset}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Generation Controls */}
+                    <div className="space-y-3">
+                      <div className="text-xs text-gray-400 font-medium">GENERATION SETTINGS</div>
+                      
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="text-xs">
+                          <span className="text-gray-400">Duration:</span>
+                          <span className="text-white ml-2">10 seconds</span>
+                        </div>
+                        <div className="text-xs">
+                          <span className="text-gray-400">Quality:</span>
+                          <span className="text-white ml-2">HD 1080p</span>
+                        </div>
+                        <div className="text-xs">
+                          <span className="text-gray-400">FPS:</span>
+                          <span className="text-white ml-2">24fps</span>
+                        </div>
+                        <div className="text-xs">
+                          <span className="text-gray-400">Aspect:</span>
+                          <span className="text-white ml-2">16:9</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Generation Progress */}
+                    {isGenerating && (
+                      <div className="space-y-2">
+                        <div className="text-xs text-gray-400 font-medium">GENERATING...</div>
+                        <div className="w-full bg-gray-700 rounded-full h-2">
+                          <div 
+                            className="bg-orange-400 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${generationProgress}%` }}
+                          />
+                        </div>
+                        <div className="text-xs text-center text-gray-400">
+                          {generationProgress < 30 ? 'Analyzing prompt...' :
+                           generationProgress < 60 ? 'Generating frames...' :
+                           generationProgress < 90 ? 'Rendering video...' : 'Finalizing...'}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Generate Button */}
+                    <Button 
+                      onClick={generateAIVideo}
+                      disabled={!aiPrompt.trim() || isGenerating}
+                      className="w-full bg-orange-600 hover:bg-orange-700"
+                    >
+                      {isGenerating ? (
+                        <div className="flex items-center">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Generating Video...
+                        </div>
+                      ) : (
+                        <div className="flex items-center">
+                          <Magic size={16} className="mr-2" />
+                          Generate AI Video
+                        </div>
+                      )}
+                    </Button>
+
+                    {/* Recent Generations */}
+                    <div className="space-y-2">
+                      <div className="text-xs text-gray-400 font-medium">RECENT AI CLIPS</div>
+                      {clips.filter(clip => clip.isAIGenerated).map(clip => (
+                        <div key={clip.id} className="bg-gray-900 rounded p-2">
+                          <div className="text-xs font-medium text-white mb-1">
+                            {clip.name}
+                          </div>
+                          <div className="text-xs text-gray-400 mb-1">
+                            Style: {clip.generationStyle}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            "{clip.generationPrompt?.substring(0, 50)}..."
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </ScrollArea>
+              </TabsContent>
+
               <TabsContent value="color" className="h-full m-0">
                 <ScrollArea className="h-full p-4">
                   <ColorCorrectionPanel />
