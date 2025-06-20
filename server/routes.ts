@@ -2,6 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { LiveStreamingService } from "./websocket";
+import { registerUser, loginUser, authenticateToken, type AuthRequest } from "./auth";
+import { createCheckoutSession, handleWebhook, getSubscriptionStatus } from "./payments";
 import { insertProjectSchema, insertAudioFileSchema, insertVideoFileSchema } from "@shared/schema";
 import multer from "multer";
 import path from "path";
