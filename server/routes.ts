@@ -304,6 +304,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Enterprise Platform Engine routes
+  app.post("/api/enterprise/create-platform", async (req, res) => {
+    try {
+      const platformId = await enterprisePlatformEngine.createWhiteLabelPlatform(req.body);
+      res.json({ platformId });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/enterprise/analytics/:schoolId", async (req, res) => {
+    try {
+      const { schoolId } = req.params;
+      const analytics = await enterprisePlatformEngine.getSchoolAnalytics(schoolId);
+      res.json(analytics);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.put("/api/enterprise/config/:schoolId", async (req, res) => {
+    try {
+      const { schoolId } = req.params;
+      await enterprisePlatformEngine.updateSchoolConfig(schoolId, req.body);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/enterprise/status", async (req, res) => {
+    try {
+      const status = enterprisePlatformEngine.getEngineStatus();
+      res.json(status);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Unified AI Platform Status
   app.get("/api/ai-platform/status", async (req, res) => {
     try {
@@ -314,7 +353,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         motionCapture: motionCaptureEngine.getEngineStatus(),
         immersiveMedia: immersiveMediaEngine.getEngineStatus(),
         adaptiveLearning: adaptiveLearningEngine.getEngineStatus(),
-        timestamp: new Date().toISOString()
+        enterprise: enterprisePlatformEngine.getEngineStatus(),
+        timestamp: new Date().toISOString(),
+        totalCapabilities: [
+          'Self-Hosted AI Music & Video Generation',
+          'Neural Audio Synthesis & Voice Cloning', 
+          'Real-Time Motion Capture & Performance Augmentation',
+          'Professional 360° Video & Spatial Audio Creation',
+          'Adaptive Learning with Biometric Analysis',
+          'White-Label Business Platform Generation',
+          'Automated Marketing & Content Creation',
+          'Advanced Business Intelligence & Analytics'
+        ]
       };
       res.json(platformStatus);
     } catch (error: any) {
