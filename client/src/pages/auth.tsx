@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Music, Users, School, CreditCard, Check } from "lucide-react";
+import { Music, Video, Cpu, Zap, Brain, Palette, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function AuthPage() {
@@ -111,28 +111,33 @@ export default function AuthPage() {
             <h1 className="text-4xl font-bold text-white">ProStudio</h1>
           </div>
           <h2 className="text-2xl text-gray-300 mb-4">
-            The Complete Music Education Platform
+            AI-Powered Multimedia Creation Platform
           </h2>
           <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
-            Professional DAW capabilities, MPC-style beat making, live streaming classrooms, 
-            and structured curriculum - all in one comprehensive platform for music schools.
+            Revolutionary self-hosted AI technology for music production, video creation, and immersive media.
+            15 cutting-edge engines delivering professional-grade capabilities that surpass industry standards.
           </p>
           
-          <div className="flex items-center justify-center space-x-8 mb-12">
-            <div className="text-center">
-              <Users className="text-orange-400 mx-auto mb-2" size={32} />
-              <div className="text-white font-semibold">Live Streaming</div>
-              <div className="text-gray-400 text-sm">Teacher-Student Interaction</div>
-            </div>
-            <div className="text-center">
-              <School className="text-orange-400 mx-auto mb-2" size={32} />
-              <div className="text-white font-semibold">Structured Curriculum</div>
-              <div className="text-gray-400 text-sm">K-12 Music Education</div>
-            </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
             <div className="text-center">
               <Music className="text-orange-400 mx-auto mb-2" size={32} />
-              <div className="text-white font-semibold">MPC Studio</div>
-              <div className="text-gray-400 text-sm">Professional Beat Making</div>
+              <div className="text-white font-semibold">Neural Audio</div>
+              <div className="text-gray-400 text-sm">AI Music Generation</div>
+            </div>
+            <div className="text-center">
+              <Video className="text-orange-400 mx-auto mb-2" size={32} />
+              <div className="text-white font-semibold">Cinematic AI</div>
+              <div className="text-gray-400 text-sm">Video Creation</div>
+            </div>
+            <div className="text-center">
+              <Cpu className="text-orange-400 mx-auto mb-2" size={32} />
+              <div className="text-white font-semibold">Motion Capture</div>
+              <div className="text-gray-400 text-sm">Performance AI</div>
+            </div>
+            <div className="text-center">
+              <Brain className="text-orange-400 mx-auto mb-2" size={32} />
+              <div className="text-white font-semibold">Adaptive Learning</div>
+              <div className="text-gray-400 text-sm">Biometric Analysis</div>
             </div>
           </div>
         </div>
@@ -334,17 +339,29 @@ export default function AuthPage() {
         <div className="mx-auto max-w-md text-center">
           <h4 className="text-lg font-semibold text-white mb-4">Try the Demo</h4>
           <div className="space-y-2">
-            <Button variant="outline" className="w-full border-gray-600 text-white hover:bg-gray-700">
-              <Users className="mr-2" size={16} />
-              Demo Teacher Portal
-            </Button>
-            <Button variant="outline" className="w-full border-gray-600 text-white hover:bg-gray-700">
-              <School className="mr-2" size={16} />
-              Demo Student Dashboard
-            </Button>
-            <Button variant="outline" className="w-full border-gray-600 text-white hover:bg-gray-700">
+            <Button 
+              variant="outline" 
+              className="w-full border-gray-600 text-white hover:bg-gray-700"
+              onClick={() => window.location.href = "/mpc"}
+            >
               <Music className="mr-2" size={16} />
-              Demo MPC Studio
+              MPC Studio Demo
+            </Button>
+            <Button 
+              variant="outline" 
+              className="w-full border-gray-600 text-white hover:bg-gray-700"
+              onClick={() => window.location.href = "/studio"}
+            >
+              <Video className="mr-2" size={16} />
+              AI Video Studio
+            </Button>
+            <Button 
+              variant="outline" 
+              className="w-full border-gray-600 text-white hover:bg-gray-700"
+              onClick={() => window.location.href = "/midi"}
+            >
+              <Zap className="mr-2" size={16} />
+              MIDI Controller Hub
             </Button>
           </div>
         </div>
