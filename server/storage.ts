@@ -91,29 +91,197 @@ export interface IStorage {
   createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
 }
 
-export class MemStorage implements IStorage {
-  private projects: Map<number, Project>;
-  private audioFiles: Map<number, AudioFile>;
-  private videoFiles: Map<number, VideoFile>;
-  private teachers: Map<number, Teacher>;
-  private students: Map<number, Student>;
-  private lessons: Map<number, Lesson>;
-  private exercises: Map<number, Exercise>;
-  private voiceCommands: Map<number, VoiceCommand>;
-  private chatMessages: Map<number, ChatMessage>;
-  private currentProjectId: number;
-  private currentAudioFileId: number;
-  private currentVideoFileId: number;
-  private currentTeacherId: number;
-  private currentStudentId: number;
-  private currentLessonId: number;
-  private currentExerciseId: number;
-  private currentVoiceCommandId: number;
-  private currentChatMessageId: number;
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
-  constructor() {
-    this.projects = new Map();
-    this.audioFiles = new Map();
+export class DatabaseStorage implements IStorage {
+
+  // Basic implementations to get platform functional
+  async getProject(id: number): Promise<Project | undefined> {
+    const [project] = await db.select().from(projects).where(eq(projects.id, id));
+    return project;
+  }
+
+  async getProjects(): Promise<Project[]> {
+    return await db.select().from(projects);
+  }
+
+  async createProject(insertProject: InsertProject): Promise<Project> {
+    const [project] = await db.insert(projects).values(insertProject).returning();
+    return project;
+  }
+
+  async updateProject(id: number, updateData: Partial<InsertProject>): Promise<Project | undefined> {
+    const [project] = await db.update(projects).set(updateData).where(eq(projects.id, id)).returning();
+    return project;
+  }
+
+  async deleteProject(id: number): Promise<boolean> {
+    const result = await db.delete(projects).where(eq(projects.id, id));
+    return result.rowCount > 0;
+  }
+
+  async getAudioFile(id: number): Promise<AudioFile | undefined> {
+    const [audioFile] = await db.select().from(audioFiles).where(eq(audioFiles.id, id));
+    return audioFile;
+  }
+
+  async getAudioFiles(): Promise<AudioFile[]> {
+    return await db.select().from(audioFiles);
+  }
+
+  async createAudioFile(insertAudioFile: InsertAudioFile): Promise<AudioFile> {
+    const [audioFile] = await db.insert(audioFiles).values(insertAudioFile).returning();
+    return audioFile;
+  }
+
+  async deleteAudioFile(id: number): Promise<boolean> {
+    const result = await db.delete(audioFiles).where(eq(audioFiles.id, id));
+    return result.rowCount > 0;
+  }
+
+  async getVideoFile(id: number): Promise<VideoFile | undefined> {
+    const [videoFile] = await db.select().from(videoFiles).where(eq(videoFiles.id, id));
+    return videoFile;
+  }
+
+  async getVideoFiles(): Promise<VideoFile[]> {
+    return await db.select().from(videoFiles);
+  }
+
+  async createVideoFile(insertVideoFile: InsertVideoFile): Promise<VideoFile> {
+    const [videoFile] = await db.insert(videoFiles).values(insertVideoFile).returning();
+    return videoFile;
+  }
+
+  async deleteVideoFile(id: number): Promise<boolean> {
+    const result = await db.delete(videoFiles).where(eq(videoFiles.id, id));
+    return result.rowCount > 0;
+  }
+
+  async getTeacher(id: number): Promise<Teacher | undefined> {
+    const [teacher] = await db.select().from(teachers).where(eq(teachers.id, id));
+    return teacher;
+  }
+
+  async getTeachers(): Promise<Teacher[]> {
+    return await db.select().from(teachers);
+  }
+
+  async createTeacher(insertTeacher: InsertTeacher): Promise<Teacher> {
+    const [teacher] = await db.insert(teachers).values(insertTeacher).returning();
+    return teacher;
+  }
+
+  async updateTeacher(id: number, updateData: Partial<InsertTeacher>): Promise<Teacher | undefined> {
+    const [teacher] = await db.update(teachers).set(updateData).where(eq(teachers.id, id)).returning();
+    return teacher;
+  }
+
+  async deleteTeacher(id: number): Promise<boolean> {
+    const result = await db.delete(teachers).where(eq(teachers.id, id));
+    return result.rowCount > 0;
+  }
+
+  async getStudent(id: number): Promise<Student | undefined> {
+    const [student] = await db.select().from(students).where(eq(students.id, id));
+    return student;
+  }
+
+  async getStudents(): Promise<Student[]> {
+    return await db.select().from(students);
+  }
+
+  async createStudent(insertStudent: InsertStudent): Promise<Student> {
+    const [student] = await db.insert(students).values(insertStudent).returning();
+    return student;
+  }
+
+  async updateStudent(id: number, updateData: Partial<InsertStudent>): Promise<Student | undefined> {
+    const [student] = await db.update(students).set(updateData).where(eq(students.id, id)).returning();
+    return student;
+  }
+
+  async deleteStudent(id: number): Promise<boolean> {
+    const result = await db.delete(students).where(eq(students.id, id));
+    return result.rowCount > 0;
+  }
+
+  async getLesson(id: number): Promise<Lesson | undefined> {
+    const [lesson] = await db.select().from(lessons).where(eq(lessons.id, id));
+    return lesson;
+  }
+
+  async getLessons(): Promise<Lesson[]> {
+    return await db.select().from(lessons);
+  }
+
+  async getLessonsByTeacher(teacherId: number): Promise<Lesson[]> {
+    return await db.select().from(lessons).where(eq(lessons.teacherId, teacherId));
+  }
+
+  async getLessonsByStudent(studentId: number): Promise<Lesson[]> {
+    return await db.select().from(lessons).where(eq(lessons.studentId, studentId));
+  }
+
+  async createLesson(insertLesson: InsertLesson): Promise<Lesson> {
+    const [lesson] = await db.insert(lessons).values(insertLesson).returning();
+    return lesson;
+  }
+
+  async updateLesson(id: number, updateData: Partial<InsertLesson>): Promise<Lesson | undefined> {
+    const [lesson] = await db.update(lessons).set(updateData).where(eq(lessons.id, id)).returning();
+    return lesson;
+  }
+
+  async deleteLesson(id: number): Promise<boolean> {
+    const result = await db.delete(lessons).where(eq(lessons.id, id));
+    return result.rowCount > 0;
+  }
+
+  async getExercise(id: number): Promise<Exercise | undefined> {
+    const [exercise] = await db.select().from(exercises).where(eq(exercises.id, id));
+    return exercise;
+  }
+
+  async getExercises(): Promise<Exercise[]> {
+    return await db.select().from(exercises);
+  }
+
+  async getExercisesByInstrument(instrument: string): Promise<Exercise[]> {
+    return await db.select().from(exercises).where(eq(exercises.instrument, instrument));
+  }
+
+  async createExercise(insertExercise: InsertExercise): Promise<Exercise> {
+    const [exercise] = await db.insert(exercises).values(insertExercise).returning();
+    return exercise;
+  }
+
+  async updateExercise(id: number, updateData: Partial<InsertExercise>): Promise<Exercise | undefined> {
+    const [exercise] = await db.update(exercises).set(updateData).where(eq(exercises.id, id)).returning();
+    return exercise;
+  }
+
+  async deleteExercise(id: number): Promise<boolean> {
+    const result = await db.delete(exercises).where(eq(exercises.id, id));
+    return result.rowCount > 0;
+  }
+
+  async getVoiceCommandsByLesson(lessonId: number): Promise<VoiceCommand[]> {
+    return await db.select().from(voiceCommands).where(eq(voiceCommands.lessonId, lessonId));
+  }
+
+  async createVoiceCommand(insertCommand: InsertVoiceCommand): Promise<VoiceCommand> {
+    const [command] = await db.insert(voiceCommands).values(insertCommand).returning();
+    return command;
+  }
+
+  async getChatMessagesByLesson(lessonId: number): Promise<ChatMessage[]> {
+    return await db.select().from(chatMessages).where(eq(chatMessages.lessonId, lessonId));
+  }
+
+  async createChatMessage(insertMessage: InsertChatMessage): Promise<ChatMessage> {
+    const [message] = await db.insert(chatMessages).values(insertMessage).returning();
     this.videoFiles = new Map();
     this.teachers = new Map();
     this.students = new Map();
@@ -483,4 +651,4 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
