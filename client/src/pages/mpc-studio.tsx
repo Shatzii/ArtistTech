@@ -212,46 +212,37 @@ export default function MPCStudio() {
     setCurrentStep(prev => (prev + 1) % currentPattern.length);
   };
 
-  const playSound = async (sound: DrumSound, time: number, velocity: number = 0.8) => {
+  const playSound = async (sound: DrumSound, time: number = 0, velocity: number = 0.8) => {
     if (!audioContextRef.current) return;
 
     try {
-      // In a real implementation, you would load and cache audio buffers
-      // For now, we'll simulate the sound playback
-      console.log(`Playing ${sound.name} at time ${time} with velocity ${velocity}`);
-      
-      // Create oscillator for demo (replace with actual audio buffer in production)
-      const oscillator = audioContextRef.current.createOscillator();
+      // Create proper audio buffer for realistic drum sounds
+      const buffer = createDrumSample(sound.category, audioContextRef.current!);
+      const source = audioContextRef.current.createBufferSource();
       const gainNode = audioContextRef.current.createGain();
+      const filterNode = audioContextRef.current.createBiquadFilter();
+
+      source.buffer = buffer;
       
-      // Configure sound based on category
-      switch (sound.category) {
-        case 'kick':
-          oscillator.frequency.setValueAtTime(60 + sound.pitch, time);
-          gainNode.gain.setValueAtTime(velocity * sound.volume * 0.8, time);
-          gainNode.gain.exponentialRampToValueAtTime(0.001, time + 0.5);
-          break;
-        case 'snare':
-          oscillator.frequency.setValueAtTime(200 + sound.pitch, time);
-          gainNode.gain.setValueAtTime(velocity * sound.volume * 0.6, time);
-          gainNode.gain.exponentialRampToValueAtTime(0.001, time + 0.3);
-          break;
-        case 'hihat':
-          oscillator.frequency.setValueAtTime(8000 + sound.pitch, time);
-          gainNode.gain.setValueAtTime(velocity * sound.volume * 0.3, time);
-          gainNode.gain.exponentialRampToValueAtTime(0.001, time + 0.1);
-          break;
-        default:
-          oscillator.frequency.setValueAtTime(440 + sound.pitch, time);
-          gainNode.gain.setValueAtTime(velocity * sound.volume * 0.5, time);
-          gainNode.gain.exponentialRampToValueAtTime(0.001, time + 0.2);
+      // Apply sound parameters
+      gainNode.gain.setValueAtTime(velocity * sound.volume * masterVolume, time || audioContextRef.current.currentTime);
+      
+      // Apply filter if specified
+      if (sound.filter !== 0) {
+        filterNode.frequency.setValueAtTime(1000 + (sound.filter * 2000), time || audioContextRef.current.currentTime);
+        filterNode.type = sound.filter > 0 ? 'highpass' : 'lowpass';
+        source.connect(filterNode);
+        filterNode.connect(gainNode);
+      } else {
+        source.connect(gainNode);
       }
       
-      oscillator.connect(gainNode);
       gainNode.connect(audioContextRef.current.destination);
       
-      oscillator.start(time);
-      oscillator.stop(time + 1);
+      // Apply pitch adjustment
+      source.playbackRate.setValueAtTime(1 + (sound.pitch / 12), time || audioContextRef.current.currentTime);
+      
+      source.start(time || audioContextRef.current.currentTime);
       
     } catch (error) {
       console.error('Failed to play sound:', error);
@@ -283,6 +274,84 @@ export default function MPCStudio() {
   const savePattern = () => {
     const newPattern = { ...currentPattern, id: `pattern_${Date.now()}` };
     setPatterns(prev => [...prev, newPattern]);
+  };
+
+  // Generate realistic drum samples
+  const createDrumSample = (category: string, audioContext: AudioContext): AudioBuffer => {
+    const sampleRate = audioContext.sampleRate;
+    const duration = category === 'crash' ? 2.0 : 0.5;
+    const length = sampleRate * duration;
+    const buffer = audioContext.createBuffer(1, length, sampleRate);
+    const data = buffer.getChannelData(0);
+
+    switch (category) {
+      case 'kick':
+        for (let i = 0; i < length; i++) {
+          const t = i / sampleRate;
+          const frequency = 60 * Math.exp(-t * 8);
+          const amplitude = Math.exp(-t * 6);
+          data[i] = amplitude * Math.sin(2 * Math.PI * frequency * t) * 0.8;
+        }
+        break;
+
+      case 'snare':
+        for (let i = 0; i < length; i++) {
+          const t = i / sampleRate;
+          const noise = (Math.random() * 2 - 1);
+          const tone = Math.sin(2 * Math.PI * 200 * t);
+          const amplitude = Math.exp(-t * 8);
+          data[i] = amplitude * (noise * 0.7 + tone * 0.3) * 0.6;
+        }
+        break;
+
+      case 'hihat':
+        for (let i = 0; i < length; i++) {
+          const t = i / sampleRate;
+          const noise = (Math.random() * 2 - 1);
+          const amplitude = Math.exp(-t * 15);
+          data[i] = amplitude * noise * 0.4;
+        }
+        break;
+
+      case 'crash':
+        for (let i = 0; i < length; i++) {
+          const t = i / sampleRate;
+          let signal = 0;
+          for (let h = 1; h <= 8; h++) {
+            signal += Math.sin(2 * Math.PI * 400 * h * t) / h;
+          }
+          const amplitude = Math.exp(-t * 2);
+          data[i] = amplitude * signal * 0.3;
+        }
+        break;
+
+      case 'perc':
+        for (let i = 0; i < length; i++) {
+          const t = i / sampleRate;
+          const frequency = 300;
+          const amplitude = Math.exp(-t * 10);
+          data[i] = amplitude * Math.sin(2 * Math.PI * frequency * t) * 0.5;
+        }
+        break;
+
+      case 'fx':
+        for (let i = 0; i < length; i++) {
+          const t = i / sampleRate;
+          const frequency = 100 + t * 1000;
+          const amplitude = Math.exp(-t * 3);
+          data[i] = amplitude * Math.sin(2 * Math.PI * frequency * t) * 0.4;
+        }
+        break;
+
+      default:
+        for (let i = 0; i < length; i++) {
+          const t = i / sampleRate;
+          const amplitude = Math.exp(-t * 5);
+          data[i] = amplitude * Math.sin(2 * Math.PI * 440 * t) * 0.4;
+        }
+    }
+
+    return buffer;
   };
 
   return (
