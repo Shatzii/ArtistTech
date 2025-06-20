@@ -11,13 +11,21 @@ import {
   Download,
   Star,
   Clock,
-  Music
+  Music,
+  ExternalLink
 } from "lucide-react";
+import { 
+  samplePacks, 
+  allSamples, 
+  sampleResources,
+  Sample as LibrarySample,
+  SamplePack as LibrarySamplePack 
+} from "@/data/sampleLibrary";
 
 interface Sample {
   id: string;
   name: string;
-  category: 'drums' | 'bass' | 'melody' | 'fx' | 'vocal';
+  category: 'drums' | 'bass' | 'melody' | 'fx' | 'vocal' | 'loops';
   subcategory: string;
   bpm?: number;
   key?: string;
@@ -26,6 +34,9 @@ interface Sample {
   tags: string[];
   favorite: boolean;
   audioUrl: string;
+  license: 'CC0' | 'CC-BY' | 'CC-BY-SA' | 'Royalty-Free';
+  artist?: string;
+  description?: string;
 }
 
 interface SamplePack {
@@ -35,6 +46,8 @@ interface SamplePack {
   samples: Sample[];
   genre: string;
   producer: string;
+  license: string;
+  website?: string;
 }
 
 interface MPCSampleLibraryProps {
@@ -54,81 +67,8 @@ export default function MPCSampleLibrary({ onSampleSelect }: MPCSampleLibraryPro
   }, []);
 
   const loadSampleLibrary = () => {
-    // Sample packs with different genres and styles
-    const defaultPacks: SamplePack[] = [
-      {
-        id: 'hip-hop-essentials',
-        name: 'Hip-Hop Essentials',
-        description: 'Classic boom-bap drums and bass samples',
-        genre: 'Hip-Hop',
-        producer: 'BeatMaker Pro',
-        samples: [
-          {
-            id: 'kick-808-1', name: '808 Kick Deep', category: 'drums', subcategory: 'kick',
-            bpm: 85, duration: 2.1, size: 125000, tags: ['808', 'deep', 'sub'], favorite: false,
-            audioUrl: '/samples/hip-hop/kick-808-1.wav'
-          },
-          {
-            id: 'snare-vintage-1', name: 'Vintage Snare Crack', category: 'drums', subcategory: 'snare',
-            duration: 0.8, size: 89000, tags: ['vintage', 'crack', 'punchy'], favorite: true,
-            audioUrl: '/samples/hip-hop/snare-vintage-1.wav'
-          },
-          {
-            id: 'bass-sub-1', name: 'Sub Bass Wobble', category: 'bass', subcategory: 'sub',
-            bpm: 85, key: 'C', duration: 4.0, size: 180000, tags: ['sub', 'wobble', 'deep'], favorite: false,
-            audioUrl: '/samples/hip-hop/bass-sub-1.wav'
-          }
-        ]
-      },
-      {
-        id: 'trap-heat',
-        name: 'Trap Heat',
-        description: 'Modern trap drums and melodic elements',
-        genre: 'Trap',
-        producer: 'TrapLord',
-        samples: [
-          {
-            id: 'kick-trap-1', name: 'Trap Kick Punch', category: 'drums', subcategory: 'kick',
-            bpm: 140, duration: 1.5, size: 95000, tags: ['trap', 'punch', 'modern'], favorite: true,
-            audioUrl: '/samples/trap/kick-trap-1.wav'
-          },
-          {
-            id: 'hihat-roll-1', name: 'Hi-Hat Roll Fast', category: 'drums', subcategory: 'hihat',
-            bpm: 140, duration: 2.0, size: 110000, tags: ['roll', 'fast', 'trap'], favorite: false,
-            audioUrl: '/samples/trap/hihat-roll-1.wav'
-          },
-          {
-            id: 'melody-bell-1', name: 'Trap Bell Lead', category: 'melody', subcategory: 'lead',
-            bpm: 140, key: 'F#m', duration: 8.0, size: 320000, tags: ['bell', 'lead', 'melodic'], favorite: false,
-            audioUrl: '/samples/trap/melody-bell-1.wav'
-          }
-        ]
-      },
-      {
-        id: 'techno-underground',
-        name: 'Techno Underground',
-        description: 'Dark and driving techno elements',
-        genre: 'Techno',
-        producer: 'DarkBeat',
-        samples: [
-          {
-            id: 'kick-techno-1', name: 'Techno Kick Hard', category: 'drums', subcategory: 'kick',
-            bpm: 128, duration: 1.0, size: 75000, tags: ['techno', 'hard', 'punchy'], favorite: false,
-            audioUrl: '/samples/techno/kick-techno-1.wav'
-          },
-          {
-            id: 'perc-metallic-1', name: 'Metallic Perc Hit', category: 'drums', subcategory: 'perc',
-            duration: 0.5, size: 45000, tags: ['metallic', 'industrial', 'hit'], favorite: true,
-            audioUrl: '/samples/techno/perc-metallic-1.wav'
-          }
-        ]
-      }
-    ];
-
-    setSamplePacks(defaultPacks);
-    
-    // Flatten all samples for browsing
-    const allSamples = defaultPacks.flatMap(pack => pack.samples);
+    // Load comprehensive open source sample library
+    setSamplePacks(samplePacks);
     setSamples(allSamples);
   };
 
@@ -159,6 +99,16 @@ export default function MPCSampleLibrary({ onSampleSelect }: MPCSampleLibraryPro
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return mins > 0 ? `${mins}:${secs.toString().padStart(2, '0')}` : `${seconds.toFixed(1)}s`;
+  };
+
+  const getLicenseColor = (license: string) => {
+    switch (license) {
+      case 'CC0': return 'text-green-400 border-green-400';
+      case 'CC-BY': return 'text-blue-400 border-blue-400';
+      case 'CC-BY-SA': return 'text-yellow-400 border-yellow-400';
+      case 'Royalty-Free': return 'text-purple-400 border-purple-400';
+      default: return 'text-gray-400 border-gray-400';
+    }
   };
 
   const categories = [
@@ -266,21 +216,35 @@ export default function MPCSampleLibrary({ onSampleSelect }: MPCSampleLibraryPro
                     <div className="text-sm font-medium truncate flex-1">
                       {sample.name}
                     </div>
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleFavorite(sample.id);
-                      }}
-                      variant="ghost"
-                      size="sm"
-                      className="p-1 h-6 w-6"
-                    >
-                      <Star 
-                        size={12} 
-                        className={sample.favorite ? 'text-yellow-400 fill-current' : 'text-gray-400'} 
-                      />
-                    </Button>
+                    <div className="flex items-center space-x-1">
+                      <Badge 
+                        variant="outline" 
+                        className={`text-xs ${getLicenseColor(sample.license)}`}
+                      >
+                        {sample.license}
+                      </Badge>
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFavorite(sample.id);
+                        }}
+                        variant="ghost"
+                        size="sm"
+                        className="p-1 h-6 w-6"
+                      >
+                        <Star 
+                          size={12} 
+                          className={sample.favorite ? 'text-yellow-400 fill-current' : 'text-gray-400'} 
+                        />
+                      </Button>
+                    </div>
                   </div>
+                  
+                  {sample.description && (
+                    <div className="text-xs text-gray-500 mb-2">
+                      {sample.description}
+                    </div>
+                  )}
                   
                   <div className="flex items-center space-x-2 text-xs text-gray-400">
                     <Badge variant="outline" className="text-xs">
@@ -306,6 +270,12 @@ export default function MPCSampleLibrary({ onSampleSelect }: MPCSampleLibraryPro
                     <div>{formatFileSize(sample.size)}</div>
                   </div>
                   
+                  {sample.artist && (
+                    <div className="text-xs text-gray-500 mt-1">
+                      Artist: {sample.artist}
+                    </div>
+                  )}
+                  
                   {sample.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
                       {sample.tags.slice(0, 3).map(tag => (
@@ -319,6 +289,27 @@ export default function MPCSampleLibrary({ onSampleSelect }: MPCSampleLibraryPro
               ))}
             </div>
           </ScrollArea>
+        </div>
+
+        {/* Educational Resources */}
+        <div className="space-y-2 border-t border-gray-600 pt-4">
+          <div className="text-xs text-gray-400 font-medium">Open Source Resources</div>
+          <div className="space-y-1">
+            {sampleResources.slice(0, 3).map(resource => (
+              <div key={resource.name} className="bg-gray-800 rounded p-2">
+                <div className="flex items-center justify-between">
+                  <div className="text-xs font-medium">{resource.name}</div>
+                  <Button variant="ghost" size="sm" className="p-1 h-6 w-6">
+                    <ExternalLink size={10} />
+                  </Button>
+                </div>
+                <div className="text-xs text-gray-400">{resource.description}</div>
+                <Badge variant="outline" className="text-xs mt-1">
+                  {resource.license}
+                </Badge>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Quick Actions */}
