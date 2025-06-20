@@ -4,7 +4,8 @@ import { storage } from "./storage";
 import { LiveStreamingService } from "./websocket";
 import { registerUser, loginUser, authenticateToken, type AuthRequest } from "./auth";
 import { createCheckoutSession, handleWebhook, getSubscriptionStatus } from "./payments";
-import { aiMusicDean } from "./ai-dean";
+import { selfHostedMusicAI } from "./self-hosted-ai";
+import { selfHostedVideoAI } from "./ai-video-generation";
 import { insertProjectSchema, insertAudioFileSchema, insertVideoFileSchema } from "@shared/schema";
 import multer from "multer";
 import path from "path";
@@ -71,11 +72,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/payments/webhook", handleWebhook);
   app.get("/api/payments/subscription/:customerId", getSubscriptionStatus);
 
-  // AI Music Dean routes
+  // Self-hosted AI Music Dean routes
   app.post("/api/ai-dean/analyze/:studentId", async (req, res) => {
     try {
       const { studentId } = req.params;
-      const analysis = await aiMusicDean.analyzeStudentProgress(studentId);
+      const student = await storage.getStudent(parseInt(studentId));
+      if (!student) {
+        return res.status(404).json({ error: "Student not found" });
+      }
+      
+      const analysis = await selfHostedMusicAI.analyzeStudentProgress(student);
       res.json(analysis);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -84,9 +90,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/ai-dean/chat", async (req, res) => {
     try {
-      const { studentId, message } = req.body;
-      const response = await aiMusicDean.generateResponse(studentId, message);
-      res.json(response);
+      const { message } = req.body;
+      const response = await selfHostedMusicAI.generateResponse({ prompt: message });
+      res.json({
+        response: response.response,
+        actions: [],
+        confidence: response.confidence
+      });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
@@ -94,49 +104,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/ai-dean/lesson-plan", async (req, res) => {
     try {
-      const { studentId, topic, duration } = req.body;
-      const lessonPlan = await aiMusicDean.generateLessonPlan(studentId, topic, duration);
+      const { topic, duration, studentLevel } = req.body;
+      const lessonPlan = await selfHostedMusicAI.createLessonPlan(topic, duration, studentLevel);
       res.json(lessonPlan);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
   });
 
-  app.get("/api/ai-dean/collaboration/:studentId", async (req, res) => {
+  app.get("/api/ai-dean/status", async (req, res) => {
     try {
-      const { studentId } = req.params;
-      const suggestions = await aiMusicDean.suggestCollaboration(studentId);
-      res.json(suggestions);
+      const status = selfHostedMusicAI.getModelStatus();
+      res.json(status);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
   });
 
-  app.get("/api/ai-dean/motivation/:studentId", async (req, res) => {
+  // Self-hosted AI Video Generation routes
+  app.post("/api/ai-video/generate", async (req, res) => {
     try {
-      const { studentId } = req.params;
-      const content = await aiMusicDean.generateMotivationalContent(studentId);
-      res.json(content);
+      const { prompt, style, duration, resolution, fps } = req.body;
+      
+      const result = await selfHostedVideoAI.generateVideo({
+        prompt,
+        style: style || 'cinematic',
+        duration: duration || 10,
+        resolution: resolution || '1920x1080',
+        fps: fps || 24
+      });
+      
+      res.json(result);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
   });
 
-  app.post("/api/ai-dean/social-post", async (req, res) => {
+  app.get("/api/ai-video/status/:generationId", async (req, res) => {
     try {
-      const { studentId, achievement } = req.body;
-      const post = await aiMusicDean.createSocialPost(studentId, achievement);
-      res.json(post);
+      const { generationId } = req.params;
+      const status = selfHostedVideoAI.getGenerationStatus(generationId);
+      res.json(status);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
   });
 
-  app.post("/api/ai-dean/autonomous-check/:studentId", async (req, res) => {
+  app.get("/api/ai-video/models", async (req, res) => {
     try {
-      const { studentId } = req.params;
-      const check = await aiMusicDean.autonomousCheck(studentId);
-      res.json(check);
+      const models = await selfHostedVideoAI.listAvailableModels();
+      res.json({ models });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }

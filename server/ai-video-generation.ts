@@ -108,7 +108,7 @@ export class SelfHostedVideoAI {
   }
 
   private enhancePrompt(prompt: string, style: string): string {
-    const styleEnhancements = {
+    const styleEnhancements: Record<string, string> = {
       cinematic: "cinematic lighting, film grain, shallow depth of field, dramatic composition, movie-quality visuals, professional cinematography",
       realistic: "photorealistic, natural lighting, high detail, documentary style, authentic textures, lifelike movement",
       artistic: "artistic interpretation, stylized visuals, creative composition, enhanced colors, artistic flair",

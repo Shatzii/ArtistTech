@@ -170,15 +170,38 @@ export default function AIMusicDean() {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const messageToSend = inputMessage;
     setInputMessage('');
     setIsThinking(true);
 
-    // Simulate AI processing
-    setTimeout(() => {
-      const aiResponse = generateAIResponse(inputMessage, currentStudent);
+    try {
+      const response = await fetch('/api/ai-dean/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: messageToSend })
+      });
+
+      const data = await response.json();
+      
+      const aiResponse: AIDeanMessage = {
+        id: `ai_${Date.now()}`,
+        type: 'ai',
+        content: data.response,
+        timestamp: new Date(),
+        category: 'general',
+        actionable: data.actions && data.actions.length > 0,
+        actions: data.actions || []
+      };
+
       setMessages(prev => [...prev, aiResponse]);
+    } catch (error) {
+      console.error('AI chat error:', error);
+      // Fallback response
+      const fallbackResponse = generateAIResponse(messageToSend, currentStudent);
+      setMessages(prev => [...prev, fallbackResponse]);
+    } finally {
       setIsThinking(false);
-    }, 1500);
+    }
   };
 
   const generateAIResponse = (userInput: string, student: StudentProfile | null): AIDeanMessage => {
