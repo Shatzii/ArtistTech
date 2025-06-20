@@ -4,7 +4,7 @@ import { AudioEngineType } from "@/hooks/useAudioEngine";
 import { useProjects } from "@/hooks/useProjects";
 import WaveformCanvas from "./WaveformCanvas";
 import { Button } from "@/components/ui/button";
-import { Archive, Mic, Play, Video } from "lucide-react";
+import { Archive, Mic, Play, Video, Volume2, Settings } from "lucide-react";
 
 interface Track {
   id: string;
@@ -139,7 +139,7 @@ export default function MainTimeline({ mode, projectId, audioEngine }: MainTimel
     return (
       <div className="flex-1 studio-bg border-b studio-border flex items-center justify-center">
         <div className="text-center text-gray-400">
-          <Disc className="mx-auto mb-4" size={48} />
+          <Volume2 className="mx-auto mb-4" size={48} />
           <p>DJ mode uses the bottom panel for mixing controls</p>
         </div>
       </div>

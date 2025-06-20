@@ -272,3 +272,84 @@ export type Track = z.infer<typeof trackSchema>;
 export type DAWProjectData = z.infer<typeof dawProjectDataSchema>;
 export type DJProjectData = z.infer<typeof djProjectDataSchema>;
 export type VideoProjectData = z.infer<typeof videoProjectDataSchema>;
+
+// Live streaming and classroom tables
+export const classrooms = pgTable("classrooms", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  teacherId: integer("teacher_id").references(() => teachers.id).notNull(),
+  description: text("description"),
+  maxStudents: integer("max_students").default(20),
+  isActive: boolean("is_active").default(false),
+  streamUrl: text("stream_url"),
+  chatEnabled: boolean("chat_enabled").default(true),
+  shareEnabled: boolean("share_enabled").default(true),
+  currentTopic: text("current_topic"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const classroomSessions = pgTable("classroom_sessions", {
+  id: serial("id").primaryKey(),
+  classroomId: text("classroom_id").references(() => classrooms.id).notNull(),
+  startTime: timestamp("start_time").defaultNow().notNull(),
+  endTime: timestamp("end_time"),
+  topic: text("topic"),
+  recording: text("recording"),
+  attendees: integer("attendees").default(0),
+  sessionData: jsonb("session_data"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const studentEnrollments = pgTable("student_enrollments", {
+  id: serial("id").primaryKey(),
+  studentId: integer("student_id").references(() => students.id).notNull(),
+  classroomId: text("classroom_id").references(() => classrooms.id).notNull(),
+  enrolledAt: timestamp("enrolled_at").defaultNow().notNull(),
+  status: text("status").default("active"),
+});
+
+export const liveClassParticipants = pgTable("live_class_participants", {
+  id: serial("id").primaryKey(),
+  sessionId: integer("session_id").references(() => classroomSessions.id).notNull(),
+  studentId: integer("student_id").references(() => students.id).notNull(),
+  joinedAt: timestamp("joined_at").defaultNow().notNull(),
+  leftAt: timestamp("left_at"),
+  isActive: boolean("is_active").default(true),
+});
+
+export const sharedContent = pgTable("shared_content", {
+  id: serial("id").primaryKey(),
+  classroomId: text("classroom_id").references(() => classrooms.id).notNull(),
+  userId: text("user_id").notNull(),
+  userType: text("user_type").notNull(), // 'teacher' or 'student'
+  contentType: text("content_type").notNull(), // 'audio', 'project', 'composition'
+  title: text("title").notNull(),
+  description: text("description"),
+  fileUrl: text("file_url"),
+  projectData: jsonb("project_data"),
+  isPublic: boolean("is_public").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const userSessions = pgTable("user_sessions", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  userType: text("user_type").notNull(), // 'teacher' or 'student'
+  token: text("token").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Schema types for live streaming
+export const insertClassroomSchema = createInsertSchema(classrooms);
+export const insertSessionSchema = createInsertSchema(classroomSessions);
+export const insertSharedContentSchema = createInsertSchema(sharedContent);
+
+export type Classroom = typeof classrooms.$inferSelect;
+export type InsertClassroom = z.infer<typeof insertClassroomSchema>;
+export type ClassroomSession = typeof classroomSessions.$inferSelect;
+export type InsertClassroomSession = z.infer<typeof insertSessionSchema>;
+export type SharedContent = typeof sharedContent.$inferSelect;
+export type InsertSharedContent = z.infer<typeof insertSharedContentSchema>;
+export type StudentEnrollment = typeof studentEnrollments.$inferSelect;
+export type LiveClassParticipant = typeof liveClassParticipants.$inferSelect;
