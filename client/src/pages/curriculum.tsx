@@ -1,646 +1,562 @@
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   BookOpen, 
-  GraduationCap, 
-  Music, 
-  Clock, 
-  Star, 
+  Play, 
+  Pause, 
+  SkipForward,
+  Star,
+  Clock,
+  Target,
+  Music,
   Trophy,
-  Play,
+  Users,
+  Calendar,
   CheckCircle,
   Lock,
-  Unlock
+  Unlock,
+  GraduationCap,
+  Award,
+  TrendingUp,
+  Volume2,
+  Headphones
 } from "lucide-react";
 
-interface MusicTheoryTopic {
+interface Lesson {
   id: number;
   title: string;
   description: string;
-  grade: 'Elementary' | 'Middle' | 'High';
-  semester: number;
-  week: number;
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
-  duration: number; // minutes
-  prerequisites: number[];
+  duration: number;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  instrument: string;
   objectives: string[];
   completed: boolean;
+  locked: boolean;
   score?: number;
-  voiceCommands: string[];
+}
+
+interface Module {
+  id: number;
+  title: string;
+  description: string;
+  grade: string;
+  totalLessons: number;
+  completedLessons: number;
+  lessons: Lesson[];
+  unlocked: boolean;
 }
 
 export default function Curriculum() {
-  const [selectedGrade, setSelectedGrade] = useState<'Elementary' | 'Middle' | 'High'>('Elementary');
-  const [selectedTopic, setSelectedTopic] = useState<number | null>(null);
-  const [curriculum, setCurriculum] = useState<MusicTheoryTopic[]>([]);
+  const [selectedGrade, setSelectedGrade] = useState('elementary');
+  const [selectedModule, setSelectedModule] = useState<number | null>(null);
+  const [currentLesson, setCurrentLesson] = useState<number | null>(null);
+  const [studentProgress, setStudentProgress] = useState({
+    totalLessons: 0,
+    completedLessons: 0,
+    averageScore: 0,
+    streakDays: 0
+  });
 
-  useEffect(() => {
-    // Comprehensive Music Theory Curriculum
-    setCurriculum([
-      // ELEMENTARY LEVEL (Ages 6-11)
+  const grades = ['elementary', 'middle', 'high'];
+  
+  const curriculumData: Record<string, Module[]> = {
+    elementary: [
       {
         id: 1,
-        title: "Musical Alphabet & Note Names",
-        description: "Learn the seven letter names of music (A, B, C, D, E, F, G) and their positions on keyboard and staff",
-        grade: 'Elementary',
-        semester: 1,
-        week: 1,
-        difficulty: 'Beginner',
-        duration: 30,
-        prerequisites: [],
-        objectives: [
-          "Identify all seven letter names in music",
-          "Find notes on piano keyboard",
-          "Understand repeating pattern of musical alphabet"
-        ],
-        completed: true,
-        score: 95,
-        voiceCommands: ["play note A", "show keyboard", "next note", "repeat alphabet"]
+        title: "Music Fundamentals",
+        description: "Basic music theory, note reading, and rhythm",
+        grade: "K-2",
+        totalLessons: 8,
+        completedLessons: 5,
+        unlocked: true,
+        lessons: [
+          {
+            id: 1,
+            title: "What is Music?",
+            description: "Introduction to sound, music, and musical instruments",
+            duration: 20,
+            difficulty: 'beginner',
+            instrument: 'general',
+            objectives: ["Identify different sounds", "Recognize musical vs non-musical sounds"],
+            completed: true,
+            locked: false,
+            score: 95
+          },
+          {
+            id: 2,
+            title: "High and Low Sounds",
+            description: "Understanding pitch and tone",
+            duration: 25,
+            difficulty: 'beginner',
+            instrument: 'general',
+            objectives: ["Distinguish high and low pitches", "Sing simple melodies"],
+            completed: true,
+            locked: false,
+            score: 88
+          },
+          {
+            id: 3,
+            title: "Fast and Slow Music",
+            description: "Introduction to tempo and rhythm",
+            duration: 30,
+            difficulty: 'beginner',
+            instrument: 'general',
+            objectives: ["Clap to different tempos", "Move to music rhythms"],
+            completed: true,
+            locked: false,
+            score: 92
+          },
+          {
+            id: 4,
+            title: "Musical Instruments",
+            description: "Identifying different instrument families",
+            duration: 35,
+            difficulty: 'beginner',
+            instrument: 'general',
+            objectives: ["Name instrument families", "Recognize instrument sounds"],
+            completed: true,
+            locked: false,
+            score: 90
+          },
+          {
+            id: 5,
+            title: "Simple Songs",
+            description: "Learning basic children's songs",
+            duration: 30,
+            difficulty: 'beginner',
+            instrument: 'voice',
+            objectives: ["Sing simple melodies", "Remember song lyrics"],
+            completed: true,
+            locked: false,
+            score: 85
+          },
+          {
+            id: 6,
+            title: "Music Notation Basics",
+            description: "Introduction to musical symbols",
+            duration: 40,
+            difficulty: 'beginner',
+            instrument: 'general',
+            objectives: ["Recognize basic note shapes", "Understand staff lines"],
+            completed: false,
+            locked: false
+          },
+          {
+            id: 7,
+            title: "Rhythm Patterns",
+            description: "Clapping and playing simple rhythms",
+            duration: 35,
+            difficulty: 'beginner',
+            instrument: 'percussion',
+            objectives: ["Clap quarter notes", "Play simple patterns"],
+            completed: false,
+            locked: false
+          },
+          {
+            id: 8,
+            title: "Musical Expression",
+            description: "Loud, soft, and emotional music",
+            duration: 30,
+            difficulty: 'beginner',
+            instrument: 'general',
+            objectives: ["Express emotions through music", "Control volume"],
+            completed: false,
+            locked: true
+          }
+        ]
       },
       {
         id: 2,
-        title: "High and Low Sounds",
-        description: "Distinguish between high pitch and low pitch sounds, understand pitch direction",
-        grade: 'Elementary',
-        semester: 1,
-        week: 2,
-        difficulty: 'Beginner',
-        duration: 25,
-        prerequisites: [1],
-        objectives: [
-          "Identify high vs low pitches by ear",
-          "Use body movement to show pitch direction",
-          "Relate pitch to keyboard position"
-        ],
-        completed: true,
-        score: 88,
-        voiceCommands: ["play high note", "play low note", "show pitch direction", "compare sounds"]
-      },
+        title: "Keyboard Basics",
+        description: "Introduction to piano and keyboard skills",
+        grade: "3-5",
+        totalLessons: 10,
+        completedLessons: 2,
+        unlocked: true,
+        lessons: [
+          {
+            id: 9,
+            title: "Piano Posture",
+            description: "Proper sitting position and hand placement",
+            duration: 25,
+            difficulty: 'beginner',
+            instrument: 'piano',
+            objectives: ["Sit correctly at piano", "Position hands properly"],
+            completed: true,
+            locked: false,
+            score: 93
+          },
+          {
+            id: 10,
+            title: "Finding Middle C",
+            description: "Locating and playing middle C",
+            duration: 30,
+            difficulty: 'beginner',
+            instrument: 'piano',
+            objectives: ["Find middle C", "Play with correct finger"],
+            completed: true,
+            locked: false,
+            score: 87
+          }
+        ]
+      }
+    ],
+    middle: [
       {
         id: 3,
-        title: "Steady Beat & Rhythm Patterns",
-        description: "Feel and maintain steady beat, clap simple rhythm patterns",
-        grade: 'Elementary',
-        semester: 1,
-        week: 3,
-        difficulty: 'Beginner',
-        duration: 35,
-        prerequisites: [],
-        objectives: [
-          "Clap along with steady beat",
-          "Distinguish between beat and rhythm",
-          "Perform simple rhythm patterns"
-        ],
-        completed: false,
-        voiceCommands: ["start metronome", "clap with beat", "play rhythm", "count beats"]
-      },
+        title: "Advanced Theory",
+        description: "Scales, chords, and harmonic analysis",
+        grade: "6-8",
+        totalLessons: 12,
+        completedLessons: 0,
+        unlocked: true,
+        lessons: []
+      }
+    ],
+    high: [
       {
         id: 4,
-        title: "Fast and Slow Tempo",
-        description: "Understand tempo changes, experience different speeds of music",
-        grade: 'Elementary',
-        semester: 1,
-        week: 4,
-        difficulty: 'Beginner',
-        duration: 30,
-        prerequisites: [3],
-        objectives: [
-          "Identify fast vs slow music",
-          "Move body to match tempo",
-          "Use voice commands to change tempo"
-        ],
-        completed: false,
-        voiceCommands: ["play faster", "play slower", "change tempo", "walk to beat"]
-      },
-      {
-        id: 5,
-        title: "Loud and Soft Dynamics",
-        description: "Experience forte (loud) and piano (soft), control volume in music",
-        grade: 'Elementary',
-        semester: 1,
-        week: 5,
-        difficulty: 'Beginner',
-        duration: 25,
-        prerequisites: [],
-        objectives: [
-          "Sing/play loudly and softly on command",
-          "Identify dynamic changes in music",
-          "Use Italian terms forte and piano"
-        ],
-        completed: false,
-        voiceCommands: ["play louder", "play softer", "forte", "piano"]
-      },
-      {
-        id: 6,
-        title: "Introduction to Staff",
-        description: "Learn about the five-line staff, treble clef symbol, line and space notes",
-        grade: 'Elementary',
-        semester: 2,
-        week: 1,
-        difficulty: 'Beginner',
-        duration: 40,
-        prerequisites: [1, 2],
-        objectives: [
-          "Count five lines and four spaces of staff",
-          "Recognize treble clef symbol",
-          "Place notes on lines and spaces"
-        ],
-        completed: false,
-        voiceCommands: ["show staff", "count lines", "place note", "treble clef"]
-      },
-
-      // MIDDLE SCHOOL LEVEL (Ages 12-14)
-      {
-        id: 20,
-        title: "Major Scales Construction",
-        description: "Build major scales using whole and half step patterns (W-W-H-W-W-W-H)",
-        grade: 'Middle',
-        semester: 1,
-        week: 1,
-        difficulty: 'Intermediate',
-        duration: 45,
-        prerequisites: [6],
-        objectives: [
-          "Understand whole and half step intervals",
-          "Build any major scale using pattern",
-          "Identify key signatures for major scales"
-        ],
-        completed: false,
-        voiceCommands: ["build scale", "show pattern", "play whole step", "play half step"]
-      },
-      {
-        id: 21,
-        title: "Key Signatures & Circle of Fifths",
-        description: "Learn all major key signatures and their relationship in the circle of fifths",
-        grade: 'Middle',
-        semester: 1,
-        week: 3,
-        difficulty: 'Intermediate',
-        duration: 50,
-        prerequisites: [20],
-        objectives: [
-          "Memorize all 15 major key signatures",
-          "Navigate circle of fifths pattern",
-          "Identify keys from key signatures"
-        ],
-        completed: false,
-        voiceCommands: ["show circle", "next key", "name signature", "play scale"]
-      },
-      {
-        id: 22,
-        title: "Intervals: Perfect, Major, Minor",
-        description: "Identify and construct all interval types within an octave",
-        grade: 'Middle',
-        semester: 1,
-        week: 5,
-        difficulty: 'Intermediate',
-        duration: 55,
-        prerequisites: [20],
-        objectives: [
-          "Identify intervals by sight and sound",
-          "Construct intervals from any note",
-          "Understand interval quality (perfect, major, minor)"
-        ],
-        completed: false,
-        voiceCommands: ["play interval", "identify sound", "build fifth", "perfect fourth"]
-      },
-      {
-        id: 23,
-        title: "Basic Triads: Major, Minor, Diminished",
-        description: "Build and identify three-note chords and their qualities",
-        grade: 'Middle',
-        semester: 2,
-        week: 1,
-        difficulty: 'Intermediate',
-        duration: 50,
-        prerequisites: [22],
-        objectives: [
-          "Build major, minor, diminished triads",
-          "Identify chord qualities by ear",
-          "Understand 1-3-5 chord construction"
-        ],
-        completed: false,
-        voiceCommands: ["play chord", "build triad", "major chord", "minor chord"]
-      },
-      {
-        id: 24,
-        title: "Time Signatures & Meter",
-        description: "Understand 2/4, 3/4, 4/4, and compound meters like 6/8",
-        grade: 'Middle',
-        semester: 2,
-        week: 3,
-        difficulty: 'Intermediate',
-        duration: 45,
-        prerequisites: [3],
-        objectives: [
-          "Count and conduct in different meters",
-          "Recognize time signatures by listening",
-          "Understand strong and weak beats"
-        ],
-        completed: false,
-        voiceCommands: ["count in four", "conduct three", "show meter", "strong beat"]
-      },
-
-      // HIGH SCHOOL LEVEL (Ages 15-18)
-      {
-        id: 40,
-        title: "Advanced Harmony: Seventh Chords",
-        description: "Study dominant 7th, major 7th, minor 7th, and half-diminished chords",
-        grade: 'High',
-        semester: 1,
-        week: 1,
-        difficulty: 'Advanced',
-        duration: 60,
-        prerequisites: [23],
-        objectives: [
-          "Build all types of seventh chords",
-          "Understand chord function in progressions",
-          "Voice leading principles"
-        ],
-        completed: false,
-        voiceCommands: ["dominant seven", "major seven", "voice leading", "chord progression"]
-      },
-      {
-        id: 41,
-        title: "Roman Numeral Analysis",
-        description: "Analyze chord progressions using Roman numeral system",
-        grade: 'High',
-        semester: 1,
-        week: 3,
-        difficulty: 'Advanced',
-        duration: 55,
-        prerequisites: [40],
-        objectives: [
-          "Use Roman numerals for chord analysis",
-          "Identify common progressions (I-V-vi-IV)",
-          "Understand functional harmony"
-        ],
-        completed: false,
-        voiceCommands: ["analyze progression", "one five six four", "tonic function", "dominant"]
-      },
-      {
-        id: 42,
-        title: "Secondary Dominants",
-        description: "Study chromatic harmony and secondary dominant relationships",
-        grade: 'High',
-        semester: 1,
-        week: 6,
-        difficulty: 'Advanced',
-        duration: 65,
-        prerequisites: [41],
-        objectives: [
-          "Identify V/V, V/vi, V/ii relationships",
-          "Compose using secondary dominants",
-          "Understand tonicization vs modulation"
-        ],
-        completed: false,
-        voiceCommands: ["five of five", "secondary dominant", "tonicize", "chromatic harmony"]
-      },
-      {
-        id: 43,
-        title: "Modulation Techniques",
-        description: "Learn common chord, chromatic, and enharmonic modulations",
-        grade: 'High',
-        semester: 2,
-        week: 1,
-        difficulty: 'Advanced',
-        duration: 70,
-        prerequisites: [42],
-        objectives: [
-          "Execute smooth modulations between keys",
-          "Identify modulation types in repertoire",
-          "Compose modulatory passages"
-        ],
-        completed: false,
-        voiceCommands: ["modulate to", "common chord", "pivot chord", "new key"]
-      },
-      {
-        id: 44,
-        title: "Non-Chord Tones & Dissonance",
-        description: "Study passing tones, neighbor tones, suspensions, and anticipations",
-        grade: 'High',
-        semester: 2,
-        week: 4,
-        difficulty: 'Advanced',
-        duration: 60,
-        prerequisites: [41],
-        objectives: [
-          "Identify all types of non-chord tones",
-          "Understand consonance and dissonance",
-          "Apply NCTs in composition"
-        ],
-        completed: false,
-        voiceCommands: ["passing tone", "suspension", "neighbor tone", "anticipation"]
+        title: "Music Composition",
+        description: "Creating original musical works",
+        grade: "9-12",
+        totalLessons: 15,
+        completedLessons: 0,
+        unlocked: false,
+        lessons: []
       }
-    ]);
+    ]
+  };
+
+  useEffect(() => {
+    // Calculate overall progress
+    const allModules = Object.values(curriculumData).flat();
+    const total = allModules.reduce((sum, module) => sum + module.totalLessons, 0);
+    const completed = allModules.reduce((sum, module) => sum + module.completedLessons, 0);
+    
+    // Calculate average score from completed lessons
+    const completedLessons = allModules
+      .flatMap(module => module.lessons)
+      .filter(lesson => lesson.completed && lesson.score);
+    
+    const avgScore = completedLessons.length > 0 
+      ? completedLessons.reduce((sum, lesson) => sum + (lesson.score || 0), 0) / completedLessons.length
+      : 0;
+
+    setStudentProgress({
+      totalLessons: total,
+      completedLessons: completed,
+      averageScore: Math.round(avgScore),
+      streakDays: 7 // Mock streak
+    });
   }, []);
-
-  const getTopicsForGrade = () => {
-    return curriculum.filter(topic => topic.grade === selectedGrade);
-  };
-
-  const getGradeProgress = (grade: 'Elementary' | 'Middle' | 'High') => {
-    const gradeTopics = curriculum.filter(topic => topic.grade === grade);
-    const completed = gradeTopics.filter(topic => topic.completed).length;
-    return gradeTopics.length > 0 ? (completed / gradeTopics.length) * 100 : 0;
-  };
-
-  const isTopicUnlocked = (topic: MusicTheoryTopic) => {
-    return topic.prerequisites.every(prereqId => 
-      curriculum.find(t => t.id === prereqId)?.completed || false
-    );
-  };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'Beginner': return 'text-green-400 bg-green-400/20';
-      case 'Intermediate': return 'text-yellow-400 bg-yellow-400/20';
-      case 'Advanced': return 'text-red-400 bg-red-400/20';
-      default: return 'text-gray-400 bg-gray-400/20';
+      case 'beginner':
+        return 'bg-green-500';
+      case 'intermediate':
+        return 'bg-yellow-500';
+      case 'advanced':
+        return 'bg-red-500';
+      default:
+        return 'bg-gray-500';
     }
   };
 
-  const gradeData = [
-    { 
-      grade: 'Elementary' as const, 
-      description: 'Ages 6-11 • Basic Music Concepts',
-      totalTopics: curriculum.filter(t => t.grade === 'Elementary').length,
-      focus: 'Fundamentals, Rhythm, Pitch Recognition'
-    },
-    { 
-      grade: 'Middle' as const, 
-      description: 'Ages 12-14 • Music Theory Foundation',
-      totalTopics: curriculum.filter(t => t.grade === 'Middle').length,
-      focus: 'Scales, Chords, Key Signatures'
-    },
-    { 
-      grade: 'High' as const, 
-      description: 'Ages 15-18 • Advanced Theory',
-      totalTopics: curriculum.filter(t => t.grade === 'High').length,
-      focus: 'Harmony, Analysis, Composition'
-    }
-  ];
+  const getModuleProgress = (module: Module) => {
+    return module.totalLessons > 0 ? (module.completedLessons / module.totalLessons) * 100 : 0;
+  };
 
-  const selectedTopicData = selectedTopic ? curriculum.find(t => t.id === selectedTopic) : null;
+  const startLesson = (lessonId: number) => {
+    setCurrentLesson(lessonId);
+    // Navigate to lesson page
+    window.location.href = '/lesson';
+  };
 
   return (
-    <div className="h-screen bg-gray-900 text-white flex flex-col">
+    <div className="min-h-screen bg-gray-900 text-white">
       {/* Header */}
-      <div className="bg-gray-800 border-b border-gray-700 p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <GraduationCap className="text-blue-400" size={28} />
-            <div>
-              <h1 className="text-xl font-bold">Music Theory Curriculum</h1>
-              <p className="text-sm text-gray-400">Comprehensive K-12 Music Education Program</p>
+      <div className="bg-gray-800 border-b border-gray-700 p-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-4">
+              <GraduationCap className="text-blue-400" size={32} />
+              <div>
+                <h1 className="text-2xl font-bold">Music Curriculum</h1>
+                <p className="text-gray-400">K-12 Structured Music Education Program</p>
+              </div>
             </div>
+            
+            <Button onClick={() => window.location.href = '/'} variant="outline">
+              Back to Home
+            </Button>
           </div>
-          
-          <div className="flex items-center space-x-4">
-            <div className="text-sm text-gray-400">
-              Total Progress: {Math.round((curriculum.filter(t => t.completed).length / curriculum.length) * 100)}%
-            </div>
-            <Progress 
-              value={(curriculum.filter(t => t.completed).length / curriculum.length) * 100} 
-              className="w-32"
-            />
+
+          {/* Progress Overview */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card className="bg-gray-900 border-gray-700">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-400">Total Progress</p>
+                    <p className="text-2xl font-bold text-blue-400">
+                      {studentProgress.completedLessons}/{studentProgress.totalLessons}
+                    </p>
+                  </div>
+                  <Trophy className="text-blue-400" size={24} />
+                </div>
+                <Progress 
+                  value={(studentProgress.completedLessons / studentProgress.totalLessons) * 100} 
+                  className="mt-2 h-2" 
+                />
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-900 border-gray-700">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-400">Average Score</p>
+                    <p className="text-2xl font-bold text-green-400">{studentProgress.averageScore}%</p>
+                  </div>
+                  <Star className="text-green-400" size={24} />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-900 border-gray-700">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-400">Learning Streak</p>
+                    <p className="text-2xl font-bold text-orange-400">{studentProgress.streakDays} days</p>
+                  </div>
+                  <TrendingUp className="text-orange-400" size={24} />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-900 border-gray-700">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-400">Next Milestone</p>
+                    <p className="text-sm font-medium text-purple-400">Grade 3 Certificate</p>
+                  </div>
+                  <Award className="text-purple-400" size={24} />
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 flex">
-        {/* Left Panel - Grade Selection */}
-        <div className="w-80 bg-gray-800 border-r border-gray-700 p-4">
-          <h2 className="text-lg font-semibold mb-4">Grade Levels</h2>
-          
-          <div className="space-y-4">
-            {gradeData.map((level) => (
-              <Card 
-                key={level.grade}
-                className={`cursor-pointer transition-all ${
-                  selectedGrade === level.grade 
-                    ? 'bg-blue-600/20 border-blue-500' 
-                    : 'bg-gray-900 border-gray-700 hover:bg-gray-750'
-                }`}
-                onClick={() => setSelectedGrade(level.grade)}
-              >
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex items-center justify-between">
-                    {level.grade} School
-                    <Badge variant="secondary" className="text-xs">
-                      {level.totalTopics} topics
-                    </Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-sm text-gray-400 mb-3">{level.description}</div>
-                  <div className="text-xs text-gray-500 mb-2">Focus: {level.focus}</div>
-                  
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-xs">
-                      <span>Progress</span>
-                      <span>{Math.round(getGradeProgress(level.grade))}%</span>
-                    </div>
-                    <Progress value={getGradeProgress(level.grade)} className="h-2" />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto p-6">
+        <Tabs value={selectedGrade} onValueChange={setSelectedGrade} className="w-full">
+          <TabsList className="grid w-full grid-cols-3 bg-gray-800">
+            <TabsTrigger value="elementary" className="text-white">
+              Elementary (K-5)
+            </TabsTrigger>
+            <TabsTrigger value="middle" className="text-white">
+              Middle School (6-8)
+            </TabsTrigger>
+            <TabsTrigger value="high" className="text-white">
+              High School (9-12)
+            </TabsTrigger>
+          </TabsList>
 
-          {/* Quick Stats */}
-          <Card className="bg-gray-900 border-gray-700 mt-6">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Learning Statistics</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-xs">
-              <div className="flex justify-between">
-                <span>Completed Topics:</span>
-                <span className="text-green-400">{curriculum.filter(t => t.completed).length}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>In Progress:</span>
-                <span className="text-yellow-400">
-                  {curriculum.filter(t => !t.completed && isTopicUnlocked(t)).length}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>Locked:</span>
-                <span className="text-gray-400">
-                  {curriculum.filter(t => !isTopicUnlocked(t)).length}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Center Panel - Topic List */}
-        <div className="flex-1 p-4">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">{selectedGrade} School Topics</h2>
-            <div className="text-sm text-gray-400">
-              {getTopicsForGrade().filter(t => t.completed).length} of {getTopicsForGrade().length} completed
-            </div>
-          </div>
-
-          <ScrollArea className="h-full">
-            <div className="space-y-3">
-              {getTopicsForGrade().map((topic) => {
-                const isUnlocked = isTopicUnlocked(topic);
-                
-                return (
-                  <Card
-                    key={topic.id}
-                    className={`cursor-pointer transition-all ${
-                      selectedTopic === topic.id
-                        ? 'bg-blue-600/20 border-blue-500'
-                        : topic.completed
-                        ? 'bg-green-600/20 border-green-500'
-                        : isUnlocked
-                        ? 'bg-gray-800 border-gray-600 hover:bg-gray-750'
-                        : 'bg-gray-900 border-gray-700 opacity-60'
-                    }`}
-                    onClick={() => isUnlocked && setSelectedTopic(topic.id)}
-                  >
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          {topic.completed ? (
-                            <CheckCircle size={16} className="text-green-400" />
-                          ) : isUnlocked ? (
-                            <Unlock size={16} className="text-blue-400" />
-                          ) : (
-                            <Lock size={16} className="text-gray-500" />
-                          )}
-                          <span>{topic.title}</span>
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          <Badge className={getDifficultyColor(topic.difficulty)}>
-                            {topic.difficulty}
-                          </Badge>
-                          {topic.completed && topic.score && (
-                            <Badge variant="secondary">
-                              {topic.score}%
+          {grades.map((grade) => (
+            <TabsContent key={grade} value={grade} className="mt-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Modules List */}
+                <div className="lg:col-span-1">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <BookOpen className="mr-2 text-blue-400" size={20} />
+                    Course Modules
+                  </h3>
+                  <div className="space-y-3">
+                    {curriculumData[grade]?.map((module) => (
+                      <Card
+                        key={module.id}
+                        className={`bg-gray-800 border-gray-700 cursor-pointer transition-all ${
+                          selectedModule === module.id ? 'ring-2 ring-blue-500' : 'hover:bg-gray-750'
+                        } ${!module.unlocked ? 'opacity-50' : ''}`}
+                        onClick={() => module.unlocked && setSelectedModule(module.id)}
+                      >
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="flex items-center">
+                              {module.unlocked ? (
+                                <Unlock className="text-green-400 mr-2" size={16} />
+                              ) : (
+                                <Lock className="text-gray-400 mr-2" size={16} />
+                              )}
+                              <h4 className="font-medium">{module.title}</h4>
+                            </div>
+                            <Badge variant="outline" className="text-xs">
+                              {module.grade}
                             </Badge>
-                          )}
-                        </div>
-                      </CardTitle>
-                    </CardHeader>
-                    
-                    <CardContent>
-                      <div className="text-xs text-gray-400 mb-2">
-                        Semester {topic.semester} • Week {topic.week} • {topic.duration} minutes
-                      </div>
-                      <div className="text-sm text-gray-300">{topic.description}</div>
-                      
-                      {/* Prerequisites */}
-                      {topic.prerequisites.length > 0 && (
-                        <div className="mt-2 text-xs text-gray-500">
-                          Prerequisites: {topic.prerequisites.map(id => 
-                            curriculum.find(t => t.id === id)?.title
-                          ).join(', ')}
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </ScrollArea>
-        </div>
-
-        {/* Right Panel - Topic Details */}
-        {selectedTopicData && (
-          <div className="w-96 bg-gray-800 border-l border-gray-700 p-4">
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-lg font-semibold mb-2">{selectedTopicData.title}</h3>
-                <div className="flex items-center space-x-2 mb-3">
-                  <Badge className={getDifficultyColor(selectedTopicData.difficulty)}>
-                    {selectedTopicData.difficulty}
-                  </Badge>
-                  <Badge variant="secondary">
-                    {selectedTopicData.duration} min
-                  </Badge>
-                  {selectedTopicData.completed && (
-                    <Badge className="bg-green-500 text-white">
-                      <Trophy size={12} className="mr-1" />
-                      Completed
-                    </Badge>
-                  )}
+                          </div>
+                          <p className="text-sm text-gray-400 mb-3">{module.description}</p>
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-xs text-gray-400">
+                              <span>Progress</span>
+                              <span>{module.completedLessons}/{module.totalLessons} lessons</span>
+                            </div>
+                            <Progress value={getModuleProgress(module)} className="h-2" />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              <div>
-                <h4 className="font-medium mb-2">Description</h4>
-                <p className="text-sm text-gray-400">{selectedTopicData.description}</p>
-              </div>
+                {/* Lessons Detail */}
+                <div className="lg:col-span-2">
+                  {selectedModule ? (
+                    <div>
+                      {(() => {
+                        const module = curriculumData[grade]?.find(m => m.id === selectedModule);
+                        if (!module) return null;
 
-              <div>
-                <h4 className="font-medium mb-2">Learning Objectives</h4>
-                <ul className="space-y-1">
-                  {selectedTopicData.objectives.map((objective, index) => (
-                    <li key={index} className="text-sm text-gray-400 flex items-start">
-                      <span className="text-blue-400 mr-2">•</span>
-                      {objective}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                        return (
+                          <div>
+                            <div className="flex items-center justify-between mb-6">
+                              <div>
+                                <h3 className="text-xl font-semibold">{module.title}</h3>
+                                <p className="text-gray-400">{module.description}</p>
+                              </div>
+                              <Badge variant="outline">
+                                {module.completedLessons}/{module.totalLessons} Complete
+                              </Badge>
+                            </div>
 
-              <div>
-                <h4 className="font-medium mb-2">Voice Commands</h4>
-                <div className="grid grid-cols-2 gap-1">
-                  {selectedTopicData.voiceCommands.map((cmd, index) => (
-                    <Badge key={index} variant="outline" className="text-xs text-center">
-                      "{cmd}"
-                    </Badge>
-                  ))}
-                </div>
-              </div>
+                            <ScrollArea className="h-96">
+                              <div className="space-y-3 pr-4">
+                                {module.lessons.map((lesson, index) => (
+                                  <Card
+                                    key={lesson.id}
+                                    className={`bg-gray-800 border-gray-700 ${
+                                      lesson.locked ? 'opacity-50' : 'hover:bg-gray-750'
+                                    }`}
+                                  >
+                                    <CardContent className="p-4">
+                                      <div className="flex items-start justify-between">
+                                        <div className="flex-1">
+                                          <div className="flex items-center mb-2">
+                                            <span className="text-sm text-gray-400 mr-3">
+                                              Lesson {index + 1}
+                                            </span>
+                                            {lesson.completed ? (
+                                              <CheckCircle className="text-green-400 mr-2" size={16} />
+                                            ) : lesson.locked ? (
+                                              <Lock className="text-gray-400 mr-2" size={16} />
+                                            ) : (
+                                              <Clock className="text-blue-400 mr-2" size={16} />
+                                            )}
+                                            <h4 className="font-medium">{lesson.title}</h4>
+                                          </div>
+                                          
+                                          <p className="text-sm text-gray-400 mb-3">
+                                            {lesson.description}
+                                          </p>
 
-              {isTopicUnlocked(selectedTopicData) && (
-                <div className="space-y-2">
-                  <Button 
-                    className="w-full"
-                    disabled={selectedTopicData.completed}
-                  >
-                    <Play size={16} className="mr-2" />
-                    {selectedTopicData.completed ? 'Review Lesson' : 'Start Lesson'}
-                  </Button>
-                  
-                  {!selectedTopicData.completed && (
-                    <Button variant="outline" className="w-full">
-                      <BookOpen size={16} className="mr-2" />
-                      Practice Exercises
-                    </Button>
-                  )}
-                </div>
-              )}
+                                          <div className="flex items-center space-x-4 mb-3">
+                                            <div className="flex items-center text-xs text-gray-400">
+                                              <Clock size={12} className="mr-1" />
+                                              {lesson.duration} min
+                                            </div>
+                                            <div className="flex items-center text-xs text-gray-400">
+                                              <Music size={12} className="mr-1" />
+                                              {lesson.instrument}
+                                            </div>
+                                            <Badge 
+                                              variant="outline" 
+                                              className={`text-xs ${getDifficultyColor(lesson.difficulty)}`}
+                                            >
+                                              {lesson.difficulty}
+                                            </Badge>
+                                          </div>
 
-              {selectedTopicData.completed && selectedTopicData.score && (
-                <Card className="bg-green-600/20 border-green-500">
-                  <CardContent className="p-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Final Score</span>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-lg font-bold text-green-400">
-                          {selectedTopicData.score}%
-                        </span>
-                        <Star className="text-yellow-400 fill-current" size={16} />
+                                          {lesson.objectives && (
+                                            <div className="mb-3">
+                                              <p className="text-xs text-gray-400 mb-1">Learning Objectives:</p>
+                                              <ul className="text-xs text-gray-300 space-y-1">
+                                                {lesson.objectives.map((objective, idx) => (
+                                                  <li key={idx} className="flex items-center">
+                                                    <Target size={8} className="mr-2 text-blue-400" />
+                                                    {objective}
+                                                  </li>
+                                                ))}
+                                              </ul>
+                                            </div>
+                                          )}
+
+                                          {lesson.completed && lesson.score && (
+                                            <div className="flex items-center mb-3">
+                                              <Star className="text-yellow-400 mr-1" size={14} />
+                                              <span className="text-sm text-yellow-400">
+                                                Score: {lesson.score}%
+                                              </span>
+                                            </div>
+                                          )}
+                                        </div>
+
+                                        <div className="ml-4">
+                                          {lesson.locked ? (
+                                            <Button variant="outline" size="sm" disabled>
+                                              <Lock size={14} className="mr-2" />
+                                              Locked
+                                            </Button>
+                                          ) : lesson.completed ? (
+                                            <Button 
+                                              variant="outline" 
+                                              size="sm"
+                                              onClick={() => startLesson(lesson.id)}
+                                            >
+                                              <Play size={14} className="mr-2" />
+                                              Review
+                                            </Button>
+                                          ) : (
+                                            <Button 
+                                              size="sm"
+                                              onClick={() => startLesson(lesson.id)}
+                                              className="bg-blue-600 hover:bg-blue-700"
+                                            >
+                                              <Play size={14} className="mr-2" />
+                                              Start
+                                            </Button>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                ))}
+                              </div>
+                            </ScrollArea>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-96 text-gray-400">
+                      <div className="text-center">
+                        <BookOpen size={48} className="mx-auto mb-4 opacity-50" />
+                        <p>Select a module to view lessons</p>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-          </div>
-        )}
+                  )}
+                </div>
+              </div>
+            </TabsContent>
+          ))}
+        </Tabs>
       </div>
     </div>
   );

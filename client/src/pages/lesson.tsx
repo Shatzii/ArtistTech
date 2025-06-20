@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Progress } from "@/components/ui/progress";
 import { 
   Video, 
   VideoOff, 
@@ -16,12 +18,17 @@ import {
   Settings,
   Camera,
   Monitor,
-  Users
+  Users,
+  Play,
+  Pause,
+  BookOpen,
+  Eye,
+  Zap,
+  Send,
+  CheckCircle,
+  Clock,
+  Star
 } from "lucide-react";
-import VoiceCommandPanel from "@/components/lesson/VoiceCommandPanel";
-import VideoMonitoringPanel from "@/components/lesson/VideoMonitoringPanel";
-import ExercisePanel from "@/components/lesson/ExercisePanel";
-import ChatPanel from "@/components/lesson/ChatPanel";
 
 export default function Lesson() {
   const [isConnected, setIsConnected] = useState(false);
@@ -30,6 +37,9 @@ export default function Lesson() {
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [currentExercise, setCurrentExercise] = useState<number | null>(null);
   const [lessonStatus, setLessonStatus] = useState<'scheduled' | 'in_progress' | 'completed'>('scheduled');
+  const [chatMessage, setChatMessage] = useState("");
+  const [isListening, setIsListening] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
@@ -45,6 +55,47 @@ export default function Lesson() {
     duration: 30,
     status: lessonStatus
   };
+
+  const exercises = [
+    {
+      id: 1,
+      title: "C Major Scale",
+      description: "Learn to play the C major scale with proper fingering",
+      difficulty: 'easy' as const,
+      completed: false
+    },
+    {
+      id: 2,
+      title: "Hand Position",
+      description: "Correct hand posture and finger placement",
+      difficulty: 'easy' as const,
+      completed: true
+    },
+    {
+      id: 3,
+      title: "Simple Chords",
+      description: "Basic C, F, and G major chords",
+      difficulty: 'medium' as const,
+      completed: false
+    }
+  ];
+
+  const chatMessages = [
+    {
+      id: 1,
+      sender: 'teacher',
+      name: 'Sarah Johnson',
+      message: 'Welcome to your piano lesson! Today we\'ll work on the C major scale.',
+      timestamp: new Date(Date.now() - 300000)
+    },
+    {
+      id: 2,
+      sender: 'student',
+      name: 'Emma Wilson', 
+      message: 'Thank you! I\'ve been practicing since last week.',
+      timestamp: new Date(Date.now() - 240000)
+    }
+  ];
 
   useEffect(() => {
     // Initialize media devices
@@ -68,12 +119,10 @@ export default function Lesson() {
 
   const toggleVideo = () => {
     setIsVideoOn(!isVideoOn);
-    // TODO: Implement actual video toggle
   };
 
   const toggleAudio = () => {
     setIsAudioOn(!isAudioOn);
-    // TODO: Implement actual audio toggle
   };
 
   const toggleScreenShare = async () => {
@@ -101,6 +150,21 @@ export default function Lesson() {
   const endLesson = () => {
     setIsConnected(false);
     setLessonStatus('completed');
+  };
+
+  const sendMessage = () => {
+    if (chatMessage.trim()) {
+      // Handle message sending
+      setChatMessage("");
+    }
+  };
+
+  const toggleListening = () => {
+    setIsListening(!isListening);
+  };
+
+  const toggleRecording = () => {
+    setIsRecording(!isRecording);
   };
 
   return (
@@ -255,20 +319,167 @@ export default function Lesson() {
 
         {/* Right Panel - Tools and Chat */}
         <div className="w-1/3 bg-gray-800 border-l border-gray-700 flex flex-col">
+          
           {/* Voice Commands Panel */}
-          <VoiceCommandPanel lessonId={lessonData.id} />
-          
+          <Card className="bg-gray-900 border-gray-700 mb-4 mx-4 mt-4">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center justify-between">
+                <div className="flex items-center">
+                  <Zap className="mr-2 text-yellow-400" size={16} />
+                  Voice Commands
+                </div>
+                <Badge variant={isListening ? "default" : "secondary"} className="text-xs">
+                  {isListening ? "Listening" : "Inactive"}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button
+                onClick={toggleListening}
+                variant={isListening ? "destructive" : "default"}
+                size="sm"
+                className="w-full"
+              >
+                {isListening ? <MicOff size={16} className="mr-2" /> : <Mic size={16} className="mr-2" />}
+                {isListening ? "Stop Listening" : "Start Voice Commands"}
+              </Button>
+              <div className="text-xs text-gray-400">
+                Try saying: "play the scale", "stop playing", "next exercise"
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Exercise Panel */}
-          <ExercisePanel 
-            currentExercise={currentExercise}
-            onExerciseSelect={setCurrentExercise}
-          />
-          
-          {/* Video Monitoring Panel */}
-          <VideoMonitoringPanel lessonId={lessonData.id} />
-          
+          <Card className="bg-gray-900 border-gray-700 mb-4 mx-4">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center">
+                <BookOpen className="mr-2 text-green-400" size={16} />
+                Lesson Exercises
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-32">
+                <div className="space-y-2">
+                  {exercises.map((exercise) => (
+                    <div
+                      key={exercise.id}
+                      className={`p-2 rounded cursor-pointer border ${
+                        currentExercise === exercise.id
+                          ? 'bg-blue-600 bg-opacity-20 border-blue-500'
+                          : 'bg-gray-800 border-gray-700 hover:bg-gray-700'
+                      }`}
+                      onClick={() => setCurrentExercise(exercise.id)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          {exercise.completed ? (
+                            <CheckCircle size={12} className="text-green-400 mr-2" />
+                          ) : (
+                            <Clock size={12} className="text-gray-400 mr-2" />
+                          )}
+                          <span className="text-xs font-medium">{exercise.title}</span>
+                        </div>
+                        <Badge variant="outline" className="text-xs">
+                          {exercise.difficulty}
+                        </Badge>
+                      </div>
+                      <div className="text-xs text-gray-400 mt-1">
+                        {exercise.description}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+
+          {/* Video Analysis Panel */}
+          <Card className="bg-gray-900 border-gray-700 mb-4 mx-4">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center justify-between">
+                <div className="flex items-center">
+                  <Eye className="mr-2 text-purple-400" size={16} />
+                  Video Analysis
+                </div>
+                <Badge variant={isRecording ? "default" : "secondary"} className="text-xs">
+                  {isRecording ? "Recording" : "Inactive"}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button
+                onClick={toggleRecording}
+                variant={isRecording ? "destructive" : "default"}
+                size="sm"
+                className="w-full"
+              >
+                {isRecording ? "Stop Analysis" : "Start Analysis"}
+              </Button>
+              {isRecording && (
+                <div className="space-y-2">
+                  <div className="text-xs text-gray-400">Real-time feedback:</div>
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-xs">
+                      <span>Hand Position</span>
+                      <span className="text-green-400">Good</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span>Posture</span>
+                      <span className="text-yellow-400">Fair</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span>Timing</span>
+                      <span className="text-green-400">On Beat</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           {/* Chat Panel */}
-          <ChatPanel lessonId={lessonData.id} />
+          <Card className="bg-gray-900 border-gray-700 mx-4 mb-4 flex-1 flex flex-col">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center">
+                <MessageSquare className="mr-2 text-blue-400" size={16} />
+                Lesson Chat
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1 flex flex-col">
+              <ScrollArea className="flex-1 mb-3">
+                <div className="space-y-2">
+                  {chatMessages.map((msg) => (
+                    <div
+                      key={msg.id}
+                      className={`p-2 rounded text-xs ${
+                        msg.sender === 'teacher'
+                          ? 'bg-blue-600 bg-opacity-20 border border-blue-500'
+                          : 'bg-green-600 bg-opacity-20 border border-green-500'
+                      }`}
+                    >
+                      <div className="font-medium mb-1">{msg.name}</div>
+                      <div className="text-gray-300">{msg.message}</div>
+                      <div className="text-gray-500 text-xs mt-1">
+                        {msg.timestamp.toLocaleTimeString()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+              <div className="flex space-x-2">
+                <Input
+                  value={chatMessage}
+                  onChange={(e) => setChatMessage(e.target.value)}
+                  placeholder="Type a message..."
+                  className="flex-1 bg-gray-800 border-gray-600 text-white text-xs"
+                  onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                />
+                <Button onClick={sendMessage} size="sm">
+                  <Send size={12} />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

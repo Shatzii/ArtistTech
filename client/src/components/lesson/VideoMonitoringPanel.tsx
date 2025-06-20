@@ -11,7 +11,8 @@ import {
   Download,
   AlertTriangle,
   CheckCircle,
-  Activity
+  Activity,
+  Record
 } from "lucide-react";
 
 interface VideoAnalytics {
