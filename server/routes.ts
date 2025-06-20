@@ -1,10 +1,12 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { LiveStreamingService } from "./websocket";
 import { insertProjectSchema, insertAudioFileSchema, insertVideoFileSchema } from "@shared/schema";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { nanoid } from "nanoid";
 
 // Configure multer for file uploads
 const uploadDir = path.join(process.cwd(), 'uploads');
@@ -20,6 +22,107 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Initialize WebSocket server
+  const httpServer = createServer(app);
+  const liveStreamingService = new LiveStreamingService(httpServer);
+
+  // Authentication middleware
+  const authenticateUser = (req: any, res: any, next: any) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+
+    const token = authHeader.split(' ')[1];
+    try {
+      // In production, verify JWT token here
+      req.user = { id: "demo-user", type: "student" }; // Demo authentication
+      next();
+    } catch (error) {
+      res.status(401).json({ message: "Invalid token" });
+    }
+  };
+
+  // Authentication routes
+  app.post("/api/auth/teacher/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      // Demo teacher authentication
+      if (email === "demo.teacher@prostudio.edu" && password === "teacher123") {
+        const token = nanoid();
+        const user = {
+          id: "teacher-1",
+          type: "teacher",
+          name: "Ms. Anderson",
+          email: email,
+          token: token
+        };
+        
+        res.json({
+          success: true,
+          user,
+          token,
+          classroomId: "music-theory-101"
+        });
+      } else {
+        res.status(401).json({ message: "Invalid credentials" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
+  app.post("/api/auth/student/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      // Demo student authentication
+      if (email === "demo.student@prostudio.edu" && password === "student123") {
+        const token = nanoid();
+        const user = {
+          id: "student-1",
+          type: "student",
+          name: "Demo Student",
+          email: email,
+          token: token
+        };
+        
+        res.json({
+          success: true,
+          user,
+          token
+        });
+      } else {
+        res.status(401).json({ message: "Invalid credentials" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
+  // Live classroom API routes
+  app.get("/api/classrooms", async (req, res) => {
+    try {
+      const classrooms = liveStreamingService.getAllClassrooms();
+      res.json(classrooms);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch classrooms" });
+    }
+  });
+
+  app.get("/api/classrooms/:id/stats", async (req, res) => {
+    try {
+      const stats = liveStreamingService.getClassroomStats(req.params.id);
+      if (!stats) {
+        return res.status(404).json({ message: "Classroom not found" });
+      }
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch classroom stats" });
+    }
+  });
+
   // Projects
   app.get("/api/projects", async (req, res) => {
     try {
@@ -203,6 +306,5 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  const httpServer = createServer(app);
   return httpServer;
 }

@@ -9,6 +9,10 @@ import Curriculum from "@/pages/curriculum";
 import MPCStudio from "@/pages/mpc-studio";
 import NotFound from "@/pages/not-found";
 
+import Login from "@/pages/login";
+import TeacherPortal from "@/pages/teacher-portal";
+import StudentDashboard from "@/pages/student-dashboard";
+
 function Router() {
   return (
     <Switch>
@@ -17,6 +21,9 @@ function Router() {
       <Route path="/mpc" component={MPCStudio} />
       <Route path="/lesson" component={Lesson} />
       <Route path="/curriculum" component={Curriculum} />
+      <Route path="/login" component={Login} />
+      <Route path="/teacher-portal" component={TeacherPortal} />
+      <Route path="/student-dashboard" component={StudentDashboard} />
       <Route component={NotFound} />
     </Switch>
   );
