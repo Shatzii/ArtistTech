@@ -2,7 +2,7 @@
 
 ## Overview
 
-ProStudio is a comprehensive web-based music production suite that combines DAW (Digital Audio Workstation), DJ mixing, and video editing capabilities in a single application. Built with modern web technologies, it provides professional-grade audio/video production tools accessible through a browser interface.
+ProStudio is a comprehensive web-based music education and production platform that combines professional DAW capabilities, MPC-style beat making, live streaming classrooms, and structured music theory curriculum. Designed for both music production and education, it enables teachers to conduct live classes with real-time collaboration while students learn through interactive lessons, beat making, and hands-on music creation.
 
 ## System Architecture
 
@@ -29,29 +29,46 @@ ProStudio is a comprehensive web-based music production suite that combines DAW 
 
 ## Key Components
 
+### Live Streaming Education Platform
+- **Teacher Portal**: Full-featured streaming interface with classroom management
+- **Student Dashboard**: Real-time class participation with audio/video controls
+- **WebSocket Integration**: Real-time communication for chat, media controls, and content sharing
+- **Authentication System**: Separate teacher and student login with demo accounts
+
+### MPC Beats Production Suite
+- **16-Pad Drum Machine**: Color-coded pads with keyboard shortcuts (QWERTY layout)
+- **Step Sequencer**: 16/32 step patterns with velocity control and real-time editing
+- **Professional Mixer**: Individual track controls, mute/solo, pitch, pan, and volume faders
+- **Sample Library**: Organized sample packs by genre (Hip-Hop, Trap, Techno)
+- **Effects Rack**: Reverb, delay, filter, compressor, and ADSR envelope controls
+
 ### Audio Engine (`useAudioEngine` hook)
 - Web Audio API integration for low-latency audio processing
 - Real-time playback controls (play, pause, stop, record)
 - Master volume and BPM controls
 - Audio file loading and buffering
 
-### Studio Interface
-- **TopMenuBar**: Project management and transport controls
-- **LeftSidebar**: Mode selection (DAW/DJ/Video) and file browser
-- **MainTimeline**: Multi-track timeline with drag-and-drop functionality
-- **BottomControlPanel**: DJ mixing interface with dual decks and crossfader
-- **RightSidebar**: Effects rack and master output controls
+### Educational System
+- **Structured Curriculum**: K-12 music theory program with grade levels and progression tracking
+- **Voice Commands**: Hands-free operation during lessons with natural language processing
+- **Video Monitoring**: Real-time teacher demonstrations with student observation
+- **Progress Tracking**: Comprehensive analytics for lesson completion and skill development
 
-### File Management
-- Multi-format audio file support (WAV, MP3, etc.)
-- Video file handling for video production mode
-- Drag-and-drop interface for timeline arrangement
-- Audio analysis (BPM detection, waveform generation)
+### Live Classroom Features
+- **Real-time Video Streaming**: Teacher broadcasts with student participation
+- **Interactive Chat**: Text messaging during live classes
+- **Content Sharing**: Real-time sharing of audio files, projects, and lesson materials
+- **Student Management**: Mute/unmute controls, hand raising, and individual student monitoring
+- **Session Recording**: Automatic class recording for later review
 
 ### Database Schema
 - **Projects**: Store project metadata and configuration
 - **AudioFiles**: Track uploaded audio files with metadata
 - **VideoFiles**: Manage video assets with properties
+- **Teachers/Students**: User authentication and profile management
+- **Classrooms**: Live streaming room management with participant tracking
+- **ClassroomSessions**: Session history and recording metadata
+- **SharedContent**: Real-time content sharing between teachers and students
 - **Shared Types**: Type-safe schema definitions with Zod validation
 
 ## Data Flow

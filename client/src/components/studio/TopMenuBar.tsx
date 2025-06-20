@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Music, Play, Pause, SkipBack, SkipForward, Circle, Grid, GraduationCap, Video } from "lucide-react";
+import { Music, Play, Pause, SkipBack, SkipForward, Circle, Grid, GraduationCap, Video, Users } from "lucide-react";
 import { Link } from "wouter";
 import { useProjects } from "@/hooks/useProjects";
 import { AudioEngineType } from "@/hooks/useAudioEngine";
@@ -134,6 +134,13 @@ export default function TopMenuBar({ currentProjectId, onProjectChange, audioEng
             <Button variant="ghost" size="sm" className="text-sm hover:bg-opacity-20 hover:bg-[var(--studio-accent)]">
               <GraduationCap size={14} className="mr-1" />
               Curriculum
+            </Button>
+          </Link>
+          
+          <Link href="/login">
+            <Button variant="ghost" size="sm" className="text-sm hover:bg-opacity-20 hover:bg-[var(--studio-accent)]">
+              <Users size={14} className="mr-1" />
+              Login
             </Button>
           </Link>
           
