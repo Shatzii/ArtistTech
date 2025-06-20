@@ -117,6 +117,34 @@ export const registerUser = async (userData: {
 };
 
 export const loginUser = async (email: string, password: string) => {
+  // Demo admin login
+  if (email === 'admin@prostudio.ai' && password === 'ProStudio2025!') {
+    return {
+      user: {
+        id: 1,
+        email: email,
+        name: 'ProStudio Admin',
+        userType: 'admin' as const,
+        profileImageUrl: null
+      },
+      token: generateToken(1, email, 'admin')
+    };
+  }
+
+  // Demo teacher login
+  if (email === 'teacher@prostudio.ai' && password === 'Teacher2025!') {
+    return {
+      user: {
+        id: 2,
+        email: email,
+        name: 'Demo Teacher',
+        userType: 'teacher' as const,
+        profileImageUrl: null
+      },
+      token: generateToken(2, email, 'teacher')
+    };
+  }
+
   // Check teachers first
   const teachers = await storage.getTeachers();
   const teacher = teachers.find(t => t.email === email);
