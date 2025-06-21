@@ -36,16 +36,17 @@ export function useAuth() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginData) => {
-      const response = await apiRequest("/api/auth/login", "POST", data);
+      const response = await apiRequest("POST", "/api/auth/login", data);
+      const result = await response.json();
       
       // Store token in localStorage
-      if (response.token) {
-        localStorage.setItem("auth_token", response.token);
+      if (result.token) {
+        localStorage.setItem("auth_token", result.token);
         // Set default authorization header
-        (globalThis as any).authToken = response.token;
+        (globalThis as any).authToken = result.token;
       }
       
-      return response;
+      return result;
     },
     onSuccess: () => {
       // Refetch user data after successful login
@@ -55,15 +56,16 @@ export function useAuth() {
 
   const registerMutation = useMutation({
     mutationFn: async (data: RegisterData) => {
-      const response = await apiRequest("/api/auth/register", "POST", data);
+      const response = await apiRequest("POST", "/api/auth/register", data);
+      const result = await response.json();
       
       // Store token in localStorage
-      if (response.token) {
-        localStorage.setItem("auth_token", response.token);
-        (globalThis as any).authToken = response.token;
+      if (result.token) {
+        localStorage.setItem("auth_token", result.token);
+        (globalThis as any).authToken = result.token;
       }
       
-      return response;
+      return result;
     },
     onSuccess: () => {
       // Refetch user data after successful registration
