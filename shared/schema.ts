@@ -37,25 +37,45 @@ export const videoFiles = pgTable("video_files", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Unified user authentication table
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  email: text("email").unique().notNull(),
+  passwordHash: text("password_hash").notNull(),
+  name: text("name").notNull(),
+  userType: text("user_type").notNull(), // 'admin', 'teacher', 'student'
+  profileImageUrl: text("profile_image_url"),
+  isActive: boolean("is_active").default(true),
+  emailVerified: boolean("email_verified").default(false),
+  subscriptionTier: text("subscription_tier").default("free"), // free, basic, pro, enterprise
+  subscriptionStatus: text("subscription_status").default("active"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // Educational system tables
 export const teachers = pgTable("teachers", {
   id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   name: text("name").notNull(),
   email: text("email").unique().notNull(),
   profileImageUrl: text("profile_image_url"),
   bio: text("bio"),
   specialization: text("specialization"), // piano, guitar, vocals, etc.
+  passwordHash: text("password_hash").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const students = pgTable("students", {
   id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   name: text("name").notNull(),
   email: text("email").unique().notNull(),
   age: integer("age"),
   parentEmail: text("parent_email"),
   level: text("level").notNull().default("beginner"), // beginner, intermediate, advanced
   instrument: text("instrument"), // preferred instrument
+  passwordHash: text("password_hash").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -146,6 +166,25 @@ export const insertVideoFileSchema = createInsertSchema(videoFiles).omit({
   createdAt: true,
 });
 
+// User authentication schemas
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const loginUserSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
+export const registerUserSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+  name: z.string().min(2),
+  userType: z.enum(['admin', 'teacher', 'student']),
+});
+
 // Insert schemas for educational system
 export const insertTeacherSchema = createInsertSchema(teachers).omit({
   id: true,
@@ -183,6 +222,11 @@ export type InsertAudioFile = z.infer<typeof insertAudioFileSchema>;
 export type AudioFile = typeof audioFiles.$inferSelect;
 export type InsertVideoFile = z.infer<typeof insertVideoFileSchema>;
 export type VideoFile = typeof videoFiles.$inferSelect;
+
+export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
+export type LoginUser = z.infer<typeof loginUserSchema>;
+export type RegisterUser = z.infer<typeof registerUserSchema>;
 
 export type Teacher = typeof teachers.$inferSelect;
 export type InsertTeacher = z.infer<typeof insertTeacherSchema>;

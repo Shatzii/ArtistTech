@@ -1,4 +1,5 @@
 import { 
+  users,
   projects, 
   audioFiles, 
   videoFiles, 
@@ -8,6 +9,7 @@ import {
   exercises, 
   voiceCommands,
   chatMessages,
+  type User,
   type Project, 
   type AudioFile, 
   type VideoFile, 
@@ -17,6 +19,7 @@ import {
   type Exercise,
   type VoiceCommand,
   type ChatMessage,
+  type InsertUser,
   type InsertProject, 
   type InsertAudioFile, 
   type InsertVideoFile,
@@ -31,6 +34,13 @@ import { db } from "./db";
 import { eq } from "drizzle-orm";
 
 export interface IStorage {
+  // Users
+  getUser(id: number): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  updateUser(id: number, user: Partial<InsertUser>): Promise<User | undefined>;
+  deleteUser(id: number): Promise<boolean>;
+
   // Projects
   getProject(id: number): Promise<Project | undefined>;
   getProjects(): Promise<Project[]>;
@@ -92,6 +102,32 @@ export interface IStorage {
 
 export class DatabaseStorage implements IStorage {
   
+  // Users
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+
+  async updateUser(id: number, updateData: Partial<InsertUser>): Promise<User | undefined> {
+    const [user] = await db.update(users).set(updateData).where(eq(users.id, id)).returning();
+    return user;
+  }
+
+  async deleteUser(id: number): Promise<boolean> {
+    const result = await db.delete(users).where(eq(users.id, id));
+    return (result.rowCount ?? 0) > 0;
+  }
+
   // Projects
   async getProject(id: number): Promise<Project | undefined> {
     const [project] = await db.select().from(projects).where(eq(projects.id, id));
