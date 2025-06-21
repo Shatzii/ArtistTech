@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { LiveStreamingService } from "./websocket";
-import { registerUser, loginUser, authenticateToken, type AuthRequest } from "./auth";
+import { registerUser, loginUser, authenticateToken, seedDemoAccounts, type AuthRequest } from "./auth";
 import { createCheckoutSession, handleWebhook, getSubscriptionStatus } from "./payments";
 import { selfHostedMusicAI } from "./self-hosted-ai";
 import { selfHostedVideoAI } from "./ai-video-generation";
@@ -36,22 +36,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
   const liveStreamingService = new LiveStreamingService(httpServer);
 
-  // Authentication middleware
-  const authenticateUser = (req: any, res: any, next: any) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ message: "No token provided" });
-    }
+  // Seed demo accounts on startup
+  await seedDemoAccounts();
 
-    const token = authHeader.split(' ')[1];
-    try {
-      // In production, verify JWT token here
-      req.user = { id: "demo-user", type: "student" }; // Demo authentication
-      next();
-    } catch (error) {
-      res.status(401).json({ message: "Invalid token" });
-    }
-  };
+  // Authentication middleware using real JWT verification
 
   // Authentication routes
   app.post("/api/auth/register", async (req, res) => {
@@ -70,6 +58,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(result);
     } catch (error: any) {
       res.status(401).json({ error: error.message });
+    }
+  });
+
+  // User profile route
+  app.get("/api/auth/user", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const user = await storage.getUser(req.user!.id);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      
+      res.json({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        userType: user.userType,
+        subscriptionTier: user.subscriptionTier,
+        subscriptionStatus: user.subscriptionStatus,
+        profileImageUrl: user.profileImageUrl,
+        emailVerified: user.emailVerified,
+        createdAt: user.createdAt
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
     }
   });
 
