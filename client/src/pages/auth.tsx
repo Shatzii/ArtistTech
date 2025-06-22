@@ -6,13 +6,27 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Music, Video, Cpu, Zap, Brain, Palette, Check } from "lucide-react";
+import { Music, Video, Cpu, Zap, Brain, Palette, Check, LogIn, UserPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { useLocation } from "wouter";
 
 export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string>('basic');
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    name: '',
+    userType: 'student' as 'admin' | 'teacher' | 'student'
+  });
+  
   const { toast } = useToast();
+  const { login, register, loginLoading, registerLoading, loginError, registerError } = useAuth();
+  const [, setLocation] = useLocation();
+
+  const isLoading = loginLoading || registerLoading;
 
   const plans = [
     {

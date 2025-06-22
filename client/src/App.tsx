@@ -15,6 +15,7 @@ import NotFound from "@/pages/not-found";
 import TeacherPortal from "@/pages/teacher-portal";
 import StudentDashboard from "@/pages/student-dashboard";
 import VideoStudio from "@/pages/video-studio";
+import AdminLogin from "@/pages/admin-login";
 
 function AuthenticatedRouter() {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -30,24 +31,27 @@ function AuthenticatedRouter() {
     );
   }
 
-  if (!isAuthenticated) {
-    return <AuthPage />;
-  }
-
   return (
     <Switch>
-      <Route path="/" component={Studio} />
-      <Route path="/studio" component={Studio} />
-      <Route path="/mpc" component={MPCStudio} />
-      <Route path="/dj" component={DJStudio} />
-      <Route path="/video" component={VideoStudio} />
-      <Route path="/midi" component={MIDIController} />
-      <Route path="/lesson" component={Lesson} />
-      <Route path="/curriculum" component={Curriculum} />
-      <Route path="/teacher" component={TeacherPortal} />
-      <Route path="/student" component={StudentDashboard} />
       <Route path="/auth" component={AuthPage} />
-      <Route component={NotFound} />
+      <Route path="/admin" component={AdminLogin} />
+      {!isAuthenticated ? (
+        <Route component={AuthPage} />
+      ) : (
+        <>
+          <Route path="/" component={Studio} />
+          <Route path="/studio" component={Studio} />
+          <Route path="/mpc" component={MPCStudio} />
+          <Route path="/dj" component={DJStudio} />
+          <Route path="/video" component={VideoStudio} />
+          <Route path="/midi" component={MIDIController} />
+          <Route path="/lesson" component={Lesson} />
+          <Route path="/curriculum" component={Curriculum} />
+          <Route path="/teacher" component={TeacherPortal} />
+          <Route path="/student" component={StudentDashboard} />
+          <Route component={NotFound} />
+        </>
+      )}
     </Switch>
   );
 }
