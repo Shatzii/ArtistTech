@@ -18,6 +18,8 @@ import { visualArtsEngine } from "./visual-arts-engine";
 import { aiWritingAssistant } from "./ai-writing-assistant";
 import { musicSamplingEngine } from "./music-sampling-engine";
 import { socialMediaSamplingEngine } from "./social-media-sampling-engine";
+import { advancedAudioEngine } from "./advanced-audio-engine";
+import { collaborativeStudioEngine } from "./collaborative-studio-engine";
 import { insertProjectSchema, insertAudioFileSchema, insertVideoFileSchema } from "../shared/schema";
 import multer from "multer";
 import path from "path";
@@ -1097,6 +1099,216 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Advanced Audio Engine Routes
+  app.post("/api/advanced-audio/separate-stems", upload.single('audioFile'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No audio file provided' });
+      }
+
+      const result = await advancedAudioEngine.separateStems(
+        req.body.trackId || 'track_' + Date.now(),
+        req.file.buffer
+      );
+
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/advanced-audio/start-remix-session", async (req, res) => {
+    try {
+      const { djId, trackA, trackB } = req.body;
+      
+      const session = await advancedAudioEngine.startLiveRemixSession(djId, trackA, trackB);
+
+      res.json(session);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/advanced-audio/generate-cinematic-shot", async (req, res) => {
+    try {
+      const { mood, duration, style } = req.body;
+      
+      const shot = await advancedAudioEngine.generateCinematicShot(mood, duration, style);
+
+      res.json(shot);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/advanced-audio/enhance-performance", async (req, res) => {
+    try {
+      const { gestureData, audioData } = req.body;
+      
+      const enhancement = await advancedAudioEngine.enhancePerformanceCapture(
+        gestureData,
+        Buffer.from(audioData, 'base64')
+      );
+
+      res.json(enhancement);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/advanced-audio/analyze-crowd", async (req, res) => {
+    try {
+      const { audioLevel, visualData, venueId } = req.body;
+      
+      const analytics = await advancedAudioEngine.analyzeCrowdResponse(
+        audioLevel,
+        visualData,
+        venueId
+      );
+
+      res.json(analytics);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/advanced-audio/export-platforms", async (req, res) => {
+    try {
+      const { trackId, platforms } = req.body;
+      
+      const exports = await advancedAudioEngine.exportForPlatforms(trackId, platforms);
+
+      res.json(exports);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/advanced-audio/status", async (req, res) => {
+    try {
+      const status = advancedAudioEngine.getEngineStatus();
+      res.json(status);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Collaborative Studio Engine Routes
+  app.post("/api/collaborative/create-session", async (req, res) => {
+    try {
+      const { userId, sessionName } = req.body;
+      
+      const session = await collaborativeStudioEngine.createCollaborativeSession(userId, sessionName);
+
+      res.json(session);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/collaborative/join-session", async (req, res) => {
+    try {
+      const { sessionId, userId, userName } = req.body;
+      
+      const success = await collaborativeStudioEngine.joinSession(sessionId, userId, userName);
+
+      if (success) {
+        res.json({ success: true, message: 'Successfully joined session' });
+      } else {
+        res.status(404).json({ error: 'Session not found or failed to join' });
+      }
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/collaborative/sync-project", async (req, res) => {
+    try {
+      const { sessionId, changes, userId } = req.body;
+      
+      await collaborativeStudioEngine.synchronizeProject(sessionId, changes, userId);
+
+      res.json({ success: true, message: 'Project synchronized' });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/collaborative/start-stream", async (req, res) => {
+    try {
+      const { sessionId, streamOptions } = req.body;
+      
+      const stream = await collaborativeStudioEngine.startLiveStream(sessionId, streamOptions);
+
+      res.json(stream);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/collaborative/audience-interaction", async (req, res) => {
+    try {
+      const { streamId, interaction } = req.body;
+      
+      await collaborativeStudioEngine.handleAudienceInteraction(streamId, interaction);
+
+      res.json({ success: true, message: 'Interaction processed' });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/collaborative/create-branch", async (req, res) => {
+    try {
+      const { sessionId, branchName, userId } = req.body;
+      
+      const branch = await collaborativeStudioEngine.createBranch(sessionId, branchName, userId);
+
+      res.json(branch);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/collaborative/commit-changes", async (req, res) => {
+    try {
+      const { sessionId, branchId, message, userId } = req.body;
+      
+      const commit = await collaborativeStudioEngine.commitChanges(sessionId, branchId, message, userId);
+
+      res.json(commit);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/collaborative/merge-request", async (req, res) => {
+    try {
+      const { sessionId, sourceBranch, targetBranch, userId, title } = req.body;
+      
+      const mergeRequest = await collaborativeStudioEngine.createMergeRequest(
+        sessionId, 
+        sourceBranch, 
+        targetBranch, 
+        userId, 
+        title
+      );
+
+      res.json(mergeRequest);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/collaborative/status", async (req, res) => {
+    try {
+      const status = collaborativeStudioEngine.getEngineStatus();
+      res.json(status);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Enhanced Engine Status Overview
   app.get("/api/engines/status", async (req, res) => {
     try {
@@ -1112,9 +1324,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         writing: aiWritingAssistant.getAssistantStatus(),
         musicSampling: musicSamplingEngine.getEngineStatus(),
         socialSampling: socialMediaSamplingEngine.getEngineStatus(),
-        totalEngines: 11,
+        advancedAudio: advancedAudioEngine.getEngineStatus(),
+        collaborativeStudio: collaborativeStudioEngine.getEngineStatus(),
+        totalEngines: 13,
         allRunning: true,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        features: [
+          'Real-Time Stem Separation & Live Remixing',
+          'AI Cinematic Director with Camera Path Generation',
+          'Enhanced Motion Capture with Visual Effects',
+          'Predictive Crowd Analytics & Track Suggestions',
+          'Cross-Platform Export & Distribution',
+          'Music Sampling with Copyright Detection',
+          'Social Media Content Extraction',
+          'Visual Arts Engine with AI Color Palettes',
+          'AI Writing Assistant for Creative Content',
+          'MIDI Controller Integration (8+ Brands)',
+          'Adaptive Learning with Biometric Analysis',
+          'Enterprise Marketing & Business Intelligence'
+        ]
       };
       
       res.json(allEngines);

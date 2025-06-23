@@ -152,6 +152,7 @@ export class AIMarketingEngine {
   }
 
   private setupMarketingServer() {
+    if (this.marketingWSS) return; // Prevent duplicate server creation
     this.marketingWSS = new WebSocketServer({ port: 8086, path: '/marketing' });
     
     this.marketingWSS.on('connection', (ws: WebSocket) => {
