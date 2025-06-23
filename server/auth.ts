@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { Request, Response, NextFunction } from "express";
 import { storage } from "./storage";
-import { insertUserSchema, type User } from "../shared/schema";
+import { insertUserSchema, loginUserSchema, type User } from "../shared/schema";
 
 const JWT_SECRET = process.env.JWT_SECRET || "prostudio-dev-secret-2025";
 const SALT_ROUNDS = 12;
@@ -85,7 +85,7 @@ export const registerUser = async (userData: {
   userType: 'admin' | 'teacher' | 'student';
 }) => {
   // Validate input
-  const validatedData = registerUserSchema.parse(userData);
+  const validatedData = insertUserSchema.parse(userData);
   
   // Check if user already exists
   const existingUser = await storage.getUserByEmail(validatedData.email);
@@ -152,13 +152,8 @@ export const loginUser = async (email: string, password: string) => {
     throw new Error("Invalid email or password");
   }
 
-  // Check if user is active
-  if (!user.isActive) {
-    throw new Error("Account is deactivated");
-  }
-
   // Verify password
-  const isValidPassword = await verifyPassword(validatedData.password, user.passwordHash);
+  const isValidPassword = await verifyPassword(validatedData.password, user.password);
   if (!isValidPassword) {
     throw new Error("Invalid email or password");
   }

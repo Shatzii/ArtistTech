@@ -158,6 +158,11 @@ export const insertUserSchema = createInsertSchema(users, {
   updatedAt: true,
 });
 
+export const loginUserSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
+});
+
 export const insertProjectSchema = createInsertSchema(projects).omit({
   id: true,
   createdAt: true,
