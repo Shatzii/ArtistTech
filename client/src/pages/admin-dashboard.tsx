@@ -36,9 +36,11 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white font-bold text-lg">
-                AT
-              </div>
+              <img 
+                src="/assets/artist-tech-logo.jpeg" 
+                alt="Artist Tech" 
+                className="w-10 h-10 rounded-lg object-cover"
+              />
               <div>
                 <h1 className="text-2xl font-bold">Artist Tech Admin</h1>
                 <p className="text-white/60">Full platform control center</p>

@@ -29,9 +29,11 @@ export default function UserLogin() {
         <div className="hidden lg:flex lg:w-1/2 bg-black/20 backdrop-blur-lg p-12 flex-col justify-center">
           <div className="max-w-md">
             <div className="flex items-center space-x-3 mb-8">
-              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white font-bold text-xl">
-                AT
-              </div>
+              <img 
+                src="/assets/artist-tech-logo.jpeg" 
+                alt="Artist Tech" 
+                className="w-12 h-12 rounded-lg object-cover"
+              />
               <div>
                 <h1 className="text-2xl font-bold">Artist Tech</h1>
                 <p className="text-white/60">Creative Studio Platform</p>
@@ -69,9 +71,11 @@ export default function UserLogin() {
           <div className="w-full max-w-md">
             {/* Mobile Logo */}
             <div className="lg:hidden flex items-center justify-center space-x-3 mb-8">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white font-bold text-lg">
-                AT
-              </div>
+              <img 
+                src="/assets/artist-tech-logo.jpeg" 
+                alt="Artist Tech" 
+                className="w-10 h-10 rounded-lg object-cover"
+              />
               <span className="text-xl font-bold">Artist Tech</span>
             </div>
 

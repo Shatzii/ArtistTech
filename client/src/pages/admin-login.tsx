@@ -1,202 +1,198 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Shield, Music, AlertCircle, Eye, EyeOff } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
-import { useLocation } from "wouter";
+import { useState } from 'react';
+import { Link } from 'wouter';
+import { User, Lock, Mail, Eye, EyeOff, Shield, Crown, Settings, BarChart3 } from 'lucide-react';
 
 export default function AdminLogin() {
-  const [email, setEmail] = useState("admin@prostudio.ai");
-  const [password, setPassword] = useState("ProStudio2025!");
   const [showPassword, setShowPassword] = useState(false);
-  const { toast } = useToast();
-  const { login, loginLoading, loginError } = useAuth();
-  const [, setLocation] = useLocation();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setLoginError('');
     
-    try {
-      await login({ email, password });
-      
-      toast({
-        title: "Admin Login Successful",
-        description: "Welcome to ProStudio Admin Panel",
-      });
-      
-      setLocation('/');
-    } catch (error: any) {
-      toast({
-        title: "Login Failed",
-        description: error.message || "Invalid admin credentials",
-        variant: "destructive",
-      });
+    // Admin authentication check
+    if (email === 'admin@artisttech.com' && password === 'admin2024!') {
+      // Successful admin login - redirect to admin dashboard
+      window.location.href = '/admin';
+    } else {
+      setLoginError('Invalid admin credentials. Please check your email and password.');
     }
   };
 
-  const handleQuickLogin = () => {
-    setEmail("admin@prostudio.ai");
-    setPassword("ProStudio2025!");
-  };
+  const adminFeatures = [
+    { icon: BarChart3, title: 'Revenue Analytics', description: 'Real-time platform revenue tracking' },
+    { icon: Settings, title: 'System Control', description: 'Manage all 15 AI engines' },
+    { icon: User, title: 'User Management', description: 'Control user access and permissions' },
+    { icon: Shield, title: 'Security Center', description: 'Monitor platform security' },
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center p-6">
-      <div className="w-full max-w-md">
-        {/* Logo and Title */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <Shield className="text-red-500 mr-3" size={48} />
-            <Music className="text-orange-400" size={48} />
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-red-900/30 to-gray-900 text-white">
+      <div className="flex min-h-screen">
+        {/* Left Side - Admin Features */}
+        <div className="hidden lg:flex lg:w-1/2 bg-black/20 backdrop-blur-lg p-12 flex-col justify-center">
+          <div className="max-w-md">
+            <div className="flex items-center space-x-3 mb-8">
+              <img 
+                src="/assets/artist-tech-logo.jpeg" 
+                alt="Artist Tech" 
+                className="w-12 h-12 rounded-lg object-cover"
+              />
+              <div>
+                <h1 className="text-2xl font-bold">Artist Tech Admin</h1>
+                <p className="text-white/60">Platform Control Center</p>
+              </div>
+            </div>
+
+            <div className="bg-red-500/20 rounded-lg p-6 border border-red-500/30 mb-8">
+              <div className="flex items-center space-x-3 mb-4">
+                <Crown className="w-8 h-8 text-yellow-400" />
+                <div>
+                  <h2 className="text-xl font-bold text-red-400">ADMIN ACCESS ONLY</h2>
+                  <p className="text-white/60">Full platform control and monitoring</p>
+                </div>
+              </div>
+            </div>
+
+            <h2 className="text-3xl font-bold mb-6">Complete Platform Control</h2>
+            <p className="text-white/70 mb-8">
+              Access real-time analytics, manage all users, control AI engines, 
+              and monitor revenue across the entire Artist Tech platform.
+            </p>
+
+            <div className="space-y-4">
+              {adminFeatures.map((feature, index) => (
+                <div key={index} className="flex items-center space-x-4 p-4 bg-white/5 rounded-lg">
+                  <feature.icon className="w-8 h-8 text-red-400" />
+                  <div>
+                    <h3 className="font-bold">{feature.title}</h3>
+                    <p className="text-white/60 text-sm">{feature.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 p-4 bg-yellow-500/20 rounded-lg border border-yellow-500/30">
+              <p className="text-yellow-400 font-bold text-sm">🔑 Admin Credentials</p>
+              <p className="text-white/70 text-xs">Email: admin@artisttech.com</p>
+              <p className="text-white/70 text-xs">Password: admin2024!</p>
+            </div>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">ProStudio Admin</h1>
-          <p className="text-gray-400">Administrative Control Panel</p>
         </div>
 
-        {/* Demo Credentials Card */}
-        <Card className="bg-red-950/20 border-red-500/50 mb-6">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-red-400 text-sm flex items-center">
-              <AlertCircle size={16} className="mr-2" />
-              Demo Admin Credentials
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="bg-gray-900/50 p-3 rounded font-mono text-sm">
-              <div className="text-gray-400">Email:</div>
-              <div className="text-white">admin@prostudio.ai</div>
+        {/* Right Side - Admin Login Form */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
+          <div className="w-full max-w-md">
+            {/* Mobile Logo */}
+            <div className="lg:hidden flex items-center justify-center space-x-3 mb-8">
+              <img 
+                src="/assets/artist-tech-logo.jpeg" 
+                alt="Artist Tech" 
+                className="w-10 h-10 rounded-lg object-cover"
+              />
+              <span className="text-xl font-bold">Artist Tech Admin</span>
             </div>
-            <div className="bg-gray-900/50 p-3 rounded font-mono text-sm">
-              <div className="text-gray-400">Password:</div>
-              <div className="text-white">ProStudio2025!</div>
-            </div>
-            <Button 
-              onClick={handleQuickLogin}
-              variant="outline" 
-              size="sm" 
-              className="w-full mt-2 border-red-500/50 text-red-400 hover:bg-red-500/10"
-            >
-              Use Demo Credentials
-            </Button>
-          </CardContent>
-        </Card>
 
-        {/* Login Form */}
-        <Card className="bg-gray-900/50 border-gray-700">
-          <CardHeader>
-            <CardTitle className="text-white">Admin Login</CardTitle>
-            <CardDescription>
-              Access the ProStudio administrative interface
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-300">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter admin email"
-                  className="bg-gray-800 border-gray-600 text-white placeholder-gray-400"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-gray-300">Password</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter admin password"
-                    className="bg-gray-800 border-gray-600 text-white placeholder-gray-400 pr-10"
-                    required
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4 text-gray-400" />
-                    ) : (
-                      <Eye className="h-4 w-4 text-gray-400" />
-                    )}
-                  </Button>
+            <div className="bg-black/30 rounded-lg p-8 border border-red-500/30">
+              <div className="text-center mb-8">
+                <div className="flex items-center justify-center space-x-2 mb-4">
+                  <Shield className="w-8 h-8 text-red-400" />
+                  <Crown className="w-8 h-8 text-yellow-400" />
                 </div>
+                <h2 className="text-2xl font-bold mb-2 text-red-400">Admin Portal</h2>
+                <p className="text-white/60">
+                  Secure access to platform administration
+                </p>
               </div>
 
               {loginError && (
-                <div className="bg-red-950/50 border border-red-500/50 rounded p-3">
-                  <div className="text-red-400 text-sm flex items-center">
-                    <AlertCircle size={16} className="mr-2" />
-                    {loginError.message}
-                  </div>
+                <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-lg">
+                  <p className="text-red-400 text-sm">{loginError}</p>
                 </div>
               )}
 
-              <Button 
-                type="submit" 
-                className="w-full bg-red-600 hover:bg-red-700 text-white"
-                disabled={loginLoading}
-              >
-                {loginLoading ? (
-                  <div className="flex items-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Logging in...
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-white/70 mb-2">
+                    Admin Email
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:border-red-500 focus:outline-none transition-colors"
+                      placeholder="admin@artisttech.com"
+                      required
+                    />
                   </div>
-                ) : (
-                  <>
-                    <Shield className="mr-2" size={16} />
-                    Login as Admin
-                  </>
-                )}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+                </div>
 
-        {/* Admin Features Preview */}
-        <Card className="bg-gray-900/30 border-gray-700 mt-6">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-white text-sm">Admin Features</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <Badge variant="outline" className="text-gray-300 border-gray-600">
-                User Management
-              </Badge>
-              <Badge variant="outline" className="text-gray-300 border-gray-600">
-                System Analytics
-              </Badge>
-              <Badge variant="outline" className="text-gray-300 border-gray-600">
-                License Control
-              </Badge>
-              <Badge variant="outline" className="text-gray-300 border-gray-600">
-                AI Engine Status
-              </Badge>
+                <div>
+                  <label className="block text-sm font-medium text-white/70 mb-2">
+                    Admin Password
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full pl-10 pr-12 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:border-red-500 focus:outline-none transition-colors"
+                      placeholder="Enter admin password"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-3 px-4 rounded-lg font-medium hover:from-red-600 hover:to-red-700 transition-all transform hover:scale-105"
+                >
+                  Access Admin Dashboard
+                </button>
+
+                <div className="text-center">
+                  <p className="text-white/60 text-sm mb-4">
+                    This portal is restricted to authorized administrators only
+                  </p>
+                  
+                  <div className="flex space-x-4">
+                    <Link href="/login">
+                      <button
+                        type="button"
+                        className="flex-1 bg-white/10 border border-white/20 text-white py-2 px-4 rounded-lg hover:bg-white/20 transition-colors"
+                      >
+                        User Login
+                      </button>
+                    </Link>
+                    <Link href="/">
+                      <button
+                        type="button"
+                        className="flex-1 bg-white/10 border border-white/20 text-white py-2 px-4 rounded-lg hover:bg-white/20 transition-colors"
+                      >
+                        Back to Home
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+              </form>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Back to Main Auth */}
-        <div className="text-center mt-6">
-          <Button 
-            variant="ghost" 
-            onClick={() => setLocation('/auth')}
-            className="text-gray-400 hover:text-white"
-          >
-            ← Back to Main Login
-          </Button>
+            <div className="mt-6 text-center text-xs text-white/50">
+              All admin access is logged and monitored for security
+            </div>
+          </div>
         </div>
       </div>
     </div>

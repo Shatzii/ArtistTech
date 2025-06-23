@@ -91,9 +91,11 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white font-bold text-lg">
-                AT
-              </div>
+              <img 
+                src="/assets/artist-tech-logo.jpeg" 
+                alt="Artist Tech" 
+                className="w-10 h-10 rounded-lg object-cover"
+              />
               <span className="text-xl font-bold">Artist Tech</span>
             </div>
             <div className="hidden md:flex items-center space-x-8">
@@ -344,9 +346,11 @@ export default function Landing() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white font-bold">
-                  AT
-                </div>
+                <img 
+                  src="/assets/artist-tech-logo.jpeg" 
+                  alt="Artist Tech" 
+                  className="w-8 h-8 rounded-lg object-cover"
+                />
                 <span className="text-xl font-bold">Artist Tech</span>
               </div>
               <p className="text-white/60">The world's most advanced AI-powered multimedia creation platform</p>

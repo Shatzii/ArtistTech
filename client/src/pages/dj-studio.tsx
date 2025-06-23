@@ -123,9 +123,11 @@ export default function DJStudio() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white font-bold text-xl">
-              AT
-            </div>
+            <img 
+              src="/assets/artist-tech-logo.jpeg" 
+              alt="Artist Tech" 
+              className="w-12 h-12 rounded-lg object-cover"
+            />
             <div>
               <h1 className="text-3xl font-bold">Artist Tech DJ Studio</h1>
               <p className="text-white/60">Professional mixing with interactive voting</p>
