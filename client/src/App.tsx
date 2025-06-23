@@ -28,6 +28,7 @@ function AuthenticatedRouter() {
       <Route path="/admin" component={AdminLogin} />
       <Route path="/" component={Studio} />
       <Route path="/studio" component={Studio} />
+      <Route path="/studio/dj" component={DJStudio} />
       <Route path="/mpc" component={MPCStudio} />
       <Route path="/dj" component={DJStudio} />
       <Route path="/video" component={VideoStudio} />

@@ -482,10 +482,3 @@ export const detectBeatsFromBuffer = (audioBuffer: AudioBuffer): BeatData => {
   const detector = new BeatDetector(audioBuffer.sampleRate);
   return detector.analyze(audioBuffer);
 };
-  };
-};
-
-export const detectBeatsFromBuffer = (audioBuffer: AudioBuffer): BeatData => {
-  const detector = new BeatDetector(audioBuffer.sampleRate);
-  return detector.analyze(audioBuffer);
-};
