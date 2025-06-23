@@ -12,6 +12,8 @@ import { immersiveMediaEngine } from "./immersive-media-engine";
 import { adaptiveLearningEngine } from "./adaptive-learning-engine";
 import { enterprisePlatformEngine } from "./enterprise-platform-engine";
 import { midiControllerEngine } from "./midi-controller-engine";
+import { aiMarketingEngine } from "./ai-marketing-engine";
+import { aiContentCreator } from "./ai-content-creator";
 import { insertProjectSchema, insertAudioFileSchema, insertVideoFileSchema } from "../shared/schema";
 import multer from "multer";
 import path from "path";
@@ -417,6 +419,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         enterprise: enterprisePlatformEngine.getEngineStatus(),
         midiController: midiControllerEngine.getEngineStatus(),
         timestamp: new Date().toISOString(),
+        marketing: aiMarketingEngine.getEngineStatus(),
+        contentCreator: aiContentCreator.getCreatorStatus(),
         totalCapabilities: [
           'Self-Hosted AI Music & Video Generation',
           'Neural Audio Synthesis & Voice Cloning', 
@@ -426,7 +430,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           'White-Label Business Platform Generation',
           'Automated Marketing & Content Creation',
           'Advanced Business Intelligence & Analytics',
-          'Professional MIDI Controller Integration'
+          'Professional MIDI Controller Integration',
+          'AI-Powered Business Management & Analytics',
+          'Automated Social Media Content Generation'
         ]
       };
       res.json(platformStatus);
