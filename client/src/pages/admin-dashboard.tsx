@@ -12,9 +12,9 @@ export default function AdminDashboard() {
     { name: 'DJ Studio', path: '/dj-studio', icon: Music, description: 'Full DJ suite with voting system', color: 'from-purple-500 to-blue-500' },
     { name: 'Video Studio', path: '/video-studio', icon: Video, description: 'Professional video editing', color: 'from-green-500 to-teal-500' },
     { name: 'Visual Arts', path: '/visual-studio', icon: Palette, description: 'Image creation and editing', color: 'from-pink-500 to-rose-500' },
-    { name: 'Music Studio', path: '/music-studio', icon: Headphones, description: 'Audio production suite', color: 'from-blue-500 to-cyan-500' },
+    { name: 'Music Studio', path: '/music-studio', icon: Music, description: 'Audio production suite', color: 'from-blue-500 to-cyan-500' },
     { name: 'Collaborative Studio', path: '/collaborative-studio', icon: Users, description: 'Real-time team creation', color: 'from-green-500 to-emerald-500' },
-    { name: 'NFT Marketplace', path: '/nft-marketplace', icon: Zap, description: 'Trade digital music assets', color: 'from-orange-500 to-red-500' },
+    { name: 'NFT Marketplace', path: '/nft-marketplace', icon: Activity, description: 'Trade digital music assets', color: 'from-orange-500 to-red-500' },
   ];
 
   const platformStats = [
