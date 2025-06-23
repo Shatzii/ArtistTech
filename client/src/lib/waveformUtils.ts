@@ -394,15 +394,94 @@ export class WaveformRenderer {
 }
 
 // Export utility functions
-export const createWaveformFromAudioBuffer = (audioBuffer: AudioBuffer): WaveformData => {
-  const analyzer = new WaveformAnalyzer();
-  const peaks = analyzer['extractPeaks'](audioBuffer);
+export const generateWaveformData = (audioBuffer: AudioBuffer, startTime: number = 0, duration?: number): WaveformData => {
+  const actualDuration = duration || audioBuffer.duration;
+  const sampleRate = audioBuffer.sampleRate;
+  const startSample = Math.floor(startTime * sampleRate);
+  const endSample = Math.floor((startTime + actualDuration) * sampleRate);
+  
+  const channelData = audioBuffer.getChannelData(0);
+  const slicedData = channelData.slice(startSample, endSample);
+  
+  const samplesPerPixel = Math.floor(slicedData.length / 800);
+  const peaks = new Float32Array(800);
+  
+  for (let i = 0; i < 800; i++) {
+    const start = i * samplesPerPixel;
+    const end = start + samplesPerPixel;
+    let max = 0;
+    
+    for (let j = start; j < end && j < slicedData.length; j++) {
+      max = Math.max(max, Math.abs(slicedData[j]));
+    }
+    
+    peaks[i] = max;
+  }
   
   return {
     peaks,
     length: peaks.length,
-    sampleRate: audioBuffer.sampleRate,
-    duration: audioBuffer.duration
+    sampleRate: sampleRate,
+    duration: actualDuration
+  };
+};
+
+export const drawWaveform = (canvas: HTMLCanvasElement, waveformData: WaveformData, options: {
+  showPlayhead?: boolean
+  playheadPosition?: number
+  color?: string
+  backgroundColor?: string
+}) => {
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  
+  const { width, height } = canvas;
+  const { peaks } = waveformData;
+  const { showPlayhead = false, playheadPosition = 0, color = '#f97316', backgroundColor = 'transparent' } = options;
+  
+  ctx.clearRect(0, 0, width, height);
+  
+  if (backgroundColor !== 'transparent') {
+    ctx.fillStyle = backgroundColor;
+    ctx.fillRect(0, 0, width, height);
+  }
+  
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  
+  const barWidth = width / peaks.length;
+  const centerY = height / 2;
+  
+  for (let i = 0; i < peaks.length; i++) {
+    const x = i * barWidth;
+    const barHeight = peaks[i] * centerY;
+    
+    ctx.moveTo(x, centerY - barHeight);
+    ctx.lineTo(x, centerY + barHeight);
+  }
+  
+  ctx.stroke();
+  
+  if (showPlayhead && playheadPosition >= 0) {
+    const playheadX = (playheadPosition / waveformData.duration) * width;
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(playheadX, 0);
+    ctx.lineTo(playheadX, height);
+    ctx.stroke();
+  }
+};
+
+export const createWaveformFromAudioBuffer = (audioBuffer: AudioBuffer): WaveformData => {
+  return generateWaveformData(audioBuffer);
+};
+
+export const detectBeatsFromBuffer = (audioBuffer: AudioBuffer): BeatData => {
+  const detector = new BeatDetector(audioBuffer.sampleRate);
+  return detector.analyze(audioBuffer);
+};
   };
 };
 

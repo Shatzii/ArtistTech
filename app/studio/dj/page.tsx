@@ -198,11 +198,10 @@ export default function AdvancedStreamingDJ() {
   }
 
   const loadTrackToDeck = (track: StreamingTrack, deckId: string) => {
-    setDecks(prev => prev.map(deck => 
-      deck.id === deckId 
-        ? { ...deck, track, streaming: true, position: 0 }
-        : deck
-    ))
+    setDecks(prevDecks => ({
+      ...prevDecks,
+      [deckId]: { ...prevDecks[deckId as keyof typeof prevDecks], track, streaming: true, position: 0 }
+    }))
   }
 
   const loadTrack = (track: StreamingTrack, deckId: 'A' | 'B' | 'C' | 'D') => {
@@ -217,23 +216,27 @@ export default function AdvancedStreamingDJ() {
   }
 
   const togglePlay = (deckId: 'A' | 'B' | 'C' | 'D') => {
-    setDecks(prev => prev.map(deck => 
-      deck.id === deckId ? { ...deck, isPlaying: !deck.isPlaying } : deck
-    ))
+    setDecks(prevDecks => ({
+      ...prevDecks,
+      [deckId]: { ...prevDecks[deckId], isPlaying: !prevDecks[deckId].isPlaying }
+    }))
   }
 
   const updateDeckValue = (deckId: 'A' | 'B' | 'C' | 'D', property: string, value: any) => {
-    setDecks(prev => prev.map(deck => 
-      deck.id === deckId ? { ...deck, [property]: value } : deck
-    ))
+    setDecks(prevDecks => ({
+      ...prevDecks,
+      [deckId]: { ...prevDecks[deckId], [property]: value }
+    }))
   }
 
   const updateEQ = (deckId: 'A' | 'B' | 'C' | 'D', band: 'low' | 'mid' | 'high', value: number) => {
-    setDecks(prev => prev.map(deck => 
-      deck.id === deckId 
-        ? { ...deck, eq: { ...deck.eq, [band]: value } }
-        : deck
-    ))
+    setDecks(prevDecks => ({
+      ...prevDecks,
+      [deckId]: { 
+        ...prevDecks[deckId], 
+        eq: { ...prevDecks[deckId].eq, [band]: value } 
+      }
+    }))
   }
 
   const formatTime = (seconds: number) => {
