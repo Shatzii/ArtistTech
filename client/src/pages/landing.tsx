@@ -107,8 +107,8 @@ export default function Landing() {
                   User Login
                 </button>
               </Link>
-              <Link href="/admin">
-                <button className="bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-2 rounded-lg font-medium hover:from-purple-600 hover:to-pink-600 transition-all">
+              <Link href="/admin-login">
+                <button className="bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 rounded-lg font-medium hover:from-red-600 hover:to-red-700 transition-all">
                   Admin
                 </button>
               </Link>

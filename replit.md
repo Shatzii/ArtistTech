@@ -1,8 +1,14 @@
-# ProStudio - Music, DJ & Video Production Suite
+# Artist Tech - Music, DJ & Video Production Suite
 
 ## Overview
 
-ProStudio is the world's most advanced AI-powered multimedia creation platform, combining cutting-edge artificial intelligence with professional music production, video editing, and immersive media creation. The platform features 15 revolutionary AI engines including neural audio synthesis, real-time motion capture, 360-degree video creation, adaptive learning systems, and enterprise white-label solutions. Built entirely with self-hosted open source models, it eliminates external dependencies while delivering professional-grade capabilities that rival industry standards.
+Artist Tech is the world's most advanced AI-powered multimedia creation platform, combining cutting-edge artificial intelligence with professional music production, video editing, and immersive media creation. The platform features 15 revolutionary AI engines including neural audio synthesis, real-time motion capture, 360-degree video creation, adaptive learning systems, and enterprise white-label solutions. Built entirely with self-hosted open source models, it eliminates external dependencies while delivering professional-grade capabilities that rival industry standards.
+
+### Authentication System
+- **User Login**: Standard user access at `/login` with credentials user@artisttech.com / demo123
+- **Admin Login**: Administrative access at `/admin-login` with credentials admin@artisttech.com / admin2024!
+- **Admin Dashboard**: Full platform control at `/admin` with real-time analytics and user management
+- **DJ Studio Integration**: Users can access the DJ studio with integrated voting panel and Spotify search
 
 ## System Architecture
 
