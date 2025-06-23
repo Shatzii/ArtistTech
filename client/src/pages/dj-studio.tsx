@@ -667,12 +667,12 @@ export default function DJStudio() {
                 type="range"
                 min="0"
                 max="100"
-                value={crossfader}
-                onChange={(e) => setCrossfader(Number(e.target.value))}
+                value={crossfaderA}
+                onChange={(e) => setCrossfaderA(Number(e.target.value))}
                 className="w-full"
               />
               <div className="text-center text-xs text-white/60 mt-1">
-                {crossfader < 40 ? 'A' : crossfader > 60 ? 'B' : 'MIX'}
+                {crossfaderA < 40 ? 'A' : crossfaderA > 60 ? 'B' : 'MIX'}
               </div>
             </div>
 
