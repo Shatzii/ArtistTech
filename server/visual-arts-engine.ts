@@ -196,8 +196,8 @@ export class VisualArtsEngine {
   }
 
   private setupVisualServer() {
-    // Visual arts WebSocket server on port 8088
-    this.visualWSS = new WebSocketServer({ port: 8088 });
+    // Visual arts WebSocket server on port 8092
+    this.visualWSS = new WebSocketServer({ port: 8092 });
     
     this.visualWSS.on('connection', (ws: WebSocket) => {
       ws.on('message', (data: Buffer) => {
