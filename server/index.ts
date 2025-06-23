@@ -2,6 +2,13 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
+// Initialize all advanced AI engines
+import { aiAutoMixingEngine } from "./ai-auto-mixing-engine";
+import { spatialAudioEngine } from "./spatial-audio-engine";
+import { aiVoiceSynthesisEngine } from "./ai-voice-synthesis-engine";
+import { vrStudioEngine } from "./vr-studio-engine";
+import { blockchainNFTEngine } from "./blockchain-nft-engine";
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
