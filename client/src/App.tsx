@@ -18,6 +18,7 @@ import VideoStudio from "@/pages/video-studio";
 import VisualStudio from "@/pages/visual-studio";
 import NFTMarketplace from "@/pages/nft-marketplace";
 import CollaborativeStudio from "@/pages/collaborative-studio";
+import BusinessDashboard from "@/pages/business-dashboard";
 import AdminLogin from "@/pages/admin-login";
 
 function AuthenticatedRouter() {
@@ -50,6 +51,7 @@ function AuthenticatedRouter() {
           <Route path="/visual" component={VisualStudio} />
           <Route path="/nft" component={NFTMarketplace} />
           <Route path="/collaborate" component={CollaborativeStudio} />
+          <Route path="/business" component={BusinessDashboard} />
           <Route path="/midi" component={MIDIController} />
           <Route path="/lesson" component={Lesson} />
           <Route path="/curriculum" component={Curriculum} />
