@@ -3,7 +3,7 @@ import { Link } from 'wouter';
 import { Play, Pause, Square, RotateCcw, Volume2, Headphones, Search, DollarSign, Heart, Clock, Users, TrendingUp, SkipForward, Shuffle, Repeat, Music, Settings, Filter, Zap, Mic, Radio, Download, Upload } from 'lucide-react';
 
 export default function DJStudio() {
-  // Professional DJ Controller State
+  // 4-CHANNEL PIONEER DJM-900NXS2 + CDJ-3000 SETUP
   const [decks, setDecks] = useState({
     A: {
       isPlaying: false,
@@ -14,16 +14,36 @@ export default function DJStudio() {
       gain: 0.7,
       eq: { high: 0, mid: 0, low: 0 },
       cue: false,
-      loop: false,
-      effects: { reverb: 0, delay: 0, filter: 0 },
+      loop: { enabled: false, start: 0, end: 0, length: 4 },
+      hotCues: Array(8).fill(null),
+      slip: false,
+      quantize: true,
+      keyShift: 0,
+      effects: { 
+        reverb: 0, 
+        delay: 0, 
+        filter: 0,
+        echo: 0,
+        flanger: 0,
+        phaser: 0,
+        bitCrusher: 0,
+        rollGate: 0
+      },
       bpm: 123,
+      tempoRange: 16, // ±16%
+      jogMode: 'vinyl', // vinyl or cd
+      needleLock: false,
       track: { 
         title: 'One More Time', 
         artist: 'Daft Punk',
         album: 'Discovery',
         key: 'F# Minor',
         energy: 85,
-        genre: 'House'
+        genre: 'House',
+        beatGrid: true,
+        analyzed: true,
+        rating: 5,
+        color: 'blue'
       }
     },
     B: {
@@ -35,26 +55,154 @@ export default function DJStudio() {
       gain: 0.7,
       eq: { high: 0, mid: 0, low: 0 },
       cue: false,
-      loop: false,
-      effects: { reverb: 0, delay: 0, filter: 0 },
+      loop: { enabled: false, start: 0, end: 0, length: 4 },
+      hotCues: Array(8).fill(null),
+      slip: false,
+      quantize: true,
+      keyShift: 0,
+      effects: { 
+        reverb: 0, 
+        delay: 0, 
+        filter: 0,
+        echo: 0,
+        flanger: 0,
+        phaser: 0,
+        bitCrusher: 0,
+        rollGate: 0
+      },
       bpm: 128,
+      tempoRange: 16,
+      jogMode: 'vinyl',
+      needleLock: false,
       track: { 
         title: 'Strobe', 
         artist: 'Deadmau5',
         album: 'For Lack of a Better Name',
         key: 'A Minor',
         energy: 92,
-        genre: 'Progressive House'
+        genre: 'Progressive House',
+        beatGrid: true,
+        analyzed: true,
+        rating: 4,
+        color: 'orange'
+      }
+    },
+    C: {
+      isPlaying: false,
+      currentTime: 0,
+      duration: 195,
+      volume: 0.8,
+      pitch: 0,
+      gain: 0.7,
+      eq: { high: 0, mid: 0, low: 0 },
+      cue: false,
+      loop: { enabled: false, start: 0, end: 0, length: 4 },
+      hotCues: Array(8).fill(null),
+      slip: false,
+      quantize: true,
+      keyShift: 0,
+      effects: { 
+        reverb: 0, 
+        delay: 0, 
+        filter: 0,
+        echo: 0,
+        flanger: 0,
+        phaser: 0,
+        bitCrusher: 0,
+        rollGate: 0
+      },
+      bpm: 140,
+      tempoRange: 16,
+      jogMode: 'vinyl',
+      needleLock: false,
+      track: { 
+        title: 'Levels', 
+        artist: 'Avicii',
+        album: 'True',
+        key: 'C# Minor',
+        energy: 98,
+        genre: 'Progressive House',
+        beatGrid: true,
+        analyzed: true,
+        rating: 5,
+        color: 'green'
+      }
+    },
+    D: {
+      isPlaying: false,
+      currentTime: 0,
+      duration: 180,
+      volume: 0.8,
+      pitch: 0,
+      gain: 0.7,
+      eq: { high: 0, mid: 0, low: 0 },
+      cue: false,
+      loop: { enabled: false, start: 0, end: 0, length: 4 },
+      hotCues: Array(8).fill(null),
+      slip: false,
+      quantize: true,
+      keyShift: 0,
+      effects: { 
+        reverb: 0, 
+        delay: 0, 
+        filter: 0,
+        echo: 0,
+        flanger: 0,
+        phaser: 0,
+        bitCrusher: 0,
+        rollGate: 0
+      },
+      bpm: 126,
+      tempoRange: 16,
+      jogMode: 'vinyl',
+      needleLock: false,
+      track: { 
+        title: 'Titanium', 
+        artist: 'David Guetta ft. Sia',
+        album: 'Nothing But The Beat',
+        key: 'F# Major',
+        energy: 89,
+        genre: 'Electro House',
+        beatGrid: true,
+        analyzed: true,
+        rating: 4,
+        color: 'purple'
       }
     }
   });
 
-  // Master Section
-  const [crossfader, setCrossfader] = useState(50);
+  // 4-CHANNEL DJM-900NXS2 MIXER CONTROLS
+  const [crossfaderA, setCrossfaderA] = useState(50); // A vs B
+  const [crossfaderB, setCrossfaderB] = useState(50); // C vs D
   const [masterVolume, setMasterVolume] = useState(0.8);
   const [masterEQ, setMasterEQ] = useState({ high: 0, mid: 0, low: 0 });
   const [headphoneLevel, setHeadphoneLevel] = useState(0.6);
   const [cueMix, setCueMix] = useState(50);
+  
+  // SOUND COLOR FX & BEAT FX (DJM-900NXS2 Features)
+  const [soundColorFX, setSoundColorFX] = useState({
+    A: { type: 'none', intensity: 0 },
+    B: { type: 'none', intensity: 0 },
+    C: { type: 'none', intensity: 0 },
+    D: { type: 'none', intensity: 0 }
+  });
+  const [beatFX, setBeatFX] = useState({ type: 'none', beat: '1/4', time: 1000 });
+  
+  // VISUAL EFFECTS SYSTEM
+  const [visualEffects, setVisualEffects] = useState({
+    enabled: true,
+    mode: 'reactive', // reactive, auto, manual
+    intensity: 80,
+    colorPalette: 'spectrum', // spectrum, neon, club, custom
+    particleCount: 500,
+    strobeSync: true,
+    laserShow: true,
+    smokeEffect: true
+  });
+  
+  // CROWD ENERGY & VISUAL FEEDBACK
+  const [crowdEnergy, setCrowdEnergy] = useState(75);
+  const [visualBeats, setVisualBeats] = useState(Array(32).fill(0));
   
   // Live Performance Features
   const [isLive, setIsLive] = useState(true);
@@ -155,23 +303,27 @@ export default function DJStudio() {
   const bpmDiff = getBPMDifference();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black text-white">
-      {/* Professional Header */}
-      <div className="bg-black/90 backdrop-blur-lg border-b border-purple-500/20 p-4">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
+    <div className="min-h-screen bg-black text-white overflow-hidden">
+      {/* Club-Standard Header - Pioneer CDJ-3000 + DJM-900NXS2 */}
+      <div className="bg-gradient-to-r from-black via-gray-900 to-black border-b-2 border-red-500/30 p-3">
+        <div className="flex items-center justify-between max-w-[1800px] mx-auto">
           <div className="flex items-center space-x-6">
             <Link href="/admin" className="hover:scale-110 transition-transform">
               <img 
                 src="/assets/artist-tech-logo.jpeg" 
                 alt="Artist Tech" 
-                className="w-12 h-12 rounded-lg object-cover border-2 border-purple-500/30"
+                className="w-10 h-10 rounded-lg object-cover border border-red-500/50"
               />
             </Link>
             <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
-                Professional DJ Controller
+              <h1 className="text-xl font-bold text-red-500">
+                PIONEER CDJ-3000 × DJM-900NXS2
               </h1>
-              <p className="text-white/60 text-sm">Pioneer CDJ-3000 Style • Serato Integration</p>
+              <p className="text-gray-400 text-xs">Industry Standard Club Setup • rekordbox Integration</p>
+            </div>
+            <div className="flex items-center space-x-2 bg-red-500/20 px-3 py-1 rounded border border-red-500/30">
+              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+              <span className="text-red-400 font-bold text-sm">PROFESSIONAL MODE</span>
             </div>
           </div>
           
@@ -190,12 +342,175 @@ export default function DJStudio() {
         </div>
       </div>
 
-      <div className="p-6 max-w-7xl mx-auto">
-        {/* Main Controller Layout */}
-        <div className="grid grid-cols-12 gap-6">
+      {/* INSANE VISUAL BACKGROUND EFFECTS */}
+      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        {/* Reactive Particle System */}
+        <div className="absolute inset-0">
+          {Array.from({length: visualEffects.particleCount}).map((_, i) => {
+            const isActive = visualBeats[i % visualBeats.length] > 50;
+            const deckColors = ['#3b82f6', '#f59e0b', '#10b981', '#8b5cf6'];
+            const activeDecks = [decks.A.isPlaying, decks.B.isPlaying, decks.C.isPlaying, decks.D.isPlaying];
+            const activeColor = deckColors[activeDecks.findIndex(Boolean)] || '#6b7280';
+            
+            return (
+              <div
+                key={i}
+                className={`absolute w-1 h-1 rounded-full transition-all duration-100 ${
+                  isActive ? 'opacity-100 scale-150' : 'opacity-30 scale-100'
+                }`}
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  backgroundColor: activeColor,
+                  boxShadow: isActive ? `0 0 20px ${activeColor}` : 'none',
+                  animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
+                  animationDelay: `${Math.random() * 2}s`
+                }}
+              />
+            );
+          })}
+        </div>
+        
+        {/* Laser Show Effect */}
+        {visualEffects.laserShow && (
+          <div className="absolute inset-0">
+            {[decks.A, decks.B, decks.C, decks.D].map((deck, i) => {
+              if (!deck.isPlaying) return null;
+              const colors = ['#3b82f6', '#f59e0b', '#10b981', '#8b5cf6'];
+              return (
+                <div
+                  key={i}
+                  className="absolute opacity-30"
+                  style={{
+                    left: `${25 * i}%`,
+                    top: '0',
+                    width: '2px',
+                    height: '100%',
+                    background: `linear-gradient(to bottom, ${colors[i]}, transparent)`,
+                    animation: `laser${i} ${60000/deck.bpm}ms linear infinite`,
+                    filter: 'blur(0.5px)'
+                  }}
+                />
+              );
+            })}
+          </div>
+        )}
+        
+        {/* Beat Visualization Grid */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 flex items-end">
+          {visualBeats.map((beat, i) => (
+            <div
+              key={i}
+              className="flex-1 bg-gradient-to-t from-red-500/30 to-transparent mx-px transition-all duration-75"
+              style={{ height: `${beat}%` }}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="relative z-10 p-4 max-w-[2000px] mx-auto">
+        {/* 4-CHANNEL PIONEER DJM-900NXS2 + CDJ-3000 SETUP */}
+        <div className="grid grid-cols-16 gap-2">
           
-          {/* Left Deck A */}
-          <div className="col-span-4 bg-gradient-to-br from-purple-900/20 to-blue-900/20 rounded-lg p-6 border border-purple-500/20">
+          {/* LEFT CDJ-3000 DECK A */}
+          <div className="col-span-5 bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-xl p-6 border-2 border-gray-700 shadow-2xl">
+            {/* CDJ-3000 TOP SECTION */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="bg-red-500 text-white px-3 py-1 rounded text-sm font-bold">CDJ-3000</div>
+                <div className="text-blue-400 font-bold text-lg">DECK A</div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className={`w-3 h-3 rounded-full ${decks.A.isPlaying ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`} />
+                <span className="bg-black px-2 py-1 rounded text-green-400 font-mono text-sm">{decks.A.bpm} BPM</span>
+                <span className="bg-black px-2 py-1 rounded text-cyan-400 font-mono text-sm">{decks.A.track.key}</span>
+              </div>
+            </div>
+
+            {/* PIONEER TOUCH SCREEN DISPLAY */}
+            <div className="bg-black rounded-lg p-4 mb-6 border-2 border-gray-600">
+              <div className="flex justify-between items-start mb-3">
+                <div className="flex-1">
+                  <h3 className="text-white font-bold text-lg truncate">{decks.A.track.title}</h3>
+                  <p className="text-gray-300 truncate">{decks.A.track.artist}</p>
+                  <p className="text-gray-500 text-sm truncate">{decks.A.track.album}</p>
+                </div>
+                <div className="text-right">
+                  <div className="text-orange-400 font-bold">{formatTime(decks.A.currentTime)}</div>
+                  <div className="text-gray-400 text-sm">-{formatTime(decks.A.duration - decks.A.currentTime)}</div>
+                  <div className="flex items-center space-x-1 mt-1">
+                    {Array.from({length: 5}).map((_, i) => (
+                      <div key={i} className={`w-2 h-2 rounded-full ${i < decks.A.track.rating ? 'bg-yellow-400' : 'bg-gray-600'}`} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              
+              {/* PROFESSIONAL WAVEFORM WITH BEATGRID */}
+              <div className="h-20 bg-gray-900 rounded border border-gray-700 relative overflow-hidden">
+                <div className="flex items-center h-full px-2">
+                  {Array.from({length: 80}).map((_, i) => (
+                    <div 
+                      key={i} 
+                      className={`w-1 mx-px transition-all ${
+                        i < (decks.A.currentTime / decks.A.duration) * 80 
+                          ? 'bg-blue-500 opacity-100' 
+                          : 'bg-blue-300 opacity-30'
+                      }`}
+                      style={{ height: `${Math.sin(i * 0.5) * 30 + 40}px` }}
+                    />
+                  ))}
+                </div>
+                {/* Beat markers */}
+                <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center">
+                  {Array.from({length: 16}).map((_, i) => (
+                    <div key={i} className="flex-1 border-l border-green-500/30 h-full" />
+                  ))}
+                </div>
+                {/* Playhead */}
+                <div 
+                  className="absolute top-0 bottom-0 w-1 bg-red-500 z-10"
+                  style={{ left: `${(decks.A.currentTime / decks.A.duration) * 100}%` }}
+                />
+              </div>
+            </div>
+
+            {/* MASSIVE PIONEER JOG WHEEL */}
+            <div className="flex justify-center mb-6">
+              <div className="relative">
+                <div className="w-48 h-48 rounded-full bg-gradient-to-br from-gray-700 via-gray-800 to-black border-4 border-gray-600 flex items-center justify-center cursor-pointer hover:brightness-110 transition-all shadow-2xl">
+                  <div className="w-40 h-40 rounded-full bg-gradient-to-br from-blue-800/30 to-blue-900/30 border-2 border-blue-500/50 flex items-center justify-center relative">
+                    {/* Vinyl texture lines */}
+                    {Array.from({length: 12}).map((_, i) => (
+                      <div 
+                        key={i} 
+                        className="absolute w-px h-16 bg-blue-400/20"
+                        style={{ 
+                          transform: `rotate(${i * 30}deg)`,
+                          transformOrigin: 'center'
+                        }}
+                      />
+                    ))}
+                    {/* Center dot */}
+                    <div className="w-8 h-8 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center">
+                      <div className="w-2 h-2 rounded-full bg-white" />
+                    </div>
+                    {/* Rotation indicator */}
+                    <div className="absolute w-1 h-12 bg-red-500 rounded-full top-4" />
+                  </div>
+                </div>
+                <div className="text-center mt-3">
+                  <div className="flex items-center justify-center space-x-2">
+                    <button className={`px-3 py-1 rounded text-xs font-bold ${decks.A.jogMode === 'vinyl' ? 'bg-red-500 text-white' : 'bg-gray-700 text-gray-300'}`}>
+                      VINYL
+                    </button>
+                    <button className={`px-3 py-1 rounded text-xs font-bold ${decks.A.jogMode === 'cd' ? 'bg-red-500 text-white' : 'bg-gray-700 text-gray-300'}`}>
+                      CD
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-purple-400">DECK A</h3>
               <div className="flex items-center space-x-2">
