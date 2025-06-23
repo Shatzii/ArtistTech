@@ -3,6 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ProStudioNavbar } from "@/components/navigation/ProStudioNavbar";
 import Studio from "@/pages/studio";
 import Lesson from "@/pages/lesson";
 import Curriculum from "@/pages/curriculum";
