@@ -12,6 +12,8 @@ import VisualStudio from "./pages/visual-studio";
 import MusicStudio from "./pages/music-studio";
 import CollaborativeStudio from "./pages/collaborative-studio";
 import NFTMarketplace from "./pages/nft-marketplace";
+import PodcastStudio from "./pages/podcast-studio";
+import AICareerManager from "./pages/ai-career-manager";
 import NotFound from "./pages/not-found";
 
 function AuthenticatedRouter() {
@@ -30,6 +32,8 @@ function AuthenticatedRouter() {
           <Route path="/visual-studio" component={VisualStudio} />
           <Route path="/collaborative-studio" component={CollaborativeStudio} />
           <Route path="/nft-marketplace" component={NFTMarketplace} />
+          <Route path="/podcast-studio" component={PodcastStudio} />
+          <Route path="/ai-career-manager" component={AICareerManager} />
           <Route path="/voting" component={SimpleVotingDemo} />
           <Route component={NotFound} />
         </Switch>
