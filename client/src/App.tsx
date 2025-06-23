@@ -22,10 +22,11 @@ import BusinessDashboard from "@/pages/business-dashboard";
 import AdminLogin from "@/pages/admin-login";
 
 function AuthenticatedRouter() {
-  // Direct access bypass for development/demo mode
+  // Check for demo login or direct access
+  const isDemoLoggedIn = localStorage.getItem("demo_user") === "true";
   const isDemoMode = true; // Set to false to enable full auth
 
-  if (isDemoMode) {
+  if (isDemoMode || isDemoLoggedIn) {
     return (
       <Switch>
         <Route path="/auth" component={AuthPage} />

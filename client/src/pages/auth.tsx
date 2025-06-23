@@ -99,11 +99,15 @@ export default function AuthPage() {
   const handleSignIn = async (formData: any) => {
     setLoading(true);
     try {
-      // Login API call would go here
+      // Demo login - bypass authentication
+      localStorage.setItem("demo_user", "true");
       toast({
         title: "Login Successful",
-        description: "Redirecting to your dashboard...",
+        description: "Welcome to ProStudio! Redirecting to your dashboard...",
       });
+      setTimeout(() => {
+        window.location.href = "/studio";
+      }, 1000);
     } catch (error) {
       toast({
         title: "Login Failed",
@@ -351,32 +355,69 @@ export default function AuthPage() {
       {/* Demo Access */}
       <div className="px-6 py-8 bg-gray-800/30">
         <div className="mx-auto max-w-md text-center">
-          <h4 className="text-lg font-semibold text-white mb-4">Try the Demo</h4>
+          <h4 className="text-lg font-semibold text-white mb-4">Instant Demo Access</h4>
           <div className="space-y-2">
             <Button 
-              variant="outline" 
-              className="w-full border-gray-600 text-white hover:bg-gray-700"
-              onClick={() => window.location.href = "/mpc"}
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold"
+              onClick={() => {
+                localStorage.setItem("demo_user", "true");
+                window.location.href = "/studio";
+              }}
             >
-              <Music className="mr-2" size={16} />
-              MPC Studio Demo
+              <LogIn className="mr-2" size={16} />
+              Enter ProStudio (No Login Required)
             </Button>
-            <Button 
-              variant="outline" 
-              className="w-full border-gray-600 text-white hover:bg-gray-700"
-              onClick={() => window.location.href = "/studio"}
-            >
-              <Video className="mr-2" size={16} />
-              AI Video Studio
-            </Button>
-            <Button 
-              variant="outline" 
-              className="w-full border-gray-600 text-white hover:bg-gray-700"
-              onClick={() => window.location.href = "/midi"}
-            >
-              <Zap className="mr-2" size={16} />
-              MIDI Controller Hub
-            </Button>
+            <div className="grid grid-cols-2 gap-2">
+              <Button 
+                variant="outline" 
+                className="border-gray-600 text-white hover:bg-gray-700"
+                onClick={() => {
+                  localStorage.setItem("demo_user", "true");
+                  window.location.href = "/mpc";
+                }}
+              >
+                <Music className="mr-1" size={14} />
+                MPC Studio
+              </Button>
+              <Button 
+                variant="outline" 
+                className="border-gray-600 text-white hover:bg-gray-700"
+                onClick={() => {
+                  localStorage.setItem("demo_user", "true");
+                  window.location.href = "/dj";
+                }}
+              >
+                <Zap className="mr-1" size={14} />
+                DJ Studio
+              </Button>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <Button 
+                variant="outline" 
+                className="border-gray-600 text-white hover:bg-gray-700"
+                onClick={() => {
+                  localStorage.setItem("demo_user", "true");
+                  window.location.href = "/video";
+                }}
+              >
+                <Video className="mr-1" size={14} />
+                Video Studio
+              </Button>
+              <Button 
+                variant="outline" 
+                className="border-gray-600 text-white hover:bg-gray-700"
+                onClick={() => {
+                  localStorage.setItem("demo_user", "true");
+                  window.location.href = "/business";
+                }}
+              >
+                <Brain className="mr-1" size={14} />
+                AI Business
+              </Button>
+            </div>
+          </div>
+          <div className="mt-4 text-xs text-gray-400">
+            Full access to all 13 AI engines • No registration required
           </div>
         </div>
       </div>
