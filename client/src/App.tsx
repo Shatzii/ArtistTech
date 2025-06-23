@@ -4,6 +4,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import Landing from "./pages/landing";
 import DJStudio from "./pages/dj-studio";
 import SimpleVotingDemo from "./pages/simple-voting-demo";
+import AdminDashboard from "./pages/admin-dashboard";
+import UserLogin from "./pages/user-login";
 
 function AuthenticatedRouter() {
   return (
@@ -11,6 +13,8 @@ function AuthenticatedRouter() {
       <main>
         <Switch>
           <Route path="/" component={Landing} />
+          <Route path="/login" component={UserLogin} />
+          <Route path="/admin" component={AdminDashboard} />
           <Route path="/dj" component={DJStudio} />
           <Route path="/voting" component={SimpleVotingDemo} />
           <Route component={Landing} />

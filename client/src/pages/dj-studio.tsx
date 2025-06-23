@@ -122,7 +122,15 @@ export default function DJStudio() {
       <div className="p-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold">🎧 Professional DJ Studio</h1>
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+              AT
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold">Artist Tech DJ Studio</h1>
+              <p className="text-white/60">Professional mixing with interactive voting</p>
+            </div>
+          </div>
           <div className="flex items-center space-x-4">
             <div className="bg-green-500/20 px-4 py-2 rounded-lg border border-green-500/30">
               <span className="text-green-400 font-bold">${totalRevenue}</span>
