@@ -24,26 +24,31 @@ import AdminLogin from "@/pages/admin-login";
 function AuthenticatedRouter() {
   // Direct access to all pages - no authentication required
   return (
-    <Switch>
-      <Route path="/auth" component={AuthPage} />
-      <Route path="/admin" component={AdminLogin} />
-      <Route path="/" component={Studio} />
-      <Route path="/studio" component={Studio} />
-      <Route path="/studio/dj" component={DJStudio} />
-      <Route path="/mpc" component={MPCStudio} />
-      <Route path="/dj" component={DJStudio} />
-      <Route path="/video" component={VideoStudio} />
-      <Route path="/visual" component={VisualStudio} />
-      <Route path="/nft" component={NFTMarketplace} />
-      <Route path="/collaborate" component={CollaborativeStudio} />
-      <Route path="/business" component={BusinessDashboard} />
-      <Route path="/midi" component={MIDIController} />
-      <Route path="/lesson" component={Lesson} />
-      <Route path="/curriculum" component={Curriculum} />
-      <Route path="/teacher" component={TeacherPortal} />
-      <Route path="/student" component={StudentDashboard} />
-      <Route component={NotFound} />
-    </Switch>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900">
+      <ProStudioNavbar />
+      <main className="pt-4">
+        <Switch>
+          <Route path="/auth" component={AuthPage} />
+          <Route path="/admin" component={AdminLogin} />
+          <Route path="/" component={Studio} />
+          <Route path="/studio" component={Studio} />
+          <Route path="/studio/dj" component={DJStudio} />
+          <Route path="/mpc" component={MPCStudio} />
+          <Route path="/dj" component={DJStudio} />
+          <Route path="/video" component={VideoStudio} />
+          <Route path="/visual" component={VisualStudio} />
+          <Route path="/nft" component={NFTMarketplace} />
+          <Route path="/collaborate" component={CollaborativeStudio} />
+          <Route path="/business" component={BusinessDashboard} />
+          <Route path="/midi" component={MIDIController} />
+          <Route path="/lesson" component={Lesson} />
+          <Route path="/curriculum" component={Curriculum} />
+          <Route path="/teacher" component={TeacherPortal} />
+          <Route path="/student" component={StudentDashboard} />
+          <Route component={NotFound} />
+        </Switch>
+      </main>
+    </div>
   );
 }
 
