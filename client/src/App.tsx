@@ -15,6 +15,9 @@ import NotFound from "@/pages/not-found";
 import TeacherPortal from "@/pages/teacher-portal";
 import StudentDashboard from "@/pages/student-dashboard";
 import VideoStudio from "@/pages/video-studio";
+import VisualStudio from "@/pages/visual-studio";
+import NFTMarketplace from "@/pages/nft-marketplace";
+import CollaborativeStudio from "@/pages/collaborative-studio";
 import AdminLogin from "@/pages/admin-login";
 
 function AuthenticatedRouter() {
@@ -44,6 +47,9 @@ function AuthenticatedRouter() {
           <Route path="/mpc" component={MPCStudio} />
           <Route path="/dj" component={DJStudio} />
           <Route path="/video" component={VideoStudio} />
+          <Route path="/visual" component={VisualStudio} />
+          <Route path="/nft" component={NFTMarketplace} />
+          <Route path="/collaborate" component={CollaborativeStudio} />
           <Route path="/midi" component={MIDIController} />
           <Route path="/lesson" component={Lesson} />
           <Route path="/curriculum" component={Curriculum} />
