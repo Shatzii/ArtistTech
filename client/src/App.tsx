@@ -22,6 +22,33 @@ import BusinessDashboard from "@/pages/business-dashboard";
 import AdminLogin from "@/pages/admin-login";
 
 function AuthenticatedRouter() {
+  // Direct access bypass for development/demo mode
+  const isDemoMode = true; // Set to false to enable full auth
+
+  if (isDemoMode) {
+    return (
+      <Switch>
+        <Route path="/auth" component={AuthPage} />
+        <Route path="/admin" component={AdminLogin} />
+        <Route path="/" component={Studio} />
+        <Route path="/studio" component={Studio} />
+        <Route path="/mpc" component={MPCStudio} />
+        <Route path="/dj" component={DJStudio} />
+        <Route path="/video" component={VideoStudio} />
+        <Route path="/visual" component={VisualStudio} />
+        <Route path="/nft" component={NFTMarketplace} />
+        <Route path="/collaborate" component={CollaborativeStudio} />
+        <Route path="/business" component={BusinessDashboard} />
+        <Route path="/midi" component={MIDIController} />
+        <Route path="/lesson" component={Lesson} />
+        <Route path="/curriculum" component={Curriculum} />
+        <Route path="/teacher" component={TeacherPortal} />
+        <Route path="/student" component={StudentDashboard} />
+        <Route component={NotFound} />
+      </Switch>
+    );
+  }
+
   const { user, isLoading, isAuthenticated } = useAuth();
 
   if (isLoading) {
