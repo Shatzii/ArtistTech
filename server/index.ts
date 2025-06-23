@@ -9,6 +9,11 @@ import { aiVoiceSynthesisEngine } from "./ai-voice-synthesis-engine";
 import { vrStudioEngine } from "./vr-studio-engine";
 import { blockchainNFTEngine } from "./blockchain-nft-engine";
 import { productionOptimizationEngine } from "./production-optimization-engine";
+import { enterpriseSecurityEngine } from "./enterprise-security-engine";
+import { professionalInstrumentsEngine } from "./professional-instruments-engine";
+import { premiumVideoCreatorEngine } from "./premium-video-creator-engine";
+import { ultraImageCreatorEngine } from "./ultra-image-creator-engine";
+import { socialMediaSamplingEngine } from "./social-media-sampling-engine";
 import "./database-migration-fix";
 
 const app = express();
