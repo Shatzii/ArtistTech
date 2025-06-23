@@ -56,6 +56,9 @@ export default function VideoStudio() {
 
   // REVOLUTIONARY AI FEATURES
   const [aiFeatures, setAiFeatures] = useState({
+    textToVideo: { enabled: false, style: 'realistic', duration: 30, quality: '4K' },
+    voiceToVideo: { enabled: false, avatarType: 'human', lipSync: true, emotions: true },
+    humanGeneration: { enabled: false, realism: 95, age: 'adult', ethnicity: 'diverse' },
     autoEdit: { enabled: false, style: 'cinematic', intensity: 70 },
     objectTracking: { enabled: false, targets: [] },
     sceneDetection: { enabled: true, confidence: 85 },
@@ -65,7 +68,8 @@ export default function VideoStudio() {
     faceEnhancement: { enabled: false, intensity: 30 },
     backgroundRemoval: { enabled: false, quality: 'high' },
     motionStabilization: { enabled: false, strength: 80 },
-    upscaling: { enabled: false, target: '8K', method: 'AI' }
+    upscaling: { enabled: false, target: '8K', method: 'AI' },
+    deepfakeProtection: { enabled: true, watermark: true, ethical: true }
   });
 
   // PROFESSIONAL EFFECTS SYSTEM
@@ -109,10 +113,26 @@ export default function VideoStudio() {
   // CINEMA-GRADE TOOLS
   const [videoTools, setVideoTools] = useState([
     { 
-      name: 'AI Auto-Edit', 
+      name: 'Text-to-Video Generator', 
       icon: Brain, 
-      description: 'Hollywood-style automatic editing',
-      category: 'AI',
+      description: 'Create videos from text prompts',
+      category: 'AI Generation',
+      premium: true,
+      status: 'active'
+    },
+    { 
+      name: 'Voice-to-Video Avatar', 
+      icon: Mic, 
+      description: 'Generate speaking humans from voice',
+      category: 'AI Generation',
+      premium: true,
+      status: 'active'
+    },
+    { 
+      name: 'Hyper-Realistic Humans', 
+      icon: Users, 
+      description: 'Indistinguishable AI humans',
+      category: 'AI Generation',
       premium: true,
       status: 'active'
     },
@@ -171,6 +191,22 @@ export default function VideoStudio() {
       category: 'VFX',
       premium: true,
       status: 'processing'
+    },
+    { 
+      name: 'AI Director', 
+      icon: Eye, 
+      description: 'Intelligent scene composition',
+      category: 'AI',
+      premium: true,
+      status: 'active'
+    },
+    { 
+      name: 'Deepfake Protection', 
+      icon: Settings, 
+      description: 'Ethical AI with watermarking',
+      category: 'Security',
+      premium: true,
+      status: 'active'
     }
   ]);
 
@@ -310,11 +346,102 @@ export default function VideoStudio() {
             ))}
           </div>
 
-          {/* AI FEATURES PANEL */}
+          {/* AI VIDEO GENERATION PANEL */}
           <div className="mt-6">
-            <h3 className="text-md font-bold mb-3 text-purple-400">AI AUTOMATION</h3>
+            <h3 className="text-md font-bold mb-3 text-purple-400">AI VIDEO GENERATION</h3>
+            
+            {/* Text-to-Video Generator */}
+            <div className="bg-gradient-to-r from-purple-800/30 to-pink-800/30 rounded-lg p-4 mb-4 border border-purple-500/30">
+              <h4 className="text-purple-300 font-bold mb-2">TEXT TO VIDEO</h4>
+              <textarea
+                placeholder="Describe the video you want to create..."
+                className="w-full bg-black/50 border border-purple-500/30 rounded px-3 py-2 text-sm text-white placeholder-gray-400 mb-3"
+                rows={3}
+              />
+              <div className="grid grid-cols-2 gap-2 mb-3">
+                <select className="bg-black/50 border border-purple-500/30 rounded px-2 py-1 text-sm text-white">
+                  <option>Realistic</option>
+                  <option>Cinematic</option>
+                  <option>Anime</option>
+                  <option>Cartoon</option>
+                </select>
+                <select className="bg-black/50 border border-purple-500/30 rounded px-2 py-1 text-sm text-white">
+                  <option>30 seconds</option>
+                  <option>60 seconds</option>
+                  <option>2 minutes</option>
+                  <option>5 minutes</option>
+                </select>
+              </div>
+              <button className="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 rounded transition-colors">
+                Generate Video
+              </button>
+            </div>
+
+            {/* Voice-to-Video Avatar */}
+            <div className="bg-gradient-to-r from-blue-800/30 to-cyan-800/30 rounded-lg p-4 mb-4 border border-blue-500/30">
+              <h4 className="text-blue-300 font-bold mb-2">VOICE TO VIDEO AVATAR</h4>
+              <div className="mb-3">
+                <input
+                  type="file"
+                  accept="audio/*"
+                  className="w-full bg-black/50 border border-blue-500/30 rounded px-3 py-2 text-sm text-white file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:bg-blue-500 file:text-white"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-2 mb-3">
+                <select className="bg-black/50 border border-blue-500/30 rounded px-2 py-1 text-sm text-white">
+                  <option>Hyper-Realistic Human</option>
+                  <option>Stylized Avatar</option>
+                  <option>Professional Presenter</option>
+                  <option>Casual Speaker</option>
+                </select>
+                <select className="bg-black/50 border border-blue-500/30 rounded px-2 py-1 text-sm text-white">
+                  <option>Auto-Emotions</option>
+                  <option>Neutral</option>
+                  <option>Energetic</option>
+                  <option>Calm</option>
+                </select>
+              </div>
+              <button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded transition-colors">
+                Create Speaking Avatar
+              </button>
+            </div>
+
+            {/* Hyper-Realistic Human Generator */}
+            <div className="bg-gradient-to-r from-green-800/30 to-emerald-800/30 rounded-lg p-4 mb-4 border border-green-500/30">
+              <h4 className="text-green-300 font-bold mb-2">AI HUMAN GENERATOR</h4>
+              <div className="grid grid-cols-2 gap-2 mb-3">
+                <select className="bg-black/50 border border-green-500/30 rounded px-2 py-1 text-sm text-white">
+                  <option>Young Adult (20-30)</option>
+                  <option>Adult (30-50)</option>
+                  <option>Senior (50+)</option>
+                  <option>Child (8-18)</option>
+                </select>
+                <select className="bg-black/50 border border-green-500/30 rounded px-2 py-1 text-sm text-white">
+                  <option>Diverse</option>
+                  <option>Caucasian</option>
+                  <option>African</option>
+                  <option>Asian</option>
+                  <option>Latino</option>
+                </select>
+              </div>
+              <div className="mb-3">
+                <label className="text-xs text-green-400">Realism Level: 95%</label>
+                <input
+                  type="range"
+                  min="60"
+                  max="99"
+                  defaultValue="95"
+                  className="w-full mt-1"
+                />
+              </div>
+              <button className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded transition-colors">
+                Generate Human
+              </button>
+            </div>
+
+            {/* AI Features Toggle */}
             <div className="space-y-2">
-              {Object.entries(aiFeatures).map(([key, feature]) => (
+              {Object.entries(aiFeatures).slice(0, 6).map(([key, feature]) => (
                 <div key={key} className="flex items-center justify-between p-2 bg-gray-800 rounded">
                   <span className="text-sm capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
                   <button 
