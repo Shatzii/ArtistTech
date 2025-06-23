@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { Request, Response, NextFunction } from "express";
 import { storage } from "./storage";
-import { registerUserSchema, loginUserSchema, type User } from "@shared/schema";
+import { insertUserSchema, type User } from "../shared/schema";
 
 const JWT_SECRET = process.env.JWT_SECRET || "prostudio-dev-secret-2025";
 const SALT_ROUNDS = 12;

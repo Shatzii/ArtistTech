@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    serverActions: true,
+    serverActions: {
+      allowedOrigins: ["localhost:3000", "*.replit.app", "*.replit.dev"]
+    }
   },
   images: {
     domains: ['localhost', 'replit.app'],

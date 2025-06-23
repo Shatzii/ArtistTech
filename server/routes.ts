@@ -12,7 +12,7 @@ import { immersiveMediaEngine } from "./immersive-media-engine";
 import { adaptiveLearningEngine } from "./adaptive-learning-engine";
 import { enterprisePlatformEngine } from "./enterprise-platform-engine";
 import { midiControllerEngine } from "./midi-controller-engine";
-import { insertProjectSchema, insertAudioFileSchema, insertVideoFileSchema } from "@shared/schema";
+import { insertProjectSchema, insertAudioFileSchema, insertVideoFileSchema } from "../shared/schema";
 import multer from "multer";
 import path from "path";
 import fs from "fs";

@@ -2,34 +2,16 @@ import {
   users,
   projects, 
   audioFiles, 
-  videoFiles, 
-  teachers, 
-  students, 
-  lessons, 
-  exercises, 
-  voiceCommands,
-  chatMessages,
+  videoFiles,
   type User,
   type Project, 
   type AudioFile, 
-  type VideoFile, 
-  type Teacher,
-  type Student,
-  type Lesson,
-  type Exercise,
-  type VoiceCommand,
-  type ChatMessage,
+  type VideoFile,
   type InsertUser,
   type InsertProject, 
   type InsertAudioFile, 
-  type InsertVideoFile,
-  type InsertTeacher,
-  type InsertStudent,
-  type InsertLesson,
-  type InsertExercise,
-  type InsertVoiceCommand,
-  type InsertChatMessage
-} from "@shared/schema";
+  type InsertVideoFile
+} from "../shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 
