@@ -66,10 +66,13 @@ export const audioFiles = pgTable("audio_files", {
   originalName: varchar("original_name", { length: 255 }).notNull(),
   filePath: varchar("file_path", { length: 500 }).notNull(),
   fileSize: integer("file_size").notNull(),
-  duration: decimal("duration", { precision: 10, scale: 3 }),
+  duration: varchar("duration", { length: 20 }), // Changed to varchar for compatibility
   bpm: integer("bpm"),
   key: varchar("key", { length: 10 }),
   genre: varchar("genre", { length: 100 }),
+  mimeType: varchar("mime_type", { length: 100 }).notNull().default('audio/wav'), // Added missing field
+  path: varchar("path", { length: 500 }).notNull().default(''), // Added missing field for backward compatibility
+  size: integer("size").notNull().default(0), // Added missing field
   createdAt: timestamp("created_at").defaultNow(),
 });
 

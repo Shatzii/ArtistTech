@@ -8,6 +8,8 @@ import { spatialAudioEngine } from "./spatial-audio-engine";
 import { aiVoiceSynthesisEngine } from "./ai-voice-synthesis-engine";
 import { vrStudioEngine } from "./vr-studio-engine";
 import { blockchainNFTEngine } from "./blockchain-nft-engine";
+import { productionOptimizationEngine } from "./production-optimization-engine";
+import "./database-migration-fix";
 
 const app = express();
 app.use(express.json());
