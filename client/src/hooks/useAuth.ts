@@ -32,6 +32,7 @@ export function useAuth() {
     queryKey: ["/api/auth/user"],
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: !!localStorage.getItem("auth_token"), // Only run query if token exists
   });
 
   const loginMutation = useMutation({

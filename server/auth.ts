@@ -53,8 +53,8 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
 
     // Fetch current user data from database
     const user = await storage.getUser(decoded.id);
-    if (!user || !user.isActive) {
-      return res.status(403).json({ message: "User not found or inactive" });
+    if (!user) {
+      return res.status(403).json({ message: "User not found" });
     }
 
     req.user = {
