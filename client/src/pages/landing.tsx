@@ -85,9 +85,9 @@ export default function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/30 to-gray-900 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900/40 to-indigo-900 text-white">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-black/20 backdrop-blur-lg border-b border-white/10 z-50">
+      <nav className="fixed top-0 w-full bg-black/30 backdrop-blur-xl border-b border-cyan-500/20 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -98,20 +98,27 @@ export default function Landing() {
               />
               <span className="text-xl font-bold">Artist Tech</span>
             </div>
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="hover:text-purple-400 transition-colors">Features</a>
-              <a href="#pricing" className="hover:text-purple-400 transition-colors">Pricing</a>
-              <a href="#testimonials" className="hover:text-purple-400 transition-colors">Reviews</a>
-              <Link href="/login">
-                <button className="border border-white/30 px-4 py-2 rounded-lg font-medium hover:bg-white/10 transition-all">
-                  User Login
-                </button>
-              </Link>
-              <Link href="/admin-login">
-                <button className="bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 rounded-lg font-medium hover:from-red-600 hover:to-red-700 transition-all">
-                  Admin
-                </button>
-              </Link>
+            <div className="flex items-center space-x-6">
+              {/* Desktop Navigation */}
+              <div className="hidden md:flex items-center space-x-8">
+                <a href="#features" className="hover:text-blue-400 transition-colors">Features</a>
+                <a href="#pricing" className="hover:text-blue-400 transition-colors">Pricing</a>
+                <a href="#testimonials" className="hover:text-blue-400 transition-colors">Reviews</a>
+              </div>
+              
+              {/* Login Buttons - Always Visible */}
+              <div className="flex items-center space-x-3">
+                <Link href="/login">
+                  <button className="bg-gradient-to-r from-blue-500 to-cyan-500 px-4 py-2 rounded-lg font-medium hover:from-blue-600 hover:to-cyan-600 transition-all text-white">
+                    Login
+                  </button>
+                </Link>
+                <Link href="/admin-login">
+                  <button className="bg-gradient-to-r from-red-500 to-red-600 px-3 py-2 rounded-lg font-medium hover:from-red-600 hover:to-red-700 transition-all text-white text-sm">
+                    Admin
+                  </button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -129,29 +136,46 @@ export default function Landing() {
             15 cutting-edge AI engines powering the world's most advanced multimedia creation platform. 
             Professional music production, DJ tools, video editing, and visual arts - all powered by Artist Tech.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/voting">
-              <button className="bg-gradient-to-r from-purple-500 to-pink-500 px-8 py-4 rounded-lg text-lg font-medium hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105">
-                Try Interactive Demo
+          {/* Primary Login Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+            <Link href="/login">
+              <button className="bg-gradient-to-r from-blue-500 to-cyan-500 px-10 py-4 rounded-lg text-lg font-bold hover:from-blue-600 hover:to-cyan-600 transition-all transform hover:scale-105 text-white shadow-xl">
+                🎵 Start Creating - User Login
               </button>
             </Link>
-            <button className="border border-white/30 px-8 py-4 rounded-lg text-lg font-medium hover:bg-white/10 transition-all">
-              Watch Overview
-            </button>
+            <Link href="/admin-login">
+              <button className="bg-gradient-to-r from-red-500 to-red-600 px-8 py-4 rounded-lg text-lg font-bold hover:from-red-600 hover:to-red-700 transition-all transform hover:scale-105 text-white shadow-xl">
+                🛡️ Admin Portal
+              </button>
+            </Link>
+          </div>
+
+          {/* Demo Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/dj">
+              <button className="border-2 border-blue-400 px-6 py-3 rounded-lg text-lg font-medium hover:bg-blue-400/20 transition-all">
+                Try DJ Studio
+              </button>
+            </Link>
+            <Link href="/voting">
+              <button className="border-2 border-cyan-400 px-6 py-3 rounded-lg text-lg font-medium hover:bg-cyan-400/20 transition-all">
+                Interactive Demo
+              </button>
+            </Link>
           </div>
           
           {/* Stats */}
           <div className="grid grid-cols-3 gap-8 mt-16 max-w-2xl mx-auto">
             <div className="text-center">
-              <div className="text-3xl font-bold text-purple-400">15</div>
+              <div className="text-3xl font-bold text-blue-400">15</div>
               <div className="text-white/60">AI Engines</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-pink-400">115/115</div>
+              <div className="text-3xl font-bold text-cyan-400">115/115</div>
               <div className="text-white/60">Security Score</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-orange-400">$3.2M</div>
+              <div className="text-3xl font-bold text-purple-400">$3.2M</div>
               <div className="text-white/60">Year 1 Target</div>
             </div>
           </div>

@@ -8,11 +8,19 @@ export default function UserLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [loginError, setLoginError] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate successful login - redirect to DJ studio for users
-    window.location.href = '/dj';
+    setLoginError('');
+    
+    // User authentication check
+    if (email === 'user@artisttech.com' && password === 'demo123') {
+      // Successful user login - redirect to DJ studio
+      window.location.href = '/dj';
+    } else {
+      setLoginError('Invalid credentials. Use: user@artisttech.com / demo123');
+    }
   };
 
   const features = [
