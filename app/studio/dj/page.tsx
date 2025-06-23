@@ -64,28 +64,28 @@ interface StreamingServices {
 }
 
 export default function AdvancedStreamingDJ() {
-  const [decks, setDecks] = useState<DJDeck[]>([
-    {
-      id: 'A', track: null, isPlaying: false, position: 0, pitch: 0, volume: 75, gain: 50,
+  const [decks, setDecks] = useState({
+    A: {
+      id: 'A' as const, track: null, isPlaying: false, position: 0, pitch: 0, volume: 75, gain: 50,
       eq: { low: 50, mid: 50, high: 50 }, effects: { reverb: 0, delay: 0, filter: 50, bitcrusher: 0 },
       cuePoints: [], loop: { start: 0, end: 0, active: false }, sync: false, quantize: true, streaming: false
     },
-    {
-      id: 'B', track: null, isPlaying: false, position: 0, pitch: 0, volume: 75, gain: 50,
+    B: {
+      id: 'B' as const, track: null, isPlaying: false, position: 0, pitch: 0, volume: 75, gain: 50,
       eq: { low: 50, mid: 50, high: 50 }, effects: { reverb: 0, delay: 0, filter: 50, bitcrusher: 0 },
       cuePoints: [], loop: { start: 0, end: 0, active: false }, sync: false, quantize: true, streaming: false
     },
-    {
-      id: 'C', track: null, isPlaying: false, position: 0, pitch: 0, volume: 75, gain: 50,
+    C: {
+      id: 'C' as const, track: null, isPlaying: false, position: 0, pitch: 0, volume: 75, gain: 50,
       eq: { low: 50, mid: 50, high: 50 }, effects: { reverb: 0, delay: 0, filter: 50, bitcrusher: 0 },
       cuePoints: [], loop: { start: 0, end: 0, active: false }, sync: false, quantize: true, streaming: false
     },
-    {
-      id: 'D', track: null, isPlaying: false, position: 0, pitch: 0, volume: 75, gain: 50,
+    D: {
+      id: 'D' as const, track: null, isPlaying: false, position: 0, pitch: 0, volume: 75, gain: 50,
       eq: { low: 50, mid: 50, high: 50 }, effects: { reverb: 0, delay: 0, filter: 50, bitcrusher: 0 },
       cuePoints: [], loop: { start: 0, end: 0, active: false }, sync: false, quantize: true, streaming: false
     }
-  ])
+  })
 
   const [services, setServices] = useState<StreamingServices>({
     spotify: { connected: false, premium: false },
@@ -545,74 +545,100 @@ export default function AdvancedStreamingDJ() {
           </div>
         </div>
 
-        {/* Main DJ Interface */}
+        {/* Main Professional DJ Interface */}
         <div className="flex-1 p-6">
-          <div className="grid grid-cols-12 gap-6 h-full">
-            {/* Left Decks */}
-            <div className="col-span-4">
-              <DeckComponent deck={decks[0]} />
-            </div>
-            <div className="col-span-4">
-              <DeckComponent deck={decks[1]} />
-            </div>
+          {/* Professional DJ Controller */}
+          <div className="mb-6">
+            <DJController
+              deckA={decks.A}
+              deckB={decks.B}
+              onDeckChange={updateDeckValue}
+              onCrossfaderChange={(value) => {
+                // Professional crossfader logic: 0-50 favors A, 50-100 favors B
+                const aVolume = Math.max(0, (50 - value) * 2)
+                const bVolume = Math.max(0, (value - 50) * 2)
+                updateDeckValue('A', 'crossfaderVolume', aVolume)
+                updateDeckValue('B', 'crossfaderVolume', bVolume)
+              }}
+              onMasterVolume={(value) => {
+                // Update master volume for all decks
+                updateDeckValue('A', 'masterVolume', value)
+                updateDeckValue('B', 'masterVolume', value)
+                updateDeckValue('C', 'masterVolume', value)
+                updateDeckValue('D', 'masterVolume', value)
+              }}
+            />
+          </div>
 
-            {/* Center Mixer */}
-            <div className="col-span-4">
-              <Card className="bg-gray-900/90 border-gray-700 h-full">
-                <CardHeader>
-                  <CardTitle className="text-center text-white">
-                    <Crosshair className="inline mr-2" size={20} />
-                    MIXER
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Crossfader */}
-                  <div className="space-y-2">
-                    <div className="text-center">
-                      <span className="text-sm text-gray-400">CROSSFADER</span>
-                      <div className="text-xs text-white">A ← 50 → B</div>
-                    </div>
-                    <Slider
-                      value={[50]}
-                      max={100}
-                      className="w-full"
-                    />
-                  </div>
+          {/* 4-Deck Extended Layout */}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <DeckComponent deck={decks.A} />
+            <DeckComponent deck={decks.B} />
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <DeckComponent deck={decks.C} />
+            <DeckComponent deck={decks.D} />
+          </div>
 
-                  {/* AI Features */}
-                  <div className="space-y-2 border-t border-gray-700 pt-4">
-                    <div className="flex items-center justify-center space-x-2 mb-3">
-                      <Brain className="text-purple-400" size={16} />
-                      <span className="text-sm text-gray-400">AI ASSIST</span>
-                    </div>
-                    
-                    {Object.entries(aiFeatures).slice(0, 4).map(([feature, enabled]) => (
-                      <div key={feature} className="flex items-center justify-between">
-                        <span className="text-xs text-gray-300 capitalize">
-                          {feature.replace(/([A-Z])/g, ' $1').trim()}
-                        </span>
-                        <Button
-                          size="sm"
-                          variant={enabled ? "default" : "outline"}
-                          className={enabled ? "bg-purple-600 hover:bg-purple-700 h-6 px-2 text-xs" : "h-6 px-2 text-xs"}
-                          onClick={() => setAiFeatures(prev => ({ ...prev, [feature]: !enabled }))}
-                        >
-                          {enabled ? 'ON' : 'OFF'}
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Record/Broadcast */}
-                  <div className="space-y-2 border-t border-gray-700 pt-4">
-                    <Button className="w-full bg-red-600 hover:bg-red-700">
-                      <Circle className="mr-2" size={16} />
-                      Start Live Stream
+          {/* AI & Live Streaming Controls */}
+          <div className="mt-6 grid grid-cols-3 gap-4">
+            <Card className="bg-gray-900/90 border-gray-700">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm text-center text-purple-400">
+                  <Brain className="inline mr-2" size={16} />
+                  AI FEATURES
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {Object.entries(aiFeatures).slice(0, 4).map(([feature, enabled]) => (
+                  <div key={feature} className="flex items-center justify-between">
+                    <span className="text-xs text-gray-300 capitalize">
+                      {feature.replace(/([A-Z])/g, ' $1').trim()}
+                    </span>
+                    <Button
+                      size="sm"
+                      variant={enabled ? "default" : "outline"}
+                      className={enabled ? "bg-purple-600 hover:bg-purple-700 h-6 px-2 text-xs" : "h-6 px-2 text-xs"}
+                      onClick={() => setAiFeatures(prev => ({ ...prev, [feature]: !enabled }))}
+                    >
+                      {enabled ? 'ON' : 'OFF'}
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-900/90 border-gray-700">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm text-center text-red-400">
+                  <Circle className="inline mr-2" size={16} />
+                  LIVE STREAMING
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Button className="w-full bg-red-600 hover:bg-red-700 text-xs">
+                  Start Live Stream
+                </Button>
+                <div className="text-xs text-gray-400 text-center">
+                  Crowd Energy: {crowdEnergy}%
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-900/90 border-gray-700">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm text-center text-green-400">
+                  <Activity className="inline mr-2" size={16} />
+                  SYSTEM STATUS
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-1">
+                <div className="text-xs text-gray-300">13 AI Engines Active</div>
+                <div className="text-xs text-gray-300">MIDI: Akai MPK Mini MK3</div>
+                <div className="text-xs text-gray-300">Audio: 48kHz/24-bit</div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
