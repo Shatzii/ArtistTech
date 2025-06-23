@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useSession, signOut } from 'next-auth/react'
 import { 
   Music, Video, Cpu, Brain, Settings, LogOut, Plus, 
   Play, Pause, BarChart3, Users, Zap, Mic, Headphones,
@@ -14,8 +13,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import Link from 'next/link'
 
 export function ProStudioDashboard() {
-  const { data: session } = useSession()
   const [activeStudio, setActiveStudio] = useState<string | null>(null)
+  
+  // Demo session - no authentication required
+  const session = {
+    user: {
+      name: 'Demo User',
+      email: 'demo@prostudio.com',
+      userType: 'student',
+      image: null
+    }
+  }
 
   const studioTools = [
     {
@@ -100,8 +108,8 @@ export function ProStudioDashboard() {
             <div className="flex items-center space-x-4">
               <Music className="text-orange-400" size={32} />
               <div>
-                <h1 className="text-2xl font-bold text-white">ProStudio</h1>
-                <p className="text-gray-400 text-sm">{currentDisplay.title}</p>
+                <h1 className="text-2xl font-bold text-white">ProStudio - DIRECT ACCESS</h1>
+                <p className="text-gray-400 text-sm">{currentDisplay.title} - NO SUBSCRIPTION REQUIRED</p>
               </div>
             </div>
             
@@ -113,7 +121,7 @@ export function ProStudioDashboard() {
               <Button 
                 variant="ghost" 
                 size="sm"
-                onClick={() => signOut()}
+                onClick={() => window.location.reload()}
                 className="text-gray-400 hover:text-white"
               >
                 <LogOut size={16} />
