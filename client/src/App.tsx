@@ -1,6 +1,8 @@
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
+import Landing from "./pages/landing";
+import DJStudio from "./pages/dj-studio";
 import SimpleVotingDemo from "./pages/simple-voting-demo";
 
 function AuthenticatedRouter() {
@@ -8,9 +10,10 @@ function AuthenticatedRouter() {
     <div className="min-h-screen">
       <main>
         <Switch>
-          <Route path="/" component={SimpleVotingDemo} />
+          <Route path="/" component={Landing} />
+          <Route path="/dj" component={DJStudio} />
           <Route path="/voting" component={SimpleVotingDemo} />
-          <Route component={SimpleVotingDemo} />
+          <Route component={Landing} />
         </Switch>
       </main>
     </div>
