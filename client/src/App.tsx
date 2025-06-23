@@ -21,6 +21,8 @@ import CollaborativeStudio from "@/pages/collaborative-studio";
 import BusinessDashboard from "@/pages/business-dashboard";
 import AdminLogin from "@/pages/admin-login";
 import PremiumStudio from "@/pages/premium-studio";
+import DJVotingInterface from "@/pages/dj-voting-interface";
+import DJInteractiveDashboard from "@/pages/dj-interactive-dashboard";
 
 function AuthenticatedRouter() {
   // Direct access to all pages - no authentication required
@@ -42,6 +44,8 @@ function AuthenticatedRouter() {
           <Route path="/collaborate" component={CollaborativeStudio} />
           <Route path="/business" component={BusinessDashboard} />
           <Route path="/premium" component={PremiumStudio} />
+          <Route path="/voting" component={DJVotingInterface} />
+          <Route path="/dj-dashboard" component={DJInteractiveDashboard} />
           <Route path="/midi" component={MIDIController} />
           <Route path="/lesson" component={Lesson} />
           <Route path="/curriculum" component={Curriculum} />

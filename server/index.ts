@@ -14,6 +14,7 @@ import { professionalInstrumentsEngine } from "./professional-instruments-engine
 import { premiumVideoCreatorEngine } from "./premium-video-creator-engine";
 import { ultraImageCreatorEngine } from "./ultra-image-creator-engine";
 import { socialMediaSamplingEngine } from "./social-media-sampling-engine";
+import { interactiveDJVotingEngine } from "./interactive-dj-voting-engine";
 import "./database-migration-fix";
 
 const app = express();
