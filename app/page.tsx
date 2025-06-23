@@ -1,17 +1,8 @@
 import React from 'react'
-import { getServerSession } from 'next-auth'
-import { authOptions } from './api/auth/[...nextauth]/route'
-import { redirect } from 'next/navigation'
 import { ProStudioDashboard } from '@/components/dashboard/ProStudioDashboard'
-import { LandingPage } from '@/components/landing/LandingPage'
 
 export default async function HomePage() {
-  const session = await getServerSession(authOptions)
-  
-  if (!session) {
-    return <LandingPage />
-  }
-
+  // Direct access to dashboard - no authentication required
   return <ProStudioDashboard />
 }
 
