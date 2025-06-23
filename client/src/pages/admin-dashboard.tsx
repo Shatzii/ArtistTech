@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { Users, DollarSign, BarChart3, Settings, Music, Video, Palette, Crown, Shield, Activity } from 'lucide-react';
+import { Users, DollarSign, BarChart3, Settings, Music, Video, Palette, Crown, Shield, Activity, UserCheck, Eye } from 'lucide-react';
 
 export default function AdminDashboard() {
   const [activeUsers, setActiveUsers] = useState(1247);
   const [totalRevenue, setTotalRevenue] = useState(48750);
   const [monthlyGrowth, setMonthlyGrowth] = useState(23.5);
+  const [viewMode, setViewMode] = useState<'admin' | 'user'>('admin');
 
   const quickActions = [
     { name: 'DJ Studio', path: '/dj', icon: Music, description: 'Full DJ suite with voting system', color: 'from-purple-500 to-blue-500' },
@@ -42,11 +43,41 @@ export default function AdminDashboard() {
                 className="w-10 h-10 rounded-lg object-cover"
               />
               <div>
-                <h1 className="text-2xl font-bold">Artist Tech Admin</h1>
-                <p className="text-white/60">Full platform control center</p>
+                <h1 className="text-2xl font-bold">
+                  Artist Tech {viewMode === 'admin' ? 'Admin' : 'User View'}
+                </h1>
+                <p className="text-white/60">
+                  {viewMode === 'admin' ? 'Full platform control center' : 'Viewing as regular user'}
+                </p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              {/* View Mode Toggle */}
+              <div className="flex items-center bg-black/30 rounded-lg p-1 border border-white/20">
+                <button
+                  onClick={() => setViewMode('admin')}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                    viewMode === 'admin' 
+                      ? 'bg-red-500 text-white shadow-lg' 
+                      : 'text-white/60 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  <Shield className="w-4 h-4 mr-1 inline" />
+                  Admin
+                </button>
+                <button
+                  onClick={() => setViewMode('user')}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                    viewMode === 'user' 
+                      ? 'bg-blue-500 text-white shadow-lg' 
+                      : 'text-white/60 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  <UserCheck className="w-4 h-4 mr-1 inline" />
+                  User
+                </button>
+              </div>
+              
               <div className="bg-yellow-500/20 border border-yellow-500/30 px-4 py-2 rounded-lg">
                 <Crown className="inline w-4 h-4 mr-2 text-yellow-400" />
                 <span className="text-yellow-400 font-bold">ADMIN ACCESS</span>
@@ -62,30 +93,77 @@ export default function AdminDashboard() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Platform Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {platformStats.map((stat, index) => (
-            <div key={index} className="bg-black/30 rounded-lg p-6 border border-white/20">
-              <div className="flex items-center justify-between mb-4">
-                <stat.icon className="w-8 h-8 text-purple-400" />
-                <span className="text-green-400 text-sm font-medium">{stat.change}</span>
-              </div>
-              <div className="text-2xl font-bold mb-1">{stat.value}</div>
-              <div className="text-white/60 text-sm">{stat.name}</div>
+        {viewMode === 'admin' ? (
+          <>
+            {/* Admin View - Platform Statistics */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {platformStats.map((stat, index) => (
+                <div key={index} className="bg-black/30 rounded-lg p-6 border border-white/20">
+                  <div className="flex items-center justify-between mb-4">
+                    <stat.icon className="w-8 h-8 text-purple-400" />
+                    <span className="text-green-400 text-sm font-medium">{stat.change}</span>
+                  </div>
+                  <div className="text-2xl font-bold mb-1">{stat.value}</div>
+                  <div className="text-white/60 text-sm">{stat.name}</div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </>
+        ) : (
+          <>
+            {/* User View - Welcome & Quick Access */}
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                Welcome to Artist Tech
+              </h2>
+              <p className="text-xl text-white/70 max-w-2xl mx-auto mb-8">
+                Your complete creative studio with 15 AI-powered engines for music production, video editing, and visual arts.
+              </p>
+              
+              {/* User Quick Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto mb-8">
+                <div className="bg-blue-500/20 rounded-lg p-6 border border-blue-500/30">
+                  <Music className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-blue-400">42</div>
+                  <div className="text-white/60 text-sm">Projects Created</div>
+                </div>
+                <div className="bg-cyan-500/20 rounded-lg p-6 border border-cyan-500/30">
+                  <Activity className="w-8 h-8 text-cyan-400 mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-cyan-400">18h</div>
+                  <div className="text-white/60 text-sm">Studio Time</div>
+                </div>
+                <div className="bg-purple-500/20 rounded-lg p-6 border border-purple-500/30">
+                  <Crown className="w-8 h-8 text-purple-400 mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-purple-400">PRO</div>
+                  <div className="text-white/60 text-sm">Membership</div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Quick Actions */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-6">Quick Actions - Full Platform Access</h2>
+          <h2 className="text-2xl font-bold mb-6">
+            {viewMode === 'admin' ? 'Admin Quick Actions - Full Platform Access' : 'Your Creative Studios'}
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {quickActions.map((action, index) => (
               <Link key={index} href={action.path}>
-                <div className={`bg-gradient-to-br ${action.color} p-6 rounded-lg hover:scale-105 transition-all cursor-pointer group`}>
+                <div className={`bg-gradient-to-br ${action.color} p-6 rounded-lg hover:scale-105 transition-all cursor-pointer group shadow-lg`}>
                   <action.icon className="w-8 h-8 text-white mb-4 group-hover:scale-110 transition-transform" />
                   <h3 className="text-lg font-bold text-white mb-2">{action.name}</h3>
                   <p className="text-white/80 text-sm">{action.description}</p>
+                  {viewMode === 'user' && (
+                    <div className="mt-3 px-3 py-1 bg-white/20 rounded-full text-xs text-white/90 inline-block">
+                      Launch Studio
+                    </div>
+                  )}
+                  {viewMode === 'admin' && (
+                    <div className="mt-3 text-xs text-white/60">
+                      Admin access enabled
+                    </div>
+                  )}
                 </div>
               </Link>
             ))}
