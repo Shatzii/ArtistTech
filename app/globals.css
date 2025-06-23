@@ -1,0 +1,152 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 20 14.3% 4.1%;
+    --foreground: 60 9.1% 97.8%;
+    --card: 20 14.3% 4.1%;
+    --card-foreground: 60 9.1% 97.8%;
+    --popover: 20 14.3% 4.1%;
+    --popover-foreground: 60 9.1% 97.8%;
+    --primary: 24 78% 58%;
+    --primary-foreground: 60 9.1% 97.8%;
+    --secondary: 12 6.5% 15.1%;
+    --secondary-foreground: 60 9.1% 97.8%;
+    --muted: 12 6.5% 15.1%;
+    --muted-foreground: 24 5.4% 63.9%;
+    --accent: 12 6.5% 15.1%;
+    --accent-foreground: 60 9.1% 97.8%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 60 9.1% 97.8%;
+    --border: 12 6.5% 15.1%;
+    --input: 12 6.5% 15.1%;
+    --ring: 24 78% 58%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 20 14.3% 4.1%;
+    --foreground: 60 9.1% 97.8%;
+    --card: 20 14.3% 4.1%;
+    --card-foreground: 60 9.1% 97.8%;
+    --popover: 20 14.3% 4.1%;
+    --popover-foreground: 60 9.1% 97.8%;
+    --primary: 24 78% 58%;
+    --primary-foreground: 60 9.1% 97.8%;
+    --secondary: 12 6.5% 15.1%;
+    --secondary-foreground: 60 9.1% 97.8%;
+    --muted: 12 6.5% 15.1%;
+    --muted-foreground: 24 5.4% 63.9%;
+    --accent: 12 6.5% 15.1%;
+    --accent-foreground: 60 9.1% 97.8%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 60 9.1% 97.8%;
+    --border: 12 6.5% 15.1%;
+    --input: 12 6.5% 15.1%;
+    --ring: 24 78% 58%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* ProStudio Theme */
+.prostudio-gradient {
+  background: linear-gradient(135deg, #1a1a1a 0%, #000000 50%, #1a1a1a 100%);
+}
+
+.prostudio-orange {
+  color: hsl(24, 78%, 58%);
+}
+
+.prostudio-red {
+  color: hsl(0, 62.8%, 50%);
+}
+
+/* Audio Visualizations */
+.waveform-container {
+  background: linear-gradient(to right, #1a1a1a, #2a2a2a);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.audio-meter {
+  background: linear-gradient(to top, #ef4444 0%, #f97316 30%, #eab308 60%, #22c55e 100%);
+  border-radius: 2px;
+}
+
+/* MIDI Controller Styles */
+.midi-pad {
+  transition: all 0.1s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.midi-pad:active {
+  transform: scale(0.95);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.midi-pad.active {
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+}
+
+/* Animations */
+@keyframes pulse-orange {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(251, 146, 60, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(251, 146, 60, 0);
+  }
+}
+
+.animate-pulse-orange {
+  animation: pulse-orange 2s infinite;
+}
+
+/* Studio Controls */
+.fader-track {
+  background: linear-gradient(to bottom, #404040, #1a1a1a);
+  border-radius: 2px;
+}
+
+.fader-thumb {
+  background: linear-gradient(to bottom, #f97316, #ea580c);
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Loading States */
+.loading-shimmer {
+  background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .midi-pad {
+    min-height: 60px;
+  }
+  
+  .fader-track {
+    height: 120px;
+  }
+}
