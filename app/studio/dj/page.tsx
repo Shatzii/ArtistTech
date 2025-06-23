@@ -14,6 +14,8 @@ import { Slider } from '@/components/ui/slider'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import WaveformCanvas from '@/components/studio/WaveformCanvas'
+import DJController from '@/components/studio/DJController'
 
 interface StreamingTrack {
   id: string
@@ -320,20 +322,16 @@ export default function AdvancedStreamingDJ() {
           </div>
         )}
 
-        {/* Waveform Display */}
+        {/* Interactive Waveform with Beat Detection */}
         {deck.track && (
-          <div className="bg-black p-2 rounded-lg">
-            <div className="h-16 bg-gradient-to-r from-orange-500/20 via-orange-500/40 to-orange-500/20 rounded border border-gray-700 relative overflow-hidden">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Waves className="text-orange-500/60" size={24} />
-              </div>
-              {/* Playhead */}
-              <div 
-                className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg"
-                style={{ left: `${(deck.position / deck.track.duration) * 100}%` }}
-              />
-            </div>
-          </div>
+          <WaveformCanvas
+            audioUrl={deck.track.previewUrl || deck.track.streamUrl}
+            isPlaying={deck.isPlaying}
+            currentTime={deck.position}
+            duration={deck.track.duration}
+            onSeek={(time) => updateDeckValue(deck.id, 'position', time)}
+            className="mb-2"
+          />
         )}
 
         {/* Transport Controls */}
