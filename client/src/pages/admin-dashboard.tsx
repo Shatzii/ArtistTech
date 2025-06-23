@@ -170,56 +170,125 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Real-time Activity Feed */}
-          <div className="bg-black/30 rounded-lg p-6 border border-white/20">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold">Live Platform Activity</h2>
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-            </div>
-            <div className="space-y-4">
-              {recentActivity.map((activity, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
-                  <div className="flex-1">
-                    <div className="font-bold text-sm">{activity.user}</div>
-                    <div className="text-white/70 text-xs">{activity.action}</div>
-                    <div className="text-white/50 text-xs">{activity.time}</div>
-                  </div>
-                  {activity.revenue > 0 && (
-                    <div className="text-green-400 font-bold text-sm">
-                      +${activity.revenue}
+        {viewMode === 'admin' ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Admin: Real-time Activity Feed */}
+            <div className="bg-black/30 rounded-lg p-6 border border-white/20">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold">Live Platform Activity</h2>
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+              </div>
+              <div className="space-y-4">
+                {recentActivity.map((activity, index) => (
+                  <div key={index} className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+                    <div className="flex-1">
+                      <div className="font-bold text-sm">{activity.user}</div>
+                      <div className="text-white/70 text-xs">{activity.action}</div>
+                      <div className="text-white/50 text-xs">{activity.time}</div>
                     </div>
-                  )}
-                </div>
-              ))}
+                    {activity.revenue > 0 && (
+                      <div className="text-green-400 font-bold text-sm">
+                        +${activity.revenue}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Admin Controls */}
-          <div className="bg-black/30 rounded-lg p-6 border border-white/20">
-            <h2 className="text-xl font-bold mb-6 flex items-center">
-              <Shield className="w-5 h-5 mr-2 text-red-400" />
-              Admin Controls
-            </h2>
-            <div className="space-y-4">
-              <button className="w-full bg-blue-500/20 border border-blue-500/30 text-blue-400 py-3 px-4 rounded-lg hover:bg-blue-500/30 transition-colors">
-                View All DJ Voting Sessions
-              </button>
-              <button className="w-full bg-green-500/20 border border-green-500/30 text-green-400 py-3 px-4 rounded-lg hover:bg-green-500/30 transition-colors">
-                Revenue Analytics Dashboard
-              </button>
-              <button className="w-full bg-purple-500/20 border border-purple-500/30 text-purple-400 py-3 px-4 rounded-lg hover:bg-purple-500/30 transition-colors">
-                User Management Panel
-              </button>
-              <button className="w-full bg-orange-500/20 border border-orange-500/30 text-orange-400 py-3 px-4 rounded-lg hover:bg-orange-500/30 transition-colors">
-                Content Moderation
-              </button>
-              <button className="w-full bg-red-500/20 border border-red-500/30 text-red-400 py-3 px-4 rounded-lg hover:bg-red-500/30 transition-colors">
-                System Settings
-              </button>
+            {/* Admin: Admin Controls */}
+            <div className="bg-black/30 rounded-lg p-6 border border-white/20">
+              <h2 className="text-xl font-bold mb-6 flex items-center">
+                <Shield className="w-5 h-5 mr-2 text-red-400" />
+                Admin Controls
+              </h2>
+              <div className="space-y-4">
+                <button className="w-full bg-blue-500/20 border border-blue-500/30 text-blue-400 py-3 px-4 rounded-lg hover:bg-blue-500/30 transition-colors">
+                  View All DJ Voting Sessions
+                </button>
+                <button className="w-full bg-green-500/20 border border-green-500/30 text-green-400 py-3 px-4 rounded-lg hover:bg-green-500/30 transition-colors">
+                  Revenue Analytics Dashboard
+                </button>
+                <button className="w-full bg-purple-500/20 border border-purple-500/30 text-purple-400 py-3 px-4 rounded-lg hover:bg-purple-500/30 transition-colors">
+                  User Management Panel
+                </button>
+                <button className="w-full bg-orange-500/20 border border-orange-500/30 text-orange-400 py-3 px-4 rounded-lg hover:bg-orange-500/30 transition-colors">
+                  Content Moderation
+                </button>
+                <button className="w-full bg-red-500/20 border border-red-500/30 text-red-400 py-3 px-4 rounded-lg hover:bg-red-500/30 transition-colors">
+                  System Settings
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* User: Recent Projects */}
+            <div className="bg-black/30 rounded-lg p-6 border border-cyan-500/20">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-cyan-400">Your Recent Projects</h2>
+                <Link href="/dj">
+                  <button className="text-sm bg-cyan-500/20 border border-cyan-500/30 px-3 py-1 rounded-lg hover:bg-cyan-500/30 transition-colors">
+                    Create New
+                  </button>
+                </Link>
+              </div>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                  <div className="flex items-center space-x-3">
+                    <Music className="w-6 h-6 text-blue-400" />
+                    <div>
+                      <div className="font-bold text-sm">Summer Mix 2025</div>
+                      <div className="text-white/60 text-xs">DJ Project • 2 hours ago</div>
+                    </div>
+                  </div>
+                  <button className="text-blue-400 hover:text-blue-300 text-sm">Open</button>
+                </div>
+                <div className="flex items-center justify-between p-4 bg-purple-500/10 rounded-lg border border-purple-500/20">
+                  <div className="flex items-center space-x-3">
+                    <Video className="w-6 h-6 text-purple-400" />
+                    <div>
+                      <div className="font-bold text-sm">Music Video Edit</div>
+                      <div className="text-white/60 text-xs">Video Project • 1 day ago</div>
+                    </div>
+                  </div>
+                  <button className="text-purple-400 hover:text-purple-300 text-sm">Open</button>
+                </div>
+                <div className="flex items-center justify-between p-4 bg-green-500/10 rounded-lg border border-green-500/20">
+                  <div className="flex items-center space-x-3">
+                    <Palette className="w-6 h-6 text-green-400" />
+                    <div>
+                      <div className="font-bold text-sm">Album Cover Art</div>
+                      <div className="text-white/60 text-xs">Visual Project • 3 days ago</div>
+                    </div>
+                  </div>
+                  <button className="text-green-400 hover:text-green-300 text-sm">Open</button>
+                </div>
+              </div>
+            </div>
+
+            {/* User: AI Assistant */}
+            <div className="bg-black/30 rounded-lg p-6 border border-purple-500/20">
+              <h2 className="text-xl font-bold mb-6 text-purple-400">AI Creative Assistant</h2>
+              <div className="space-y-4">
+                <div className="p-4 bg-purple-500/10 rounded-lg border border-purple-500/20">
+                  <h3 className="font-bold text-sm mb-2">Today's Suggestions</h3>
+                  <ul className="text-white/70 text-sm space-y-2">
+                    <li>• Try the new harmonic mixing feature in DJ Studio</li>
+                    <li>• Your track "Summer Mix" is trending - create a remix</li>
+                    <li>• Complete your profile for better AI recommendations</li>
+                  </ul>
+                </div>
+                <button className="w-full bg-purple-500/20 border border-purple-500/30 text-purple-400 py-3 px-4 rounded-lg hover:bg-purple-500/30 transition-colors">
+                  Get Creative Ideas
+                </button>
+                <button className="w-full bg-blue-500/20 border border-blue-500/30 text-blue-400 py-3 px-4 rounded-lg hover:bg-blue-500/30 transition-colors">
+                  Generate Samples
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Platform Health */}
         <div className="mt-8 bg-black/30 rounded-lg p-6 border border-white/20">
