@@ -214,7 +214,7 @@ export class VisualArtsEngine {
       });
     });
 
-    console.log("Visual arts server started on port 8088");
+    console.log("Visual arts server started on port 8092");
   }
 
   private initializeBrushPresets() {
