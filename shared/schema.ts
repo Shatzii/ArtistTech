@@ -1,153 +1,161 @@
-import { pgTable, text, serial, integer, boolean, jsonb, timestamp, varchar } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  varchar,
+  timestamp,
+  jsonb,
+  index,
+  integer,
+  boolean,
+  decimal,
+} from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const projects = pgTable("projects", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  type: text("type").notNull(), // 'daw', 'dj', 'video'
-  data: jsonb("data").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+// Session storage table for NextAuth
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  },
+  (table) => [index("IDX_session_expire").on(table.expire)],
+);
 
-export const audioFiles = pgTable("audio_files", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  originalName: text("original_name").notNull(),
-  path: text("path").notNull(),
-  duration: integer("duration"), // in milliseconds
-  bpm: integer("bpm"),
-  key: text("key"),
-  mimeType: text("mime_type").notNull(),
-  size: integer("size").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
-
-export const videoFiles = pgTable("video_files", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  originalName: text("original_name").notNull(),
-  path: text("path").notNull(),
-  duration: integer("duration"), // in milliseconds
-  width: integer("width"),
-  height: integer("height"),
-  mimeType: text("mime_type").notNull(),
-  size: integer("size").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
-
-// Unified user authentication table
+// Users table with enterprise features
 export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  email: text("email").unique().notNull(),
-  passwordHash: text("password_hash").notNull(),
-  name: text("name").notNull(),
-  userType: text("user_type").notNull(), // 'admin', 'teacher', 'student'
-  profileImageUrl: text("profile_image_url"),
-  isActive: boolean("is_active").default(true),
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  email: varchar("email", { length: 255 }).unique().notNull(),
+  password: varchar("password", { length: 255 }).notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  userType: varchar("user_type", { length: 50 }).notNull().default('student'),
+  subscriptionTier: varchar("subscription_tier", { length: 50 }).notNull().default('free'),
+  subscriptionStatus: varchar("subscription_status", { length: 50 }).notNull().default('inactive'),
+  profileImageUrl: varchar("profile_image_url", { length: 500 }),
   emailVerified: boolean("email_verified").default(false),
-  subscriptionTier: text("subscription_tier").default("free"), // free, basic, pro, enterprise
-  subscriptionStatus: text("subscription_status").default("active"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  // Enterprise features
+  schoolId: varchar("school_id", { length: 100 }),
+  licenseKey: varchar("license_key", { length: 255 }),
+  maxStudents: integer("max_students").default(1),
+  billingEmail: varchar("billing_email", { length: 255 }),
+  whitelabelConfig: jsonb("whitelabel_config"),
 });
 
-// Educational system tables
-export const teachers = pgTable("teachers", {
-  id: serial("id").primaryKey(),
+// Projects table for multimedia creation
+export const projects = pgTable("projects", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   userId: integer("user_id").references(() => users.id).notNull(),
-  name: text("name").notNull(),
-  email: text("email").unique().notNull(),
-  profileImageUrl: text("profile_image_url"),
-  bio: text("bio"),
-  specialization: text("specialization"), // piano, guitar, vocals, etc.
-  passwordHash: text("password_hash").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  type: varchar("type", { length: 50 }).notNull(), // 'music', 'video', 'dj', 'lesson'
+  description: text("description"),
+  data: jsonb("data").notNull(),
+  thumbnail: varchar("thumbnail", { length: 500 }),
+  isPublic: boolean("is_public").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const students = pgTable("students", {
-  id: serial("id").primaryKey(),
+// Audio files management
+export const audioFiles = pgTable("audio_files", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   userId: integer("user_id").references(() => users.id).notNull(),
-  name: text("name").notNull(),
-  email: text("email").unique().notNull(),
-  age: integer("age"),
-  parentEmail: text("parent_email"),
-  level: text("level").notNull().default("beginner"), // beginner, intermediate, advanced
-  instrument: text("instrument"), // preferred instrument
-  passwordHash: text("password_hash").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  filename: varchar("filename", { length: 255 }).notNull(),
+  originalName: varchar("original_name", { length: 255 }).notNull(),
+  filePath: varchar("file_path", { length: 500 }).notNull(),
+  fileSize: integer("file_size").notNull(),
+  duration: decimal("duration", { precision: 10, scale: 3 }),
+  bpm: integer("bpm"),
+  key: varchar("key", { length: 10 }),
+  genre: varchar("genre", { length: 100 }),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const lessons = pgTable("lessons", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  description: text("description"),
-  teacherId: integer("teacher_id").notNull(),
-  studentId: integer("student_id").notNull(),
-  scheduledAt: timestamp("scheduled_at").notNull(),
-  duration: integer("duration").notNull().default(30), // minutes
-  status: text("status").notNull().default("scheduled"), // scheduled, in_progress, completed, cancelled
-  recordingPath: text("recording_path"),
-  notes: text("notes"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+// Video files management
+export const videoFiles = pgTable("video_files", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  filename: varchar("filename", { length: 255 }).notNull(),
+  originalName: varchar("original_name", { length: 255 }).notNull(),
+  filePath: varchar("file_path", { length: 500 }).notNull(),
+  fileSize: integer("file_size").notNull(),
+  duration: decimal("duration", { precision: 10, scale: 3 }),
+  resolution: varchar("resolution", { length: 20 }),
+  fps: integer("fps"),
+  codec: varchar("codec", { length: 50 }),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const voiceCommands = pgTable("voice_commands", {
-  id: serial("id").primaryKey(),
-  lessonId: integer("lesson_id").notNull(),
-  timestamp: timestamp("timestamp").notNull(),
-  command: text("command").notNull(),
-  recognized: text("recognized"),
-  confidence: integer("confidence"), // 0-100
-  executed: boolean("executed").default(false),
-  result: text("result"),
+// AI generation history
+export const aiGenerations = pgTable("ai_generations", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  engine: varchar("engine", { length: 100 }).notNull(), // 'neural_audio', 'video_ai', etc.
+  prompt: text("prompt").notNull(),
+  parameters: jsonb("parameters"),
+  outputPath: varchar("output_path", { length: 500 }),
+  status: varchar("status", { length: 50 }).notNull().default('pending'),
+  error: text("error"),
+  createdAt: timestamp("created_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
 });
 
-export const lessonRecordings = pgTable("lesson_recordings", {
-  id: serial("id").primaryKey(),
-  lessonId: integer("lesson_id").notNull(),
-  type: text("type").notNull(), // video, audio, screen
-  path: text("path").notNull(),
-  startTime: timestamp("start_time").notNull(),
-  endTime: timestamp("end_time"),
-  size: integer("size").notNull(),
-  metadata: jsonb("metadata"), // resolution, fps, etc.
+// Learning progress for adaptive AI
+export const learningProgress = pgTable("learning_progress", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  skill: varchar("skill", { length: 100 }).notNull(),
+  level: integer("level").notNull().default(1),
+  progress: decimal("progress", { precision: 5, scale: 2 }).notNull().default('0.00'),
+  masteryScore: decimal("mastery_score", { precision: 5, scale: 2 }),
+  lastPracticed: timestamp("last_practiced"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const exercises = pgTable("exercises", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  description: text("description"),
-  difficulty: text("difficulty").notNull(), // easy, medium, hard
-  instrument: text("instrument").notNull(),
-  audioPath: text("audio_path"),
-  sheetMusicPath: text("sheet_music_path"),
-  instructions: text("instructions"),
-  voiceCommands: text("voice_commands").array(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+// MIDI controller presets
+export const midiPresets = pgTable("midi_presets", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  controllerType: varchar("controller_type", { length: 100 }).notNull(),
+  mapping: jsonb("mapping").notNull(),
+  isDefault: boolean("is_default").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const studentProgress = pgTable("student_progress", {
-  id: serial("id").primaryKey(),
-  studentId: integer("student_id").notNull(),
-  exerciseId: integer("exercise_id").notNull(),
-  completed: boolean("completed").default(false),
-  score: integer("score"), // 0-100
-  attempts: integer("attempts").default(0),
-  timeSpent: integer("time_spent"), // minutes
-  lastAttempt: timestamp("last_attempt"),
-  feedback: text("feedback"),
+// Collaboration and sharing
+export const collaborations = pgTable("collaborations", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  projectId: integer("project_id").references(() => projects.id).notNull(),
+  ownerId: integer("owner_id").references(() => users.id).notNull(),
+  collaboratorId: integer("collaborator_id").references(() => users.id).notNull(),
+  permissions: varchar("permissions", { length: 50 }).notNull().default('view'),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const chatMessages = pgTable("chat_messages", {
-  id: serial("id").primaryKey(),
-  lessonId: integer("lesson_id").notNull(),
-  senderId: integer("sender_id").notNull(),
-  senderType: text("sender_type").notNull(), // teacher, student
-  message: text("message").notNull(),
-  timestamp: timestamp("timestamp").defaultNow().notNull(),
-  type: text("type").default("text"), // text, emoji, voice_note
+// Analytics for business insights
+export const analytics = pgTable("analytics", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer("user_id").references(() => users.id),
+  event: varchar("event", { length: 100 }).notNull(),
+  data: jsonb("data"),
+  timestamp: timestamp("timestamp").defaultNow(),
+  sessionId: varchar("session_id", { length: 255 }),
+  ipAddress: varchar("ip_address", { length: 45 }),
+});
+
+// Zod schemas for validation
+export const insertUserSchema = createInsertSchema(users, {
+  email: z.string().email(),
+  password: z.string().min(8),
+  name: z.string().min(1),
+}).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
 export const insertProjectSchema = createInsertSchema(projects).omit({
@@ -166,234 +174,29 @@ export const insertVideoFileSchema = createInsertSchema(videoFiles).omit({
   createdAt: true,
 });
 
-// User authentication schemas
-export const insertUserSchema = createInsertSchema(users).omit({
+export const insertAiGenerationSchema = createInsertSchema(aiGenerations).omit({
   id: true,
   createdAt: true,
-  updatedAt: true,
+  completedAt: true,
 });
 
-export const loginUserSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-});
-
-export const registerUserSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-  name: z.string().min(2),
-  userType: z.enum(['admin', 'teacher', 'student']),
-});
-
-// Insert schemas for educational system
-export const insertTeacherSchema = createInsertSchema(teachers).omit({
-  id: true,
-  createdAt: true,
-});
-
-export const insertStudentSchema = createInsertSchema(students).omit({
-  id: true,
-  createdAt: true,
-});
-
-export const insertLessonSchema = createInsertSchema(lessons).omit({
-  id: true,
-  createdAt: true,
-});
-
-export const insertExerciseSchema = createInsertSchema(exercises).omit({
-  id: true,
-  createdAt: true,
-});
-
-export const insertVoiceCommandSchema = createInsertSchema(voiceCommands).omit({
-  id: true,
-});
-
-export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({
-  id: true,
-  timestamp: true,
-});
-
-// Type exports
-export type InsertProject = z.infer<typeof insertProjectSchema>;
-export type Project = typeof projects.$inferSelect;
-export type InsertAudioFile = z.infer<typeof insertAudioFileSchema>;
-export type AudioFile = typeof audioFiles.$inferSelect;
-export type InsertVideoFile = z.infer<typeof insertVideoFileSchema>;
-export type VideoFile = typeof videoFiles.$inferSelect;
-
+// Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
-export type LoginUser = z.infer<typeof loginUserSchema>;
-export type RegisterUser = z.infer<typeof registerUserSchema>;
 
-export type Teacher = typeof teachers.$inferSelect;
-export type InsertTeacher = z.infer<typeof insertTeacherSchema>;
-export type Student = typeof students.$inferSelect;
-export type InsertStudent = z.infer<typeof insertStudentSchema>;
-export type Lesson = typeof lessons.$inferSelect;
-export type InsertLesson = z.infer<typeof insertLessonSchema>;
-export type Exercise = typeof exercises.$inferSelect;
-export type InsertExercise = z.infer<typeof insertExerciseSchema>;
-export type VoiceCommand = typeof voiceCommands.$inferSelect;
-export type InsertVoiceCommand = z.infer<typeof insertVoiceCommandSchema>;
-export type ChatMessage = typeof chatMessages.$inferSelect;
-export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
-export type LessonRecording = typeof lessonRecordings.$inferSelect;
-export type StudentProgress = typeof studentProgress.$inferSelect;
+export type Project = typeof projects.$inferSelect;
+export type InsertProject = z.infer<typeof insertProjectSchema>;
 
-// Project data schemas
-export const trackSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  type: z.enum(['audio', 'midi', 'video']),
-  volume: z.number().min(0).max(1),
-  muted: z.boolean(),
-  solo: z.boolean(),
-  clips: z.array(z.object({
-    id: z.string(),
-    fileId: z.number().optional(),
-    start: z.number(),
-    end: z.number(),
-    offset: z.number().default(0),
-    volume: z.number().min(0).max(1).default(1),
-  })),
-});
+export type AudioFile = typeof audioFiles.$inferSelect;
+export type InsertAudioFile = z.infer<typeof insertAudioFileSchema>;
 
-export const dawProjectDataSchema = z.object({
-  bpm: z.number().min(60).max(200).default(120),
-  tracks: z.array(trackSchema),
-  masterVolume: z.number().min(0).max(1).default(1),
-  effects: z.array(z.object({
-    id: z.string(),
-    type: z.string(),
-    enabled: z.boolean(),
-    parameters: z.record(z.number()),
-  })),
-});
+export type VideoFile = typeof videoFiles.$inferSelect;
+export type InsertVideoFile = z.infer<typeof insertVideoFileSchema>;
 
-export const djProjectDataSchema = z.object({
-  deckA: z.object({
-    fileId: z.number().optional(),
-    bpm: z.number().optional(),
-    position: z.number().default(0),
-    volume: z.number().min(0).max(1).default(1),
-    eqHigh: z.number().min(0).max(1).default(0.5),
-    eqMid: z.number().min(0).max(1).default(0.5),
-    eqLow: z.number().min(0).max(1).default(0.5),
-  }),
-  deckB: z.object({
-    fileId: z.number().optional(),
-    bpm: z.number().optional(),
-    position: z.number().default(0),
-    volume: z.number().min(0).max(1).default(1),
-    eqHigh: z.number().min(0).max(1).default(0.5),
-    eqMid: z.number().min(0).max(1).default(0.5),
-    eqLow: z.number().min(0).max(1).default(0.5),
-  }),
-  crossfader: z.number().min(0).max(1).default(0.5),
-  masterVolume: z.number().min(0).max(1).default(1),
-});
+export type AiGeneration = typeof aiGenerations.$inferSelect;
+export type InsertAiGeneration = z.infer<typeof insertAiGenerationSchema>;
 
-export const videoProjectDataSchema = z.object({
-  timeline: z.array(z.object({
-    id: z.string(),
-    type: z.enum(['video', 'audio']),
-    fileId: z.number(),
-    start: z.number(),
-    end: z.number(),
-    track: z.number(),
-  })),
-  resolution: z.object({
-    width: z.number(),
-    height: z.number(),
-  }).default({ width: 1920, height: 1080 }),
-  framerate: z.number().default(30),
-});
-
-export type Track = z.infer<typeof trackSchema>;
-export type DAWProjectData = z.infer<typeof dawProjectDataSchema>;
-export type DJProjectData = z.infer<typeof djProjectDataSchema>;
-export type VideoProjectData = z.infer<typeof videoProjectDataSchema>;
-
-// Live streaming and classroom tables
-export const classrooms = pgTable("classrooms", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  teacherId: integer("teacher_id").references(() => teachers.id).notNull(),
-  description: text("description"),
-  maxStudents: integer("max_students").default(20),
-  isActive: boolean("is_active").default(false),
-  streamUrl: text("stream_url"),
-  chatEnabled: boolean("chat_enabled").default(true),
-  shareEnabled: boolean("share_enabled").default(true),
-  currentTopic: text("current_topic"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
-
-export const classroomSessions = pgTable("classroom_sessions", {
-  id: serial("id").primaryKey(),
-  classroomId: text("classroom_id").references(() => classrooms.id).notNull(),
-  startTime: timestamp("start_time").defaultNow().notNull(),
-  endTime: timestamp("end_time"),
-  topic: text("topic"),
-  recording: text("recording"),
-  attendees: integer("attendees").default(0),
-  sessionData: jsonb("session_data"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
-
-export const studentEnrollments = pgTable("student_enrollments", {
-  id: serial("id").primaryKey(),
-  studentId: integer("student_id").references(() => students.id).notNull(),
-  classroomId: text("classroom_id").references(() => classrooms.id).notNull(),
-  enrolledAt: timestamp("enrolled_at").defaultNow().notNull(),
-  status: text("status").default("active"),
-});
-
-export const liveClassParticipants = pgTable("live_class_participants", {
-  id: serial("id").primaryKey(),
-  sessionId: integer("session_id").references(() => classroomSessions.id).notNull(),
-  studentId: integer("student_id").references(() => students.id).notNull(),
-  joinedAt: timestamp("joined_at").defaultNow().notNull(),
-  leftAt: timestamp("left_at"),
-  isActive: boolean("is_active").default(true),
-});
-
-export const sharedContent = pgTable("shared_content", {
-  id: serial("id").primaryKey(),
-  classroomId: text("classroom_id").references(() => classrooms.id).notNull(),
-  userId: text("user_id").notNull(),
-  userType: text("user_type").notNull(), // 'teacher' or 'student'
-  contentType: text("content_type").notNull(), // 'audio', 'project', 'composition'
-  title: text("title").notNull(),
-  description: text("description"),
-  fileUrl: text("file_url"),
-  projectData: jsonb("project_data"),
-  isPublic: boolean("is_public").default(true),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
-
-export const userSessions = pgTable("user_sessions", {
-  id: text("id").primaryKey(),
-  userId: text("user_id").notNull(),
-  userType: text("user_type").notNull(), // 'teacher' or 'student'
-  token: text("token").notNull(),
-  expiresAt: timestamp("expires_at").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
-
-// Schema types for live streaming
-export const insertClassroomSchema = createInsertSchema(classrooms);
-export const insertSessionSchema = createInsertSchema(classroomSessions);
-export const insertSharedContentSchema = createInsertSchema(sharedContent);
-
-export type Classroom = typeof classrooms.$inferSelect;
-export type InsertClassroom = z.infer<typeof insertClassroomSchema>;
-export type ClassroomSession = typeof classroomSessions.$inferSelect;
-export type InsertClassroomSession = z.infer<typeof insertSessionSchema>;
-export type SharedContent = typeof sharedContent.$inferSelect;
-export type InsertSharedContent = z.infer<typeof insertSharedContentSchema>;
-export type StudentEnrollment = typeof studentEnrollments.$inferSelect;
-export type LiveClassParticipant = typeof liveClassParticipants.$inferSelect;
+export type LearningProgress = typeof learningProgress.$inferSelect;
+export type MidiPreset = typeof midiPresets.$inferSelect;
+export type Collaboration = typeof collaborations.$inferSelect;
+export type Analytics = typeof analytics.$inferSelect;
