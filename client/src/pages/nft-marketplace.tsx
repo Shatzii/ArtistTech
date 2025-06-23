@@ -1,434 +1,328 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { 
-  Search, 
-  Filter, 
-  Heart, 
-  Share2, 
-  TrendingUp, 
-  Eye, 
-  ShoppingCart,
-  Wallet,
-  Upload,
-  Star,
-  Users,
-  Calendar,
-  DollarSign
-} from "lucide-react";
-
-interface NFTItem {
-  id: string;
-  title: string;
-  artist: string;
-  price: number;
-  currency: string;
-  image: string;
-  likes: number;
-  views: number;
-  category: string;
-  tags: string[];
-  description: string;
-  isLiked: boolean;
-  rarity: 'common' | 'uncommon' | 'rare' | 'legendary';
-  createdAt: string;
-}
-
-interface Artist {
-  id: string;
-  name: string;
-  avatar: string;
-  verified: boolean;
-  followers: number;
-  totalSales: number;
-}
+import { useState } from 'react';
+import { Link } from 'wouter';
+import { Zap, TrendingUp, Eye, Heart, ShoppingCart, Star, Filter, Search } from 'lucide-react';
 
 export default function NFTMarketplace() {
-  const [nfts, setNfts] = useState<NFTItem[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [sortBy, setSortBy] = useState("trending");
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // Mock data - in production, this would come from your blockchain API
-  useEffect(() => {
-    const mockNFTs: NFTItem[] = [
-      {
-        id: "1",
-        title: "Digital Dreams #001",
-        artist: "CryptoArtist",
-        price: 2.5,
-        currency: "ETH",
-        image: "/api/placeholder/300/300",
-        likes: 142,
-        views: 1250,
-        category: "art",
-        tags: ["digital", "abstract", "dreams"],
-        description: "A mesmerizing digital artwork exploring the realm of dreams and consciousness.",
-        isLiked: false,
-        rarity: "rare",
-        createdAt: "2024-01-15"
-      },
-      {
-        id: "2",
-        title: "Synthwave Sunset",
-        artist: "NeonCreator",
-        price: 1.8,
-        currency: "ETH",
-        image: "/api/placeholder/300/300",
-        likes: 89,
-        views: 892,
-        category: "art",
-        tags: ["synthwave", "sunset", "neon"],
-        description: "Retro-futuristic artwork capturing the essence of synthwave aesthetics.",
-        isLiked: true,
-        rarity: "uncommon",
-        createdAt: "2024-01-10"
-      },
-      {
-        id: "3",
-        title: "Beat Machine #42",
-        artist: "AudioVisual",
-        price: 3.2,
-        currency: "ETH",
-        image: "/api/placeholder/300/300",
-        likes: 203,
-        views: 1890,
-        category: "music",
-        tags: ["music", "beats", "machine"],
-        description: "Interactive music NFT with generative beat patterns.",
-        isLiked: false,
-        rarity: "legendary",
-        createdAt: "2024-01-20"
-      }
-    ];
-    setNfts(mockNFTs);
-  }, []);
-
-  const categories = [
-    { id: "all", name: "All Categories" },
-    { id: "art", name: "Digital Art" },
-    { id: "music", name: "Music" },
-    { id: "video", name: "Video" },
-    { id: "3d", name: "3D Models" },
-    { id: "photography", name: "Photography" }
+  const filters = [
+    { id: 'all', name: 'All', count: 1247 },
+    { id: 'music', name: 'Music', count: 456 },
+    { id: 'art', name: 'Visual Art', count: 321 },
+    { id: 'video', name: 'Video', count: 234 },
+    { id: 'beats', name: 'Beats', count: 236 },
   ];
 
-  const rarityColors = {
-    common: "bg-gray-500",
-    uncommon: "bg-green-500",
-    rare: "bg-blue-500",
-    legendary: "bg-purple-500"
-  };
+  const featuredNFTs = [
+    {
+      id: 1,
+      title: 'Synthwave Dreams',
+      artist: 'CyberBeats',
+      price: 2.5,
+      currency: 'ETH',
+      image: 'gradient-1',
+      likes: 234,
+      views: 1567,
+      category: 'music',
+      verified: true
+    },
+    {
+      id: 2,
+      title: 'Digital Harmony',
+      artist: 'AudioVision',
+      price: 1.8,
+      currency: 'ETH',
+      image: 'gradient-2',
+      likes: 156,
+      views: 892,
+      category: 'art',
+      verified: true
+    },
+    {
+      id: 3,
+      title: 'Beat Collection #001',
+      artist: 'RhythmMaster',
+      price: 0.5,
+      currency: 'ETH',
+      image: 'gradient-3',
+      likes: 89,
+      views: 445,
+      category: 'beats',
+      verified: false
+    },
+    {
+      id: 4,
+      title: 'Live Concert Visuals',
+      artist: 'VisualFlow',
+      price: 3.2,
+      currency: 'ETH',
+      image: 'gradient-4',
+      likes: 345,
+      views: 2134,
+      category: 'video',
+      verified: true
+    },
+  ];
 
-  const filteredNFTs = nfts.filter(nft => {
-    const matchesSearch = nft.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         nft.artist.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || nft.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const trendingArtists = [
+    { name: 'CyberBeats', sales: 45, growth: '+23%' },
+    { name: 'AudioVision', sales: 32, growth: '+18%' },
+    { name: 'RhythmMaster', sales: 28, growth: '+15%' },
+    { name: 'VisualFlow', sales: 25, growth: '+12%' },
+  ];
 
-  const toggleLike = (nftId: string) => {
-    setNfts(nfts.map(nft => 
-      nft.id === nftId 
-        ? { ...nft, isLiked: !nft.isLiked, likes: nft.isLiked ? nft.likes - 1 : nft.likes + 1 }
-        : nft
-    ));
+  const getGradientClass = (image: string) => {
+    const gradients = {
+      'gradient-1': 'from-purple-500 to-pink-500',
+      'gradient-2': 'from-blue-500 to-cyan-500',
+      'gradient-3': 'from-green-500 to-emerald-500',
+      'gradient-4': 'from-orange-500 to-red-500',
+    };
+    return gradients[image as keyof typeof gradients] || 'from-gray-500 to-gray-700';
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      {/* Header */}
-      <div className="bg-gray-800 border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
-                ProStudio NFT Marketplace
-              </h1>
-              <Badge variant="secondary" className="bg-purple-600">
-                <TrendingUp className="w-3 h-3 mr-1" />
-                Hot
-              </Badge>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <Button variant="outline" className="hidden sm:flex">
-                <Wallet className="w-4 h-4 mr-2" />
-                Connect Wallet
-              </Button>
-              <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-                    <Upload className="w-4 h-4 mr-2" />
-                    Create NFT
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-md bg-gray-800 border-gray-700">
-                  <DialogHeader>
-                    <DialogTitle>Create New NFT</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="title">Title</Label>
-                      <Input id="title" placeholder="Enter NFT title" className="bg-gray-700 border-gray-600" />
-                    </div>
-                    <div>
-                      <Label htmlFor="description">Description</Label>
-                      <Textarea id="description" placeholder="Describe your NFT" className="bg-gray-700 border-gray-600" />
-                    </div>
-                    <div>
-                      <Label htmlFor="price">Price (ETH)</Label>
-                      <Input id="price" type="number" step="0.01" placeholder="0.00" className="bg-gray-700 border-gray-600" />
-                    </div>
-                    <div>
-                      <Label htmlFor="category">Category</Label>
-                      <Select>
-                        <SelectTrigger className="bg-gray-700 border-gray-600">
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {categories.slice(1).map(category => (
-                            <SelectItem key={category.id} value={category.id}>
-                              {category.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <Button className="w-full">
-                      <Upload className="w-4 h-4 mr-2" />
-                      Upload & Mint NFT
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900/40 to-purple-900 text-white">
+      <div className="p-6">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-4">
+            <img 
+              src="/assets/artist-tech-logo.jpeg" 
+              alt="Artist Tech" 
+              className="w-12 h-12 rounded-lg object-cover"
+            />
+            <div>
+              <h1 className="text-3xl font-bold">NFT Marketplace</h1>
+              <p className="text-white/60">Discover and trade unique digital music assets</p>
             </div>
           </div>
+          <div className="flex items-center space-x-4">
+            <button className="bg-gradient-to-r from-purple-500 to-pink-500 px-6 py-2 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-colors">
+              Create NFT
+            </button>
+            <Link href="/admin">
+              <button className="bg-white/10 border border-white/20 px-4 py-2 rounded-lg hover:bg-white/20 transition-colors">
+                Back to Dashboard
+              </button>
+            </Link>
+          </div>
         </div>
-      </div>
 
-      {/* Search and Filters */}
-      <div className="bg-gray-800/50 border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-            <div className="flex flex-1 items-center space-x-4 max-w-2xl">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  placeholder="Search NFTs, artists, collections..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-gray-700 border-gray-600 focus:border-purple-500"
-                />
+        {/* Stats Bar */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-black/30 rounded-lg p-4 border border-purple-500/20">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-white/60">Total Volume</p>
+                <p className="text-xl font-bold">1,234.5 ETH</p>
               </div>
-              <Button variant="outline" size="sm">
-                <Filter className="w-4 h-4 mr-2" />
-                Filters
-              </Button>
+              <TrendingUp className="w-8 h-8 text-green-400" />
             </div>
-
-            <div className="flex items-center space-x-4">
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-40 bg-gray-700 border-gray-600">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map(category => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-32 bg-gray-700 border-gray-600">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="trending">Trending</SelectItem>
-                  <SelectItem value="recent">Recent</SelectItem>
-                  <SelectItem value="price-low">Price: Low to High</SelectItem>
-                  <SelectItem value="price-high">Price: High to Low</SelectItem>
-                  <SelectItem value="likes">Most Liked</SelectItem>
-                </SelectContent>
-              </Select>
+          </div>
+          <div className="bg-black/30 rounded-lg p-4 border border-blue-500/20">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-white/60">Active NFTs</p>
+                <p className="text-xl font-bold">1,247</p>
+              </div>
+              <Zap className="w-8 h-8 text-blue-400" />
+            </div>
+          </div>
+          <div className="bg-black/30 rounded-lg p-4 border border-green-500/20">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-white/60">Artists</p>
+                <p className="text-xl font-bold">456</p>
+              </div>
+              <Star className="w-8 h-8 text-yellow-400" />
+            </div>
+          </div>
+          <div className="bg-black/30 rounded-lg p-4 border border-pink-500/20">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-white/60">Floor Price</p>
+                <p className="text-xl font-bold">0.1 ETH</p>
+              </div>
+              <Heart className="w-8 h-8 text-pink-400" />
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Tabs defaultValue="explore" className="space-y-6">
-          <TabsList className="bg-gray-800 border border-gray-700">
-            <TabsTrigger value="explore">Explore</TabsTrigger>
-            <TabsTrigger value="trending">Trending</TabsTrigger>
-            <TabsTrigger value="new">New Drops</TabsTrigger>
-            <TabsTrigger value="following">Following</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="explore" className="space-y-6">
-            {/* Stats Banner */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card className="bg-gray-800 border-gray-700">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-400">Total Volume</p>
-                      <p className="text-2xl font-bold">2,847 ETH</p>
-                    </div>
-                    <DollarSign className="w-8 h-8 text-green-500" />
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+          {/* Main Content */}
+          <div className="xl:col-span-3 space-y-6">
+            {/* Search and Filters */}
+            <div className="bg-black/30 rounded-lg p-6 border border-purple-500/20">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                <div className="flex items-center space-x-2">
+                  <Search className="w-5 h-5 text-white/60" />
+                  <input
+                    type="text"
+                    placeholder="Search NFTs, artists, collections..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="bg-white/10 border border-white/20 rounded-lg px-4 py-2 w-64 focus:outline-none focus:border-purple-500/50"
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Filter className="w-5 h-5 text-white/60" />
+                  <div className="flex space-x-2">
+                    {filters.map((filter) => (
+                      <button
+                        key={filter.id}
+                        onClick={() => setActiveFilter(filter.id)}
+                        className={`px-3 py-2 rounded-lg text-sm transition-colors ${
+                          activeFilter === filter.id
+                            ? 'bg-purple-500/30 border border-purple-400/50 text-purple-300'
+                            : 'bg-white/10 border border-white/20 hover:bg-white/20'
+                        }`}
+                      >
+                        {filter.name} ({filter.count})
+                      </button>
+                    ))}
                   </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gray-800 border-gray-700">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-400">Active Artists</p>
-                      <p className="text-2xl font-bold">1,234</p>
-                    </div>
-                    <Users className="w-8 h-8 text-blue-500" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gray-800 border-gray-700">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-400">Collections</p>
-                      <p className="text-2xl font-bold">567</p>
-                    </div>
-                    <Star className="w-8 h-8 text-yellow-500" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gray-800 border-gray-700">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-400">24h Sales</p>
-                      <p className="text-2xl font-bold">89</p>
-                    </div>
-                    <TrendingUp className="w-8 h-8 text-purple-500" />
-                  </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
 
-            {/* NFT Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredNFTs.map((nft) => (
-                <Card key={nft.id} className="bg-gray-800 border-gray-700 hover:border-purple-500 transition-colors overflow-hidden group">
-                  <div className="relative">
-                    <img 
-                      src={nft.image} 
-                      alt={nft.title}
-                      className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute top-2 left-2">
-                      <Badge className={`${rarityColors[nft.rarity]} text-white`}>
-                        {nft.rarity}
-                      </Badge>
-                    </div>
-                    <div className="absolute top-2 right-2 flex space-x-1">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="bg-black/50 hover:bg-black/70 text-white h-8 w-8 p-0"
-                        onClick={() => toggleLike(nft.id)}
-                      >
-                        <Heart className={`w-4 h-4 ${nft.isLiked ? 'fill-red-500 text-red-500' : ''}`} />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="bg-black/50 hover:bg-black/70 text-white h-8 w-8 p-0"
-                      >
-                        <Share2 className="w-4 h-4" />
-                      </Button>
+            {/* Featured NFTs Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featuredNFTs.map((nft) => (
+                <div key={nft.id} className="bg-black/30 rounded-lg overflow-hidden border border-purple-500/20 hover:border-purple-400/40 transition-colors group">
+                  {/* NFT Image */}
+                  <div className={`aspect-square bg-gradient-to-br ${getGradientClass(nft.image)} flex items-center justify-center`}>
+                    <div className="text-center text-white">
+                      <div className="w-16 h-16 bg-white/20 rounded-full mx-auto mb-4 flex items-center justify-center">
+                        <Zap className="w-8 h-8" />
+                      </div>
+                      <p className="font-bold">{nft.title}</p>
                     </div>
                   </div>
 
-                  <CardContent className="p-4">
-                    <div className="space-y-3">
-                      <div>
-                        <h3 className="font-semibold text-lg truncate">{nft.title}</h3>
-                        <p className="text-sm text-gray-400">by {nft.artist}</p>
-                      </div>
-
-                      <div className="flex items-center justify-between text-sm text-gray-400">
-                        <div className="flex items-center space-x-4">
-                          <span className="flex items-center">
-                            <Heart className="w-3 h-3 mr-1" />
-                            {nft.likes}
-                          </span>
-                          <span className="flex items-center">
-                            <Eye className="w-3 h-3 mr-1" />
-                            {nft.views}
-                          </span>
+                  {/* NFT Details */}
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-bold text-lg">{nft.title}</h3>
+                      {nft.verified && (
+                        <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                          <div className="w-2 h-2 bg-white rounded-full" />
                         </div>
-                        <div className="flex items-center">
-                          <Calendar className="w-3 h-3 mr-1" />
-                          {new Date(nft.createdAt).toLocaleDateString()}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm text-gray-400">Current Price</p>
-                          <p className="font-bold text-lg">
-                            {nft.price} {nft.currency}
-                          </p>
-                        </div>
-                        <Button size="sm" className="bg-purple-600 hover:bg-purple-700">
-                          <ShoppingCart className="w-4 h-4 mr-1" />
-                          Buy
-                        </Button>
-                      </div>
+                      )}
                     </div>
-                  </CardContent>
-                </Card>
+                    
+                    <p className="text-white/60 text-sm mb-3">by {nft.artist}</p>
+                    
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-4 text-sm text-white/60">
+                        <div className="flex items-center space-x-1">
+                          <Eye className="w-4 h-4" />
+                          <span>{nft.views}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Heart className="w-4 h-4" />
+                          <span>{nft.likes}</span>
+                        </div>
+                      </div>
+                      <span className={`text-xs px-2 py-1 rounded-full ${
+                        nft.category === 'music' ? 'bg-purple-500/20 text-purple-400' :
+                        nft.category === 'art' ? 'bg-pink-500/20 text-pink-400' :
+                        nft.category === 'video' ? 'bg-blue-500/20 text-blue-400' :
+                        'bg-green-500/20 text-green-400'
+                      }`}>
+                        {nft.category}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-white/60 text-xs">Current Price</p>
+                        <p className="text-xl font-bold">{nft.price} {nft.currency}</p>
+                      </div>
+                      <button className="bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-2 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-colors flex items-center space-x-2">
+                        <ShoppingCart className="w-4 h-4" />
+                        <span>Buy Now</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
-          </TabsContent>
+          </div>
 
-          <TabsContent value="trending">
-            <div className="text-center py-12">
-              <TrendingUp className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Trending NFTs</h3>
-              <p className="text-gray-400">Discover the hottest NFTs right now</p>
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Trending Artists */}
+            <div className="bg-black/30 rounded-lg p-6 border border-purple-500/20">
+              <h3 className="text-lg font-bold mb-4 flex items-center">
+                <TrendingUp className="w-5 h-5 mr-2 text-green-400" />
+                Trending Artists
+              </h3>
+              <div className="space-y-3">
+                {trendingArtists.map((artist, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                        <span className="text-xs font-bold">{artist.name.slice(0, 2)}</span>
+                      </div>
+                      <div>
+                        <p className="font-bold text-sm">{artist.name}</p>
+                        <p className="text-xs text-white/60">{artist.sales} sales</p>
+                      </div>
+                    </div>
+                    <span className="text-green-400 text-xs font-bold">{artist.growth}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </TabsContent>
 
-          <TabsContent value="new">
-            <div className="text-center py-12">
-              <Star className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">New Drops</h3>
-              <p className="text-gray-400">Fresh NFTs from top artists</p>
+            {/* Quick Actions */}
+            <div className="bg-black/30 rounded-lg p-6 border border-purple-500/20">
+              <h3 className="text-lg font-bold mb-4">Quick Actions</h3>
+              <div className="space-y-3">
+                <button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 py-3 px-4 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-colors">
+                  Create Collection
+                </button>
+                <button className="w-full bg-blue-500/20 border border-blue-500/30 text-blue-400 py-3 px-4 rounded-lg hover:bg-blue-500/30 transition-colors">
+                  My NFTs
+                </button>
+                <button className="w-full bg-green-500/20 border border-green-500/30 text-green-400 py-3 px-4 rounded-lg hover:bg-green-500/30 transition-colors">
+                  Wallet
+                </button>
+                <button className="w-full bg-orange-500/20 border border-orange-500/30 text-orange-400 py-3 px-4 rounded-lg hover:bg-orange-500/30 transition-colors">
+                  Analytics
+                </button>
+              </div>
             </div>
-          </TabsContent>
 
-          <TabsContent value="following">
-            <div className="text-center py-12">
-              <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Following</h3>
-              <p className="text-gray-400">NFTs from artists you follow</p>
+            {/* Blockchain Info */}
+            <div className="bg-black/30 rounded-lg p-6 border border-purple-500/20">
+              <h3 className="text-lg font-bold mb-4">Blockchain Status</h3>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-white/60">Network</span>
+                  <span className="text-sm font-bold">Ethereum</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-white/60">Gas Price</span>
+                  <span className="text-sm font-bold">25 Gwei</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-white/60">ETH Price</span>
+                  <span className="text-sm font-bold text-green-400">$2,345</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-white/60">Status</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full" />
+                    <span className="text-sm font-bold text-green-400">Online</span>
+                  </div>
+                </div>
+              </div>
             </div>
-          </TabsContent>
-        </Tabs>
+          </div>
+        </div>
       </div>
     </div>
   );

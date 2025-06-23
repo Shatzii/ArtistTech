@@ -7,6 +7,12 @@ import SimpleVotingDemo from "./pages/simple-voting-demo";
 import AdminDashboard from "./pages/admin-dashboard";
 import AdminLogin from "./pages/admin-login";
 import UserLogin from "./pages/user-login";
+import VideoStudio from "./pages/video-studio";
+import VisualStudio from "./pages/visual-studio";
+import MusicStudio from "./pages/music-studio";
+import CollaborativeStudio from "./pages/collaborative-studio";
+import NFTMarketplace from "./pages/nft-marketplace";
+import NotFound from "./pages/not-found";
 
 function AuthenticatedRouter() {
   return (
@@ -18,8 +24,14 @@ function AuthenticatedRouter() {
           <Route path="/admin-login" component={AdminLogin} />
           <Route path="/admin" component={AdminDashboard} />
           <Route path="/dj" component={DJStudio} />
+          <Route path="/dj-studio" component={DJStudio} />
+          <Route path="/music-studio" component={MusicStudio} />
+          <Route path="/video-studio" component={VideoStudio} />
+          <Route path="/visual-studio" component={VisualStudio} />
+          <Route path="/collaborative-studio" component={CollaborativeStudio} />
+          <Route path="/nft-marketplace" component={NFTMarketplace} />
           <Route path="/voting" component={SimpleVotingDemo} />
-          <Route component={Landing} />
+          <Route component={NotFound} />
         </Switch>
       </main>
     </div>
