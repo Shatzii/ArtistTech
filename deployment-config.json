@@ -1,0 +1,48 @@
+{
+  "domain": "artist-tech.com",
+  "environment": "production",
+  "deployment": {
+    "platform": "vercel",
+    "region": "us-east-1",
+    "nodeVersion": "20.x",
+    "buildCommand": "npm run build",
+    "outputDirectory": "dist",
+    "installCommand": "npm ci --production"
+  },
+  "database": {
+    "provider": "neon",
+    "connectionString": "DATABASE_URL",
+    "poolSize": 50,
+    "ssl": true,
+    "migrations": "drizzle-kit push"
+  },
+  "cdn": {
+    "provider": "cloudflare",
+    "zones": ["media.artist-tech.com", "api.artist-tech.com"],
+    "caching": {
+      "static": "1y",
+      "api": "5m",
+      "media": "30d"
+    }
+  },
+  "security": {
+    "ssl": true,
+    "hsts": true,
+    "csp": "strict",
+    "rateLimit": {
+      "requests": 1000,
+      "window": "15m"
+    }
+  },
+  "monitoring": {
+    "sentry": true,
+    "analytics": "vercel-analytics",
+    "uptime": "betterstack"
+  },
+  "features": {
+    "realtime": true,
+    "ai": true,
+    "blockchain": true,
+    "streaming": true
+  }
+}
