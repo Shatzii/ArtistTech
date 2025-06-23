@@ -20,6 +20,7 @@ import { musicSamplingEngine } from "./music-sampling-engine";
 import { socialMediaSamplingEngine } from "./social-media-sampling-engine";
 import { advancedAudioEngine } from "./advanced-audio-engine";
 import { collaborativeStudioEngine } from "./collaborative-studio-engine";
+import { streamingIntegrationEngine } from "./streaming-integration-engine";
 import { insertProjectSchema, insertAudioFileSchema, insertVideoFileSchema } from "../shared/schema";
 import multer from "multer";
 import path from "path";

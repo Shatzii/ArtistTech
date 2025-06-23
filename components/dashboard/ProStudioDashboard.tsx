@@ -36,8 +36,8 @@ export function ProStudioDashboard() {
     },
     {
       id: 'dj',
-      title: 'Virtual DJ Suite',
-      description: 'Professional DJ mixing with dual decks',
+      title: 'Streaming DJ Suite',
+      description: 'Live DJ mixing with Spotify, SoundCloud & Apple Music',
       icon: Headphones,
       color: 'bg-blue-600',
       href: '/studio/dj'
