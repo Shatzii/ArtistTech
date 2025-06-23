@@ -85,9 +85,31 @@ export default function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900/40 to-indigo-900 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900/40 to-indigo-900 text-white relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-20 left-20 w-32 h-32 bg-cyan-500/10 rounded-full blur-xl animate-pulse"></div>
+        <div className="absolute top-60 right-40 w-24 h-24 bg-blue-500/10 rounded-full blur-lg animate-bounce"></div>
+        <div className="absolute bottom-40 left-1/3 w-40 h-40 bg-indigo-500/10 rounded-full blur-xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/3 right-20 w-16 h-16 bg-cyan-400/20 rounded-full blur-md animate-ping"></div>
+      </div>
+      
+      {/* Circuit Pattern Overlay */}
+      <div className="fixed inset-0 opacity-5 pointer-events-none">
+        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <pattern id="circuit" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M2,2 L18,2 L18,8 L12,8 L12,18 L8,18 L8,12 L2,12 Z" fill="none" stroke="currentColor" strokeWidth="0.5"/>
+              <circle cx="6" cy="6" r="1" fill="currentColor"/>
+              <circle cx="14" cy="14" r="1" fill="currentColor"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#circuit)"/>
+        </svg>
+      </div>
+
       {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-black/30 backdrop-blur-xl border-b border-cyan-500/20 z-50">
+      <nav className="fixed top-0 w-full bg-black/30 backdrop-blur-xl border-b border-cyan-500/20 z-50 shadow-lg">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -197,21 +219,21 @@ export default function Landing() {
               <div
                 key={feature.id}
                 className={`
-                  relative p-6 rounded-lg border border-white/10 transition-all duration-300 cursor-pointer
+                  relative p-6 rounded-lg border border-cyan-500/20 transition-all duration-300 cursor-pointer backdrop-blur-sm
                   ${hoveredFeature === feature.id 
-                    ? 'bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-purple-500/30 transform scale-105' 
-                    : 'bg-black/20 hover:bg-white/5'}
+                    ? 'bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border-cyan-400/50 transform scale-105 shadow-lg shadow-cyan-500/20' 
+                    : 'bg-black/30 hover:bg-blue-900/20 hover:border-blue-400/30'}
                 `}
                 onMouseEnter={() => setHoveredFeature(feature.id)}
                 onMouseLeave={() => setHoveredFeature(null)}
               >
                 {feature.premium && (
-                  <div className="absolute top-2 right-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-black text-xs px-2 py-1 rounded-full font-bold">
+                  <div className="absolute top-2 right-2 bg-gradient-to-r from-cyan-400 to-blue-500 text-black text-xs px-2 py-1 rounded-full font-bold">
                     PRO
                   </div>
                 )}
                 {feature.new && (
-                  <div className="absolute top-2 right-2 bg-gradient-to-r from-green-400 to-blue-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+                  <div className="absolute top-2 right-2 bg-gradient-to-r from-green-400 to-cyan-500 text-white text-xs px-2 py-1 rounded-full font-bold">
                     NEW
                   </div>
                 )}

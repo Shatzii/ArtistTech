@@ -31,7 +31,7 @@ export default function UserLogin() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/30 to-gray-900 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900/40 to-indigo-900 text-white">
       <div className="flex min-h-screen">
         {/* Left Side - Branding & Features */}
         <div className="hidden lg:flex lg:w-1/2 bg-black/20 backdrop-blur-lg p-12 flex-col justify-center">
@@ -54,16 +54,22 @@ export default function UserLogin() {
               video editing, and visual arts creation.
             </p>
 
-            <div className="space-y-4">
+            <div className="space-y-4 mb-8">
               {features.map((feature, index) => (
-                <div key={index} className="flex items-center space-x-4 p-4 bg-white/5 rounded-lg">
-                  <feature.icon className="w-8 h-8 text-purple-400" />
+                <div key={index} className="flex items-center space-x-4 p-4 bg-white/5 rounded-lg border border-blue-500/20">
+                  <feature.icon className="w-8 h-8 text-cyan-400" />
                   <div>
-                    <h3 className="font-bold">{feature.title}</h3>
+                    <h3 className="font-bold text-blue-200">{feature.title}</h3>
                     <p className="text-white/60 text-sm">{feature.description}</p>
                   </div>
                 </div>
               ))}
+            </div>
+
+            <div className="p-4 bg-blue-500/20 rounded-lg border border-blue-500/30">
+              <p className="text-blue-400 font-bold text-sm">🔑 Demo Credentials</p>
+              <p className="text-white/70 text-xs">Email: user@artisttech.com</p>
+              <p className="text-white/70 text-xs">Password: demo123</p>
             </div>
 
             <div className="mt-8 p-4 bg-green-500/20 rounded-lg border border-green-500/30">

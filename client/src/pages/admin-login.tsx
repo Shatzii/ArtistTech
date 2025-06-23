@@ -29,7 +29,7 @@ export default function AdminLogin() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-red-900/30 to-gray-900 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900/40 to-blue-900 text-white">
       <div className="flex min-h-screen">
         {/* Left Side - Admin Features */}
         <div className="hidden lg:flex lg:w-1/2 bg-black/20 backdrop-blur-lg p-12 flex-col justify-center">
