@@ -20,6 +20,7 @@ import NFTMarketplace from "@/pages/nft-marketplace";
 import CollaborativeStudio from "@/pages/collaborative-studio";
 import BusinessDashboard from "@/pages/business-dashboard";
 import AdminLogin from "@/pages/admin-login";
+import PremiumStudio from "@/pages/premium-studio";
 
 function AuthenticatedRouter() {
   // Direct access to all pages - no authentication required
@@ -40,6 +41,7 @@ function AuthenticatedRouter() {
           <Route path="/nft" component={NFTMarketplace} />
           <Route path="/collaborate" component={CollaborativeStudio} />
           <Route path="/business" component={BusinessDashboard} />
+          <Route path="/premium" component={PremiumStudio} />
           <Route path="/midi" component={MIDIController} />
           <Route path="/lesson" component={Lesson} />
           <Route path="/curriculum" component={Curriculum} />
