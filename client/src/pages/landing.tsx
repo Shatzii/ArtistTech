@@ -48,6 +48,20 @@ export default function Landing() {
       new: true
     },
     {
+      id: 'podcast-studio',
+      title: 'Podcast Studio Pro',
+      description: 'Live streaming with AI transcription and multi-platform distribution',
+      icon: '🎙️',
+      premium: true
+    },
+    {
+      id: 'ai-career-manager',
+      title: 'AI Career Manager',
+      description: '4 autonomous agents managing marketing, bookings, revenue, and legal',
+      icon: '🤖',
+      premium: true
+    },
+    {
       id: 'nft-marketplace',
       title: 'NFT Marketplace',
       description: 'Blockchain integration with automated royalty distribution',
