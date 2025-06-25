@@ -7,6 +7,7 @@ import {
   Waves, Layers, Target, Crown, Sparkles, Globe, Camera, Lightbulb,
   Wand2, BarChart3, Crosshair, Sliders, Filter, Gauge, Activity
 } from 'lucide-react';
+import StudioNavigation from '../components/studio-navigation';
 
 export default function UltimateDJStudio() {
   // AI BEATMATCHING & HARMONIC MIXING
@@ -173,6 +174,8 @@ export default function UltimateDJStudio() {
 
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">
+      <StudioNavigation />
+      
       {/* STUDIO HEADER */}
       <div className="bg-gradient-to-r from-black via-blue-900/50 to-black border-b-2 border-blue-500/30 p-3">
         <div className="flex items-center justify-between max-w-[2000px] mx-auto">
@@ -410,19 +413,41 @@ export default function UltimateDJStudio() {
                   </div>
                 </div>
 
-                {/* Waveform Placeholder */}
-                <div className="bg-black rounded p-3 mb-4 h-20 flex items-center justify-center">
-                  <div className="flex items-end space-x-1">
-                    {Array.from({ length: 40 }).map((_, i) => (
-                      <div 
-                        key={i}
-                        className={`w-1 bg-blue-500 transition-all duration-100 ${
-                          i < tracks.deckA.position / 2.5 ? 'opacity-50' : 'opacity-100'
-                        }`}
-                        style={{ height: `${Math.random() * 60 + 10}px` }}
-                      />
-                    ))}
+                {/* Advanced Waveform Display */}
+                <div className="bg-black rounded p-3 mb-4 h-20 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-cyan-500/30 to-blue-500/20"></div>
+                  <div className="relative flex items-end space-x-px h-full">
+                    {Array.from({ length: 80 }).map((_, i) => {
+                      const height = Math.sin(i * 0.3) * 30 + 30 + Math.random() * 20;
+                      const isPlaying = i < tracks.deckA.position;
+                      return (
+                        <div 
+                          key={i}
+                          className={`w-1 transition-all duration-200 ${
+                            isPlaying 
+                              ? 'bg-gradient-to-t from-cyan-400 to-blue-300 shadow-lg shadow-cyan-500/50' 
+                              : 'bg-gradient-to-t from-blue-600 to-blue-400'
+                          }`}
+                          style={{ height: `${height}px` }}
+                        />
+                      );
+                    })}
                   </div>
+                  
+                  {/* Playhead */}
+                  <div 
+                    className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg shadow-white/50"
+                    style={{ left: `${tracks.deckA.position}%` }}
+                  />
+                  
+                  {/* Beat Grid */}
+                  {[25, 50, 75].map((pos) => (
+                    <div 
+                      key={pos}
+                      className="absolute top-0 bottom-0 w-px bg-yellow-400/30"
+                      style={{ left: `${pos}%` }}
+                    />
+                  ))}
                 </div>
 
                 {/* Stem Controls */}
@@ -484,22 +509,69 @@ export default function UltimateDJStudio() {
               <div className="bg-gray-800/50 rounded-lg border border-gray-700 p-4">
                 <h3 className="text-lg font-bold text-purple-400 mb-4 text-center">AI CROSSFADER</h3>
                 
-                {/* Crossfader */}
+                {/* Advanced Crossfader */}
                 <div className="mb-6">
-                  <div className="bg-black rounded-lg p-4">
+                  <div className="bg-black rounded-lg p-4 border border-purple-500/30 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/20 to-red-500/10"></div>
                     <div className="relative">
-                      <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={beatMatching.crossfaderPosition}
-                        onChange={(e) => setBeatMatching(prev => ({ ...prev, crossfaderPosition: parseInt(e.target.value) }))}
-                        className="w-full h-8 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
-                      />
-                      <div className="flex justify-between text-xs text-gray-400 mt-2">
-                        <span>DECK A</span>
-                        <span>CENTER</span>
-                        <span>DECK B</span>
+                      <div className="mb-3">
+                        <div className="flex justify-between text-xs text-gray-400 mb-1">
+                          <span className="text-blue-400 font-bold">DECK A</span>
+                          <span className="text-purple-400 font-bold">AI CROSSFADER</span>
+                          <span className="text-red-400 font-bold">DECK B</span>
+                        </div>
+                        
+                        {/* Visual Mix Display */}
+                        <div className="h-2 bg-gray-800 rounded-full overflow-hidden mb-2">
+                          <div 
+                            className="h-full bg-gradient-to-r from-blue-500 to-red-500 transition-all duration-300"
+                            style={{ 
+                              background: `linear-gradient(to right, 
+                                rgba(59, 130, 246, ${(100 - beatMatching.crossfaderPosition) / 100}) 0%, 
+                                rgba(139, 69, 19, 0.5) 50%, 
+                                rgba(239, 68, 68, ${beatMatching.crossfaderPosition / 100}) 100%)`
+                            }}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="relative">
+                        <input
+                          type="range"
+                          min="0"
+                          max="100"
+                          value={beatMatching.crossfaderPosition}
+                          onChange={(e) => setBeatMatching(prev => ({ ...prev, crossfaderPosition: parseInt(e.target.value) }))}
+                          className="w-full h-8 bg-transparent appearance-none cursor-pointer slider-purple"
+                          style={{
+                            background: `linear-gradient(to right, 
+                              #3b82f6 0%, 
+                              #8b5cf6 50%, 
+                              #ef4444 100%)`
+                          }}
+                        />
+                        
+                        {/* Crossfader Indicator */}
+                        <div 
+                          className="absolute top-0 w-1 h-8 bg-white shadow-lg shadow-white/50 rounded-full pointer-events-none transition-all duration-100"
+                          style={{ 
+                            left: `calc(${beatMatching.crossfaderPosition}% - 2px)`,
+                            boxShadow: '0 0 10px rgba(255, 255, 255, 0.8)'
+                          }}
+                        />
+                      </div>
+                      
+                      <div className="flex justify-between text-xs mt-3">
+                        <div className="text-blue-400">
+                          Volume: {100 - beatMatching.crossfaderPosition}%
+                        </div>
+                        <div className="text-purple-400">
+                          {beatMatching.crossfaderPosition === 50 ? 'BALANCED' : 
+                           beatMatching.crossfaderPosition < 50 ? 'A DOMINANT' : 'B DOMINANT'}
+                        </div>
+                        <div className="text-red-400">
+                          Volume: {beatMatching.crossfaderPosition}%
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -606,20 +678,51 @@ export default function UltimateDJStudio() {
                   )}
                 </div>
 
-                {/* Waveform Placeholder */}
-                <div className="bg-black rounded p-3 mb-4 h-20 flex items-center justify-center">
+                {/* Advanced Waveform Display B */}
+                <div className="bg-black rounded p-3 mb-4 h-20 relative overflow-hidden">
                   {tracks.deckB.loaded ? (
-                    <div className="flex items-end space-x-1">
-                      {Array.from({ length: 40 }).map((_, i) => (
+                    <>
+                      <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 via-pink-500/30 to-red-500/20"></div>
+                      <div className="relative flex items-end space-x-px h-full">
+                        {Array.from({ length: 80 }).map((_, i) => {
+                          const height = Math.cos(i * 0.25) * 25 + 35 + Math.random() * 15;
+                          const isPlaying = i < tracks.deckB.position;
+                          return (
+                            <div 
+                              key={i}
+                              className={`w-1 transition-all duration-200 ${
+                                isPlaying 
+                                  ? 'bg-gradient-to-t from-pink-400 to-red-300 shadow-lg shadow-pink-500/50' 
+                                  : 'bg-gradient-to-t from-red-600 to-red-400'
+                              }`}
+                              style={{ height: `${height}px` }}
+                            />
+                          );
+                        })}
+                      </div>
+                      
+                      {/* Playhead */}
+                      <div 
+                        className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg shadow-white/50"
+                        style={{ left: `${tracks.deckB.position}%` }}
+                      />
+                      
+                      {/* Beat Grid */}
+                      {[25, 50, 75].map((pos) => (
                         <div 
-                          key={i}
-                          className="w-1 bg-red-500 transition-all duration-100"
-                          style={{ height: `${Math.random() * 60 + 10}px` }}
+                          key={pos}
+                          className="absolute top-0 bottom-0 w-px bg-yellow-400/30"
+                          style={{ left: `${pos}%` }}
                         />
                       ))}
-                    </div>
+                    </>
                   ) : (
-                    <div className="text-gray-500 text-xs">LOAD TRACK TO SEE WAVEFORM</div>
+                    <div className="flex items-center justify-center h-full">
+                      <div className="text-center">
+                        <div className="text-gray-500 text-xs mb-2">LOAD TRACK TO SEE WAVEFORM</div>
+                        <div className="w-full h-2 bg-gray-800 rounded animate-pulse"></div>
+                      </div>
+                    </div>
                   )}
                 </div>
 

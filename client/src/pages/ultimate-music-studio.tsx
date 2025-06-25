@@ -8,6 +8,7 @@ import {
   Lightbulb, Camera, Gauge, Activity, Crosshair, MapPin, Calendar, Briefcase, 
   MessageSquare, Headphones as HeadphonesIcon, Wireless, Cpu, Database, Mic2
 } from 'lucide-react';
+import StudioNavigation from '../components/studio-navigation';
 
 export default function UltimateMusicStudio() {
   // HIT SONG ANALYZER STATE
