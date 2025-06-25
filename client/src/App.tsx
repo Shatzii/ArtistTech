@@ -15,6 +15,8 @@ import NFTMarketplace from "./pages/nft-marketplace";
 import PodcastStudio from "./pages/podcast-studio";
 import AICareerManager from "./pages/ai-career-manager";
 import NotFound from "./pages/not-found";
+import UltimateMusicStudio from "./pages/ultimate-music-studio";
+import UltimateDJStudio from "./pages/ultimate-dj-studio";
 
 function AuthenticatedRouter() {
   return (
@@ -34,6 +36,8 @@ function AuthenticatedRouter() {
           <Route path="/nft-marketplace" component={NFTMarketplace} />
           <Route path="/podcast-studio" component={PodcastStudio} />
           <Route path="/ai-career-manager" component={AICareerManager} />
+          <Route path="/ultimate-music-studio" component={UltimateMusicStudio} />
+          <Route path="/ultimate-dj-studio" component={UltimateDJStudio} />
           <Route path="/voting" component={SimpleVotingDemo} />
           <Route component={NotFound} />
         </Switch>
