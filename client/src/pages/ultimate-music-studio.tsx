@@ -4,7 +4,9 @@ import {
   Play, Pause, Square, Volume2, Music, Mic, Headphones, Settings, Upload, Save, Share2,
   Zap, Brain, Target, Star, Crown, TrendingUp, BarChart3, Users, Clock, Download,
   Wand2, Sparkles, Radio, Waves, Sliders, Filter, Layers, Eye, Heart, Award,
-  Globe, Instagram, Youtube, Music2, Disc3, Shuffle, SkipForward, Repeat
+  Globe, Instagram, Youtube, Music2, Disc3, Shuffle, SkipForward, Repeat, DollarSign,
+  Lightbulb, Camera, Gauge, Activity, Crosshair, MapPin, Calendar, Briefcase, 
+  MessageSquare, Headphones as HeadphonesIcon, Wireless, Cpu, Database, Mic2
 } from 'lucide-react';
 
 export default function UltimateMusicStudio() {
@@ -122,6 +124,149 @@ export default function UltimateMusicStudio() {
     releaseStrategy: 'Single -> EP -> Album',
     optimalReleaseDate: 'Friday, March 15th',
     marketingBudget: 5000
+  });
+
+  // BILLBOARD HIT FORMULA ANALYZER
+  const [billboardAnalyzer, setBillboardAnalyzer] = useState({
+    currentChartData: [
+      { position: 1, track: 'Flowers - Miley Cyrus', weeks: 8, formula: 'vi-IV-I-V', hitScore: 98 },
+      { position: 2, track: 'Anti-Hero - Taylor Swift', weeks: 12, formula: 'I-V-vi-IV', hitScore: 96 },
+      { position: 3, track: 'As It Was - Harry Styles', weeks: 15, formula: 'vi-IV-I-V', hitScore: 94 }
+    ],
+    trendingElements: ['80s Synths', 'Auto-tuned Vocals', 'Trap Drums', 'Guitar Riffs'],
+    hitProbability: 0,
+    structureAnalysis: null
+  });
+
+  // CELEBRITY VOICE SYNTHESIS
+  const [celebrityVoices, setCelebrityVoices] = useState({
+    availableVoices: [
+      { name: 'Taylor Swift Style', genre: 'Pop', quality: 96, legal: true },
+      { name: 'Drake Style', genre: 'Hip-Hop', quality: 94, legal: true },
+      { name: 'Billie Eilish Style', genre: 'Alt-Pop', quality: 95, legal: true },
+      { name: 'The Weeknd Style', genre: 'R&B', quality: 93, legal: true },
+      { name: 'Ariana Grande Style', genre: 'Pop', quality: 97, legal: true }
+    ],
+    selectedVoice: null,
+    harmoniesGenerated: false,
+    vocalProcessing: {
+      autotune: 60,
+      compression: 70,
+      reverb: 40,
+      delay: 30
+    }
+  });
+
+  // ADVANCED COMPOSITION AI
+  const [compositionAI, setCompositionAI] = useState({
+    melodyGPT: {
+      active: false,
+      genre: 'Pop',
+      mood: 'Uplifting',
+      complexity: 7,
+      generatedMelody: null
+    },
+    chordGenius: {
+      currentProgression: ['C', 'Am', 'F', 'G'],
+      suggestions: [
+        { progression: 'vi-IV-I-V', popularity: 95, used_in: 'Flowers, Someone Like You' },
+        { progression: 'I-V-vi-IV', popularity: 89, used_in: 'Let It Be, Don\'t Stop Believin\'' },
+        { progression: 'I-vi-IV-V', popularity: 82, used_in: 'Stand By Me, Blue Moon' }
+      ]
+    },
+    songStructure: {
+      recommended: 'Intro-Verse-PreChorus-Chorus-Verse-PreChorus-Chorus-Bridge-Chorus-Outro',
+      timing: { intro: 8, verse: 16, prechorus: 8, chorus: 16, bridge: 8 }
+    }
+  });
+
+  // SESSION MUSICIAN AI
+  const [sessionMusicians, setSessionMusicians] = useState({
+    virtualOrchestra: {
+      strings: { active: false, style: 'Cinematic', intensity: 70 },
+      brass: { active: false, style: 'Jazz', intensity: 60 },
+      woodwinds: { active: false, style: 'Classical', intensity: 50 }
+    },
+    guitarSolo: {
+      style: 'Blues Rock',
+      artist: 'Hendrix Style',
+      generated: false,
+      duration: 16
+    },
+    drumProgramming: {
+      style: 'Modern Pop',
+      humanization: 85,
+      complexity: 7,
+      swing: 16
+    }
+  });
+
+  // TIKTOK & VIRAL HOOK CREATOR  
+  const [viralHookCreator, setViralHookCreator] = useState({
+    hooks: [],
+    currentTrends: [
+      { sound: 'Aesthetic Synth Pad', popularity: 94, timeframe: '15-30s' },
+      { sound: 'Vocal Chop Drop', popularity: 87, timeframe: '7-15s' },
+      { sound: 'Guitar Riff Loop', popularity: 81, timeframe: '10-20s' }
+    ],
+    optimalHashtags: ['#newmusic', '#viral', '#artisttech', '#hitsong'],
+    viralPotential: 0
+  });
+
+  // COLLABORATION HUB
+  const [collaborationHub, setCollaborationHub] = useState({
+    connectedProducers: [
+      { name: 'Max Martin AI', specialty: 'Pop Hits', rating: 10, available: true, price: '$5000' },
+      { name: 'Metro Boomin AI', specialty: 'Hip-Hop', rating: 9, available: true, price: '$3500' },
+      { name: 'Jack Antonoff AI', specialty: 'Indie Pop', rating: 9, available: false, price: '$4000' }
+    ],
+    arConnections: [
+      { label: 'Atlantic Records', interest: 94, genre: 'Pop' },
+      { label: 'Interscope', interest: 87, genre: 'Hip-Hop' },
+      { label: 'Republic Records', interest: 91, genre: 'Pop/R&B' }
+    ],
+    syncOpportunities: [
+      { project: 'Netflix Series Soundtrack', match: 89, budget: '$15000' },
+      { project: 'Apple iPhone Commercial', match: 76, budget: '$25000' },
+      { project: 'FIFA 2025 Game', match: 83, budget: '$8000' }
+    ]
+  });
+
+  // REAL-TIME COLLABORATION
+  const [realTimeCollab, setRealTimeCollab] = useState({
+    activeUsers: [
+      { name: 'Producer Mike', role: 'Beat Maker', status: 'online', location: 'Mix Console' },
+      { name: 'Vocalist Sarah', role: 'Singer', status: 'recording', location: 'Vocal Booth' },
+      { name: 'Engineer Tom', role: 'Mix Engineer', status: 'mixing', location: 'Master Bus' }
+    ],
+    versionControl: {
+      currentVersion: '2.1.3',
+      branches: ['main', 'vocal-experiment', 'beat-variation'],
+      changes: 15
+    },
+    videoCall: false
+  });
+
+  // INDUSTRY ANALYTICS
+  const [industryAnalytics, setIndustryAnalytics] = useState({
+    marketPosition: {
+      genre: 'Pop',
+      saturation: 73,
+      opportunity: 'High',
+      competitors: ['Dua Lipa', 'Harry Styles', 'Billie Eilish']
+    },
+    fanDemographics: {
+      age: '18-34',
+      gender: '65% Female',
+      location: 'US, UK, Canada',
+      interests: ['Pop Music', 'Social Media', 'Fashion']
+    },
+    careerTrajectory: {
+      currentLevel: 'Emerging Artist',
+      nextMilestone: '100K Monthly Listeners',
+      timeToAchieve: '6-8 months',
+      successProbability: 78
+    }
   });
 
   // CURRENT PROJECT STATE
@@ -596,12 +741,212 @@ export default function UltimateMusicStudio() {
               </div>
             </div>
 
-            {/* Social Media & TikTok Integration */}
-            <div className="grid grid-cols-3 gap-6">
+            {/* Billboard Hit Formula Analyzer */}
+            <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700 mb-6">
+              <h4 className="text-lg font-bold mb-3 text-yellow-400 flex items-center">
+                <Crown className="w-5 h-5 mr-2" />
+                Billboard Hit Formula Analyzer
+              </h4>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h5 className="text-sm font-bold mb-2 text-green-400">Current Chart Analysis</h5>
+                  <div className="space-y-2">
+                    {billboardAnalyzer.currentChartData.map((hit, index) => (
+                      <div key={index} className="bg-gray-700/50 rounded p-2">
+                        <div className="flex justify-between items-start mb-1">
+                          <div>
+                            <div className="font-bold text-xs">#{hit.position} {hit.track}</div>
+                            <div className="text-xs text-gray-400">{hit.weeks} weeks • {hit.formula}</div>
+                          </div>
+                          <div className={`text-xs font-bold ${getScoreColor(hit.hitScore)}`}>
+                            {hit.hitScore}%
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <div>
+                  <h5 className="text-sm font-bold mb-2 text-purple-400">Trending Elements</h5>
+                  <div className="space-y-1">
+                    {billboardAnalyzer.trendingElements.map((element, index) => (
+                      <div key={index} className="bg-purple-500/20 border border-purple-500/30 px-2 py-1 rounded text-xs text-purple-400">
+                        {element}
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="mt-3">
+                    <h5 className="text-sm font-bold mb-2 text-blue-400">Chord Progression Genius</h5>
+                    <div className="space-y-1">
+                      {compositionAI.chordGenius.suggestions.map((prog, index) => (
+                        <div key={index} className="bg-gray-700/50 rounded p-2">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="font-bold text-xs">{prog.progression}</span>
+                            <span className="text-xs text-green-400">{prog.popularity}%</span>
+                          </div>
+                          <div className="text-xs text-gray-400">{prog.used_in}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <button 
+                className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 rounded-lg transition-colors mt-4"
+                onClick={() => setBillboardAnalyzer(prev => ({ ...prev, hitProbability: Math.random() * 30 + 70 }))}
+              >
+                Analyze Hit Potential
+              </button>
+            </div>
+
+            {/* Celebrity Voice Synthesis & Session Musicians */}
+            <div className="grid grid-cols-2 gap-6 mb-6">
+              <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+                <h4 className="text-lg font-bold mb-3 text-pink-400 flex items-center">
+                  <Mic2 className="w-5 h-5 mr-2" />
+                  Celebrity Voice Synthesis
+                </h4>
+                
+                <div className="space-y-2 mb-4">
+                  {celebrityVoices.availableVoices.map((voice, index) => (
+                    <div 
+                      key={index} 
+                      className={`bg-gray-700/50 rounded p-2 cursor-pointer transition-colors border ${
+                        celebrityVoices.selectedVoice === voice.name 
+                          ? 'border-pink-500 bg-pink-500/10' 
+                          : 'border-gray-600 hover:border-pink-500/50'
+                      }`}
+                      onClick={() => setCelebrityVoices(prev => ({ ...prev, selectedVoice: voice.name }))}
+                    >
+                      <div className="flex justify-between items-center mb-1">
+                        <div className="font-bold text-sm">{voice.name}</div>
+                        <div className={`text-xs font-bold ${getScoreColor(voice.quality)}`}>
+                          {voice.quality}%
+                        </div>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-gray-400">{voice.genre}</span>
+                        <span className={`${voice.legal ? 'text-green-400' : 'text-red-400'}`}>
+                          {voice.legal ? 'Legal' : 'Sample Only'}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="space-y-2">
+                  <button 
+                    className={`w-full py-2 rounded transition-colors ${
+                      celebrityVoices.harmoniesGenerated 
+                        ? 'bg-green-500 text-white' 
+                        : 'bg-gray-600 text-gray-300 hover:bg-gray-700'
+                    }`}
+                    onClick={() => setCelebrityVoices(prev => ({ ...prev, harmoniesGenerated: !prev.harmoniesGenerated }))}
+                  >
+                    {celebrityVoices.harmoniesGenerated ? 'Harmonies Generated' : 'Generate AI Harmonies'}
+                  </button>
+                  <button className="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 rounded transition-colors">
+                    Clone & Synthesize Voice
+                  </button>
+                </div>
+              </div>
+
+              <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+                <h4 className="text-lg font-bold mb-3 text-orange-400 flex items-center">
+                  <Music className="w-5 h-5 mr-2" />
+                  Session Musician AI
+                </h4>
+                
+                <div className="space-y-3">
+                  <div>
+                    <h5 className="text-sm font-bold mb-2 text-cyan-400">Virtual Orchestra</h5>
+                    {Object.entries(sessionMusicians.virtualOrchestra).map(([instrument, config]) => (
+                      <div key={instrument} className="flex items-center space-x-2 mb-1">
+                        <button 
+                          className={`w-16 h-6 rounded transition-colors text-xs font-bold ${
+                            config.active ? 'bg-cyan-500 text-white' : 'bg-gray-600 text-gray-300'
+                          }`}
+                          onClick={() => setSessionMusicians(prev => ({
+                            ...prev,
+                            virtualOrchestra: {
+                              ...prev.virtualOrchestra,
+                              [instrument]: { ...prev.virtualOrchestra[instrument], active: !prev.virtualOrchestra[instrument].active }
+                            }
+                          }))}
+                        >
+                          {instrument.toUpperCase()}
+                        </button>
+                        <select 
+                          value={config.style}
+                          onChange={(e) => setSessionMusicians(prev => ({
+                            ...prev,
+                            virtualOrchestra: {
+                              ...prev.virtualOrchestra,
+                              [instrument]: { ...prev.virtualOrchestra[instrument], style: e.target.value }
+                            }
+                          }))}
+                          className="flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-xs text-white"
+                        >
+                          <option>Cinematic</option>
+                          <option>Classical</option>
+                          <option>Modern</option>
+                          <option>Jazz</option>
+                        </select>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div>
+                    <h5 className="text-sm font-bold mb-2 text-yellow-400">Guitar Solo Generator</h5>
+                    <div className="grid grid-cols-2 gap-2">
+                      <select 
+                        value={sessionMusicians.guitarSolo.style}
+                        onChange={(e) => setSessionMusicians(prev => ({
+                          ...prev,
+                          guitarSolo: { ...prev.guitarSolo, style: e.target.value }
+                        }))}
+                        className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-xs text-white"
+                      >
+                        <option>Blues Rock</option>
+                        <option>Shred Metal</option>
+                        <option>Jazz Fusion</option>
+                        <option>Classic Rock</option>
+                      </select>
+                      <select 
+                        value={sessionMusicians.guitarSolo.artist}
+                        onChange={(e) => setSessionMusicians(prev => ({
+                          ...prev,
+                          guitarSolo: { ...prev.guitarSolo, artist: e.target.value }
+                        }))}
+                        className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-xs text-white"
+                      >
+                        <option>Hendrix Style</option>
+                        <option>Page Style</option>
+                        <option>Gilmour Style</option>
+                        <option>Slash Style</option>
+                      </select>
+                    </div>
+                    <button 
+                      className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-1 rounded transition-colors mt-2"
+                      onClick={() => setSessionMusicians(prev => ({ ...prev, guitarSolo: { ...prev.guitarSolo, generated: true } }))}
+                    >
+                      Generate Guitar Solo
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* TikTok Creator & Real-Time Collaboration */}
+            <div className="grid grid-cols-3 gap-6 mb-6">
               <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
                 <h4 className="text-lg font-bold mb-3 text-pink-400 flex items-center">
                   <TrendingUp className="w-5 h-5 mr-2" />
-                  Viral Hook Creator
+                  TikTok Hook Creator
                 </h4>
                 
                 <div className="space-y-3">
@@ -638,35 +983,108 @@ export default function UltimateMusicStudio() {
               </div>
 
               <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
-                <h4 className="text-lg font-bold mb-3 text-yellow-400 flex items-center">
+                <h4 className="text-lg font-bold mb-3 text-cyan-400 flex items-center">
                   <Users className="w-5 h-5 mr-2" />
-                  Producer Collaboration
+                  Real-Time Collaboration
                 </h4>
                 
-                <div className="space-y-2">
-                  {collaboration.connectedProducers.map((producer, index) => (
-                    <div key={index} className={`p-2 rounded border ${producer.available ? 'border-green-500 bg-green-500/10' : 'border-gray-600'}`}>
+                <div className="space-y-2 mb-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-400">Multi-User DAW</span>
+                    <button 
+                      className={`px-2 py-1 rounded text-xs ${
+                        realTimeCollab.videoCall ? 'bg-green-500 text-white' : 'bg-gray-600 text-gray-300'
+                      }`}
+                      onClick={() => setRealTimeCollab(prev => ({ ...prev, videoCall: !prev.videoCall }))}
+                    >
+                      {realTimeCollab.videoCall ? 'Video ON' : 'Video OFF'}
+                    </button>
+                  </div>
+                  
+                  {realTimeCollab.activeUsers.map((user, index) => (
+                    <div key={index} className="bg-gray-700/50 rounded p-2">
                       <div className="flex justify-between items-center">
                         <div>
-                          <div className="font-bold text-sm">{producer.name}</div>
-                          <div className="text-xs text-gray-400">{producer.specialty}</div>
+                          <div className="font-bold text-sm">{user.name}</div>
+                          <div className="text-xs text-gray-400">{user.role}</div>
                         </div>
                         <div className="text-right">
-                          <div className="text-xs text-yellow-400">★ {producer.rating}/10</div>
-                          <div className={`text-xs ${producer.available ? 'text-green-400' : 'text-red-400'}`}>
-                            {producer.available ? 'Available' : 'Busy'}
+                          <div className={`text-xs ${
+                            user.status === 'online' ? 'text-green-400' : 
+                            user.status === 'recording' ? 'text-red-400' : 'text-yellow-400'
+                          }`}>
+                            {user.status.toUpperCase()}
                           </div>
+                          <div className="text-xs text-gray-400">{user.location}</div>
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
                 
+                <div className="bg-gray-700/50 rounded p-2 mb-3">
+                  <div className="text-xs text-gray-400 mb-1">Version Control</div>
+                  <div className="flex justify-between text-xs">
+                    <span>v{realTimeCollab.versionControl.currentVersion}</span>
+                    <span>{realTimeCollab.versionControl.changes} changes</span>
+                  </div>
+                  <div className="flex space-x-1 mt-1">
+                    {realTimeCollab.versionControl.branches.map((branch, index) => (
+                      <span key={index} className="bg-cyan-500/20 px-1 rounded text-xs text-cyan-400">
+                        {branch}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                
+                <button className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 rounded-lg transition-colors">
+                  Start Collaboration
+                </button>
+              </div>
+
+              <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+                <h4 className="text-lg font-bold mb-3 text-yellow-400 flex items-center">
+                  <Briefcase className="w-5 h-5 mr-2" />
+                  Industry Connections
+                </h4>
+                
+                <div className="space-y-3">
+                  <div>
+                    <h5 className="text-sm font-bold mb-1 text-green-400">A&R Connections</h5>
+                    {collaborationHub.arConnections.map((ar, index) => (
+                      <div key={index} className="bg-gray-700/50 rounded p-2 mb-1">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <div className="font-bold text-sm">{ar.label}</div>
+                            <div className="text-xs text-gray-400">{ar.genre}</div>
+                          </div>
+                          <div className={`text-xs font-bold ${getScoreColor(ar.interest)}`}>
+                            {ar.interest}%
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div>
+                    <h5 className="text-sm font-bold mb-1 text-purple-400">Sync Opportunities</h5>
+                    {collaborationHub.syncOpportunities.slice(0, 2).map((sync, index) => (
+                      <div key={index} className="bg-gray-700/50 rounded p-2 mb-1">
+                        <div className="font-bold text-xs">{sync.project}</div>
+                        <div className="flex justify-between text-xs">
+                          <span className="text-gray-400">{sync.match}% match</span>
+                          <span className="text-green-400">{sync.budget}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
                 <button 
                   className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 rounded-lg transition-colors mt-3"
                   onClick={() => setCollaboration(prev => ({ ...prev, arScore: Math.random() * 30 + 70 }))}
                 >
-                  Connect with A&R
+                  Connect with Labels
                 </button>
               </div>
 
@@ -765,6 +1183,58 @@ export default function UltimateMusicStudio() {
                 <Instagram className="w-4 h-4" />
                 <span>Share on Instagram</span>
               </button>
+            </div>
+
+            {/* Industry Analytics */}
+            <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700 mb-4">
+              <h4 className="font-bold mb-2 text-sm text-cyan-400 flex items-center">
+                <BarChart3 className="w-4 h-4 mr-1" />
+                Industry Analytics
+              </h4>
+              <div className="space-y-3 text-xs">
+                <div>
+                  <div className="text-gray-400 mb-1">Market Position</div>
+                  <div className="bg-gray-700/50 rounded p-2">
+                    <div className="flex justify-between mb-1">
+                      <span>Genre Saturation</span>
+                      <span className={`${industryAnalytics.marketPosition.saturation > 70 ? 'text-red-400' : 'text-green-400'}`}>
+                        {industryAnalytics.marketPosition.saturation}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Opportunity</span>
+                      <span className="text-green-400">{industryAnalytics.marketPosition.opportunity}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <div className="text-gray-400 mb-1">Fan Demographics</div>
+                  <div className="bg-gray-700/50 rounded p-2">
+                    <div className="flex justify-between mb-1">
+                      <span>Primary Age</span>
+                      <span className="text-white">{industryAnalytics.fanDemographics.age}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Gender Split</span>
+                      <span className="text-white">{industryAnalytics.fanDemographics.gender}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <div className="text-gray-400 mb-1">Career Trajectory</div>
+                  <div className="bg-gray-700/50 rounded p-2">
+                    <div className="flex justify-between mb-1">
+                      <span>Success Probability</span>
+                      <span className={`font-bold ${getScoreColor(industryAnalytics.careerTrajectory.successProbability)}`}>
+                        {industryAnalytics.careerTrajectory.successProbability}%
+                      </span>
+                    </div>
+                    <div className="text-gray-400">{industryAnalytics.careerTrajectory.timeToAchieve}</div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Project Stats */}
