@@ -9,6 +9,7 @@ import {
   MessageSquare, Headphones as HeadphonesIcon, Wireless, Cpu, Database, Mic2
 } from 'lucide-react';
 import StudioNavigation from '../components/studio-navigation';
+import CuttingEdgeBeatMaker from '../components/cutting-edge-beatmaker';
 
 export default function UltimateMusicStudio() {
   // HIT SONG ANALYZER STATE

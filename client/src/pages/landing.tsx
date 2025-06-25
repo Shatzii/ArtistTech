@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'wouter';
+import StudioNavigation from '../components/studio-navigation';
 
 export default function Landing() {
   const [hoveredFeature, setHoveredFeature] = useState<string | null>(null);
