@@ -262,6 +262,7 @@ export default function UltimateDJStudio() {
                     {crowdAnalytics.faceDetection ? 'ON' : 'OFF'}
                   </div>
                 </div>
+                </HolographicPanel>
               </div>
             </div>
 
@@ -420,7 +421,7 @@ export default function UltimateDJStudio() {
 
                 {/* Ultra-Advanced Waveform Display */}
                 <AdvancedWaveform
-                  isPlaying={tracks.deckA.isPlaying}
+                  isPlaying={tracks.deckA.playing}
                   position={tracks.deckA.position}
                   color="blue"
                   title="DECK A - NEURAL WAVEFORM"
@@ -659,7 +660,7 @@ export default function UltimateDJStudio() {
                 {/* Ultra-Advanced Waveform Display B */}
                 {tracks.deckB.loaded ? (
                   <AdvancedWaveform
-                    isPlaying={tracks.deckB.isPlaying}
+                    isPlaying={tracks.deckB.playing}
                     position={tracks.deckB.position}
                     color="red"
                     title="DECK B - NEURAL WAVEFORM"
@@ -730,6 +731,7 @@ export default function UltimateDJStudio() {
                     <Square className="w-4 h-4 mx-auto" />
                   </button>
                 </div>
+                </HolographicPanel>
               </div>
             </div>
           </div>
