@@ -7,10 +7,6 @@ import {
   Zap, Sliders, Settings, Radio, Sparkles 
 } from 'lucide-react';
 import StudioNavigation from '@/components/studio-navigation';
-import NeuralBackground from '@/components/neural-background';
-import HolographicPanel from '@/components/holographic-ui';
-import AdvancedWaveform from '@/components/advanced-waveform';
-import AIAssistant from '@/components/ai-assistant';
 
 export default function UltimateDJStudio() {
   const [crossfaderPosition, setCrossfaderPosition] = useState(50);
@@ -108,7 +104,6 @@ export default function UltimateDJStudio() {
 
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden relative">
-      <NeuralBackground />
       <StudioNavigation />
       
       {/* STUDIO HEADER */}
@@ -152,7 +147,11 @@ export default function UltimateDJStudio() {
       <div className="flex h-[calc(100vh-100px)]">
         {/* LEFT SIDEBAR - AI ANALYTICS */}
         <div className="w-80 bg-gray-900/50 border-r border-gray-700 p-4 space-y-4 overflow-y-auto">
-          <HolographicPanel title="AI CROWD ANALYTICS" subtitle="Real-time Audience Intelligence" glowColor="green" ai={true}>
+          <div className="bg-gray-800/50 rounded-lg border border-green-500/30 p-4 relative overflow-hidden">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-green-400">AI CROWD ANALYTICS</h3>
+              <div className="text-xs text-green-400">Real-time Audience Intelligence</div>
+            </div>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-gray-700/50 rounded p-2">
@@ -171,7 +170,7 @@ export default function UltimateDJStudio() {
                 </div>
               </div>
             </div>
-          </HolographicPanel>
+          </div>
 
           <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700">
             <h3 className="text-sm font-bold mb-2 text-yellow-400">AI Song Predictions</h3>
@@ -195,7 +194,11 @@ export default function UltimateDJStudio() {
           <div className="grid grid-cols-12 gap-6 h-[400px]">
             {/* LEFT DECK A */}
             <div className="col-span-4 space-y-4">
-              <HolographicPanel title="DECK A" subtitle="Neural Audio Analysis" glowColor="blue">
+              <div className="bg-gray-800/50 rounded-lg border border-blue-500/30 p-4 relative overflow-hidden">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-blue-400">DECK A</h3>
+                  <div className="text-xs text-blue-400">Neural Audio Analysis</div>
+                </div>
                 <div className="space-y-4">
                   {/* Track Display */}
                   <div className="bg-black/30 rounded-lg p-4 border border-blue-500/30">
@@ -209,12 +212,9 @@ export default function UltimateDJStudio() {
                       </div>
                     </div>
                     
-                    <AdvancedWaveform 
-                      isPlaying={tracks.deckA.playing} 
-                      position={tracks.deckA.position} 
-                      color="blue"
-                      title="Deck A"
-                    />
+                    <div className="h-16 bg-gradient-to-r from-blue-500/20 to-blue-600/20 rounded border border-blue-500/30 flex items-center justify-center">
+                      <div className="text-blue-400 text-sm">WAVEFORM DISPLAY</div>
+                    </div>
                   </div>
 
                   {/* Deck Controls */}
@@ -235,7 +235,11 @@ export default function UltimateDJStudio() {
 
             {/* CENTER MIXER */}
             <div className="col-span-4 space-y-4">
-              <HolographicPanel title="AI NEURAL CROSSFADER" subtitle="Quantum Audio Processing" glowColor="purple" ai={true}>
+              <div className="bg-gray-800/50 rounded-lg border border-purple-500/30 p-4 relative overflow-hidden">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-purple-400">AI NEURAL CROSSFADER</h3>
+                  <div className="text-xs text-purple-400">Quantum Audio Processing</div>
+                </div>
                 <div className="space-y-4">
                   {/* Advanced Crossfader */}
                   <div className="mb-6">
@@ -295,14 +299,21 @@ export default function UltimateDJStudio() {
                     ))}
                   </div>
                 </div>
-              </HolographicPanel>
+              </div>
 
-              <AIAssistant />
+              <div className="bg-gray-800/50 rounded-lg border border-purple-500/30 p-4">
+                <h3 className="text-lg font-bold text-purple-400 mb-3">AI Assistant</h3>
+                <div className="text-sm text-gray-300">Voice commands and real-time suggestions active</div>
+              </div>
             </div>
 
             {/* RIGHT DECK B */}
             <div className="col-span-4 space-y-4">
-              <HolographicPanel title="DECK B" subtitle="AI Enhanced Audio Processing" glowColor="red">
+              <div className="bg-gray-800/50 rounded-lg border border-red-500/30 p-4 relative overflow-hidden">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-red-400">DECK B</h3>
+                  <div className="text-xs text-red-400">AI Enhanced Audio Processing</div>
+                </div>
                 <div className="space-y-4">
                   {/* Track Display */}
                   <div className="bg-black/30 rounded-lg p-4 border border-red-500/30">
@@ -316,12 +327,9 @@ export default function UltimateDJStudio() {
                       </div>
                     </div>
                     
-                    <AdvancedWaveform 
-                      isPlaying={tracks.deckB.playing} 
-                      position={tracks.deckB.position} 
-                      color="red"
-                      title="Deck B"
-                    />
+                    <div className="h-16 bg-gradient-to-r from-red-500/20 to-red-600/20 rounded border border-red-500/30 flex items-center justify-center">
+                      <div className="text-red-400 text-sm">WAVEFORM DISPLAY</div>
+                    </div>
                   </div>
 
                   {/* Deck Controls */}
