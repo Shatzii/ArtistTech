@@ -199,6 +199,11 @@ export default function Landing() {
                 Interactive Demo
               </button>
             </Link>
+            <Link href="/enterprise-management">
+              <button className="border-2 border-purple-400 px-6 py-3 rounded-lg text-lg font-medium hover:bg-purple-400/20 transition-all">
+                Enterprise Management
+              </button>
+            </Link>
           </div>
           
           {/* Stats */}
