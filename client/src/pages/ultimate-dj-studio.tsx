@@ -1,145 +1,133 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'wouter';
 import { 
-  Play, Pause, Square, Volume2, Mic, Headphones, 
+  Play, Pause, Volume2, SkipForward, SkipBack, 
   Disc3, Music, TrendingUp, Users, BarChart3, 
   Heart, MessageCircle, Share2, DollarSign, 
   Zap, Sliders, Settings, Radio, Sparkles 
 } from 'lucide-react';
-import StudioNavigation from '@/components/studio-navigation';
 
 export default function UltimateDJStudio() {
   const [crossfaderPosition, setCrossfaderPosition] = useState(50);
   const [masterVolume, setMasterVolume] = useState(75);
-  const [isRecording, setIsRecording] = useState(false);
-  const [selectedRequest, setSelectedRequest] = useState<string | null>(null);
-  const [voteSocketConnected, setVoteSocketConnected] = useState(false);
-
-  // Enhanced track state with AI features
+  const [crowdAnalytics, setCrowdAnalytics] = useState({
+    energyLevel: 85,
+    danceIntensity: 92,
+    vocals: 78,
+    engagement: 94,
+    faceDetection: true
+  });
+  
   const [tracks, setTracks] = useState({
     deckA: {
-      loaded: true,
-      playing: true,
-      title: "Summer Vibes 2025",
-      artist: "DJ Neural",
+      title: "Epic Future Bass",
+      artist: "AI Producer",
       bpm: 128,
-      key: "Am",
-      energy: 85,
-      position: 45,
-      duration: 240,
-      cuePoints: [30, 60, 120, 180]
+      key: "C Major",
+      playing: false,
+      position: 0.35,
+      energy: 92
     },
     deckB: {
-      loaded: true,
-      playing: false,
-      title: "Future Bass Dreams",
-      artist: "Quantum Beat",
+      title: "Neural Trap",
+      artist: "AI Beatmaker",
       bpm: 140,
-      key: "Gm",
-      energy: 92,
-      position: 0,
-      duration: 195,
-      cuePoints: [25, 50, 100, 150]
+      key: "G Minor",
+      playing: false,
+      position: 0.65,
+      energy: 88
     }
   });
 
-  // Enhanced stem separation state
-  const [stemSeparation, setStemSeparation] = useState({
-    vocals: { level: 100, isolated: false, effects: [] },
-    drums: { level: 100, isolated: false, effects: [] },
-    bass: { level: 100, isolated: false, effects: [] },
-    melody: { level: 100, isolated: false, effects: [] }
+  const [effects, setEffects] = useState({
+    deckA: { reverb: 0, delay: 0, filter: 50, echo: 0 },
+    deckB: { reverb: 0, delay: 0, filter: 50, echo: 0 }
   });
 
-  // Crowd analytics with AI
-  const [crowdAnalytics, setCrowdAnalytics] = useState({
-    energyLevel: 78,
-    responseTime: 2.3,
-    peakMoments: [45, 92, 156, 203],
-    faceDetection: true,
-    nextTrackSuggestions: [
-      { title: "Electric Dreams", match: 94, genre: "Progressive House" },
-      { title: "Neon Nights", match: 89, genre: "Future Bass" },
-      { title: "Digital Love", match: 87, genre: "Synthwave" }
-    ]
+  const [eqSettings, setEQSettings] = useState({
+    deckA: { high: 50, mid: 50, low: 50 },
+    deckB: { high: 50, mid: 50, low: 50 }
   });
 
-  // Live requests with payment integration
-  const [liveRequests, setLiveRequests] = useState([
-    { id: 1, song: "Blinding Lights", artist: "The Weeknd", user: "PartyGoer123", payment: 15, votes: 89, priority: "high" },
-    { id: 2, song: "Don't Start Now", artist: "Dua Lipa", user: "DanceFan99", payment: 10, votes: 67, priority: "medium" },
-    { id: 3, song: "Watermelon Sugar", artist: "Harry Styles", user: "MusicLover", payment: 8, votes: 45, priority: "medium" },
-    { id: 4, song: "Levitating", artist: "Dua Lipa", user: "VibeChecker", payment: 0, votes: 34, priority: "low" },
-    { id: 5, song: "Peaches", artist: "Justin Bieber", user: "PopFan2025", payment: 12, votes: 78, priority: "high" }
+  const [requests, setRequests] = useState([
+    { id: 1, track: "Synthwave Nights", votes: 45, payment: 25, priority: "high" },
+    { id: 2, track: "Bass Drop City", votes: 32, payment: 15, priority: "medium" },
+    { id: 3, track: "Chill Vibes Only", votes: 28, payment: 10, priority: "low" },
+    { id: 4, track: "Electronic Dreams", votes: 19, payment: 0, priority: "low" }
   ]);
 
-  const [totalRevenue, setTotalRevenue] = useState(247.50);
-
-  const keyCompatibility = {
-    '1A': 'Am', '1B': 'C', '2A': 'Em', '2B': 'G', '3A': 'Bm', '3B': 'D',
-    '4A': 'F#m', '4B': 'A', '5A': 'C#m', '5B': 'E', '6A': 'G#m', '6B': 'B',
-    '7A': 'D#m', '7B': 'F#', '8A': 'A#m', '8B': 'C#', '9A': 'Fm', '9B': 'G#',
-    '10A': 'Cm', '10B': 'D#', '11A': 'Gm', '11B': 'A#', '12A': 'Dm', '12B': 'F'
-  };
-
-  const getCompatibleKeys = (currentKey: string) => {
-    const keyToNumber = Object.entries(keyCompatibility).find(([_, key]) => key === currentKey)?.[0];
-    return keyToNumber || '1A';
-  };
-
   useEffect(() => {
-    // WebSocket connection for live voting
-    const ws = new WebSocket(`${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`);
-    ws.onopen = () => setVoteSocketConnected(true);
-    ws.onclose = () => setVoteSocketConnected(false);
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === 'newRequest') {
-        setLiveRequests(prev => [...prev, data.request]);
-        setTotalRevenue(prev => prev + (data.request.payment || 0));
-      }
-    };
-    return () => ws.close();
+    const interval = setInterval(() => {
+      setCrowdAnalytics(prev => ({
+        ...prev,
+        energyLevel: Math.max(70, Math.min(100, prev.energyLevel + (Math.random() - 0.5) * 10)),
+        danceIntensity: Math.max(70, Math.min(100, prev.danceIntensity + (Math.random() - 0.5) * 8)),
+        engagement: Math.max(80, Math.min(100, prev.engagement + (Math.random() - 0.5) * 6))
+      }));
+    }, 2000);
+
+    return () => clearInterval(interval);
   }, []);
+
+  const handlePlayToggle = (deck: string) => {
+    setTracks(prev => ({
+      ...prev,
+      [deck]: { ...prev[deck as keyof typeof prev], playing: !prev[deck as keyof typeof prev].playing }
+    }));
+  };
 
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden relative">
-      <StudioNavigation />
+      {/* Animated Background */}
+      <div className="fixed inset-0 opacity-30">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-red-900/20 animate-pulse"></div>
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute rounded-full bg-white/10 animate-bounce"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                width: `${Math.random() * 4 + 2}px`,
+                height: `${Math.random() * 4 + 2}px`,
+                animationDelay: `${Math.random() * 2}s`,
+                animationDuration: `${Math.random() * 3 + 2}s`
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <div className="relative z-50 bg-gray-900/90 border-b border-gray-700 p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <Disc3 className="w-8 h-8 text-blue-400 animate-spin" />
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              ULTIMATE DJ STUDIO
+            </h1>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="text-sm text-gray-300">Live Audience: 1,247</div>
+            <div className="text-sm text-green-400">Revenue: $2,847</div>
+          </div>
+        </div>
+      </div>
       
       {/* STUDIO HEADER */}
       <div className="bg-gradient-to-r from-black via-blue-900/50 to-black border-b-2 border-blue-500/30 p-3 relative z-10">
-        <div className="flex items-center justify-between max-w-[2000px] mx-auto">
+        <div className="flex items-center justify-between">
           <div className="flex items-center space-x-6">
-            <Link href="/admin" className="hover:scale-110 transition-transform">
-              <img 
-                src="/assets/artist-tech-logo.jpeg" 
-                alt="Artist Tech" 
-                className="h-12 w-auto rounded-lg border-2 border-blue-500/50 hover:border-blue-400"
-              />
-            </Link>
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-orange-500 bg-clip-text text-transparent">
-                ULTIMATE DJ STUDIO PRO
-              </h1>
-              <p className="text-blue-300 text-sm">Professional Club Integration • AI-Powered Mixing • Live Crowd Interaction</p>
+            <div className="text-2xl font-bold text-blue-400 animate-pulse">🎵 ARTIST TECH DJ STUDIO PRO 🎵</div>
+            <div className="flex items-center space-x-2 text-green-400">
+              <Radio className="w-4 h-4 animate-pulse" />
+              <span className="text-sm">LIVE • 1,247 listeners</span>
             </div>
           </div>
-          
           <div className="flex items-center space-x-4">
-            <div className="bg-black/50 rounded-lg p-3 border border-green-500/30">
-              <div className="text-xs text-green-400 mb-1">LIVE REVENUE</div>
-              <div className="text-lg font-bold text-green-400">${totalRevenue.toFixed(2)}</div>
-            </div>
-            <div className="bg-black/50 rounded-lg p-3 border border-purple-500/30">
-              <div className="text-xs text-purple-400 mb-1">CROWD ENERGY</div>
-              <div className="text-lg font-bold text-purple-400">{crowdAnalytics.energyLevel}%</div>
-            </div>
-            <div className={`flex items-center space-x-2 px-3 py-2 rounded-lg ${voteSocketConnected ? 'bg-green-900/30 border border-green-500/30' : 'bg-red-900/30 border border-red-500/30'}`}>
-              <div className={`w-2 h-2 rounded-full ${voteSocketConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
-              <span className={`text-xs font-bold ${voteSocketConnected ? 'text-green-400' : 'text-red-400'}`}>
-                {voteSocketConnected ? 'LIVE CONNECTED' : 'OFFLINE'}
-              </span>
-            </div>
+            <div className="text-orange-400 font-bold">💰 Revenue: $2,847</div>
+            <div className="text-blue-400">🎯 Energy: {crowdAnalytics.energyLevel}%</div>
+            <div className="text-purple-400">💃 Dance: {crowdAnalytics.danceIntensity}%</div>
           </div>
         </div>
       </div>
@@ -159,8 +147,12 @@ export default function UltimateDJStudio() {
                   <div className="text-green-400 font-bold">{crowdAnalytics.energyLevel}%</div>
                 </div>
                 <div className="bg-gray-700/50 rounded p-2">
-                  <div className="text-gray-400">Response Time</div>
-                  <div className="text-blue-400 font-bold">{crowdAnalytics.responseTime}s</div>
+                  <div className="text-gray-400">Dance Intensity</div>
+                  <div className="text-blue-400 font-bold">{crowdAnalytics.danceIntensity}%</div>
+                </div>
+                <div className="bg-gray-700/50 rounded p-2">
+                  <div className="text-gray-400">Vocal Response</div>
+                  <div className="text-yellow-400 font-bold">{crowdAnalytics.vocals}%</div>
                 </div>
                 <div className="bg-gray-700/50 rounded p-2">
                   <div className="text-gray-400">Face Detection</div>
@@ -173,23 +165,35 @@ export default function UltimateDJStudio() {
           </div>
 
           <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700">
-            <h3 className="text-sm font-bold mb-2 text-yellow-400">AI Song Predictions</h3>
-            <div className="space-y-2">
-              {crowdAnalytics.nextTrackSuggestions.map((song, idx) => (
-                <div key={idx} className="bg-gray-700/50 rounded p-2 text-xs">
-                  <div className="font-bold text-white">{song.title}</div>
-                  <div className="text-gray-400">{song.genre}</div>
-                  <div className="text-green-400">{song.match}% match</div>
+            <h3 className="text-purple-400 font-bold mb-3">🎵 LIVE REQUESTS QUEUE</h3>
+            <div className="space-y-2 max-h-80 overflow-y-auto">
+              {requests.map((request) => (
+                <div 
+                  key={request.id} 
+                  className={`p-3 rounded border ${
+                    request.priority === 'high' ? 'border-green-500 bg-green-500/10' :
+                    request.priority === 'medium' ? 'border-yellow-500 bg-yellow-500/10' :
+                    'border-gray-500 bg-gray-500/10'
+                  }`}
+                >
+                  <div className="font-semibold text-sm">{request.track}</div>
+                  <div className="flex justify-between text-xs mt-1">
+                    <span className="text-blue-400">👍 {request.votes}</span>
+                    <span className="text-green-400">${request.payment}</span>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <AIAssistant />
+          <div className="bg-gray-800/50 rounded-lg border border-purple-500/30 p-4">
+            <h3 className="text-lg font-bold text-purple-400 mb-3">AI Assistant</h3>
+            <div className="text-sm text-gray-300">Voice commands and real-time suggestions active</div>
+          </div>
         </div>
 
         {/* MAIN STUDIO INTERFACE */}
-        <div className="flex-1 p-6 space-y-6 overflow-y-auto">
+        <div className="flex-1 bg-gray-900/30 p-6 space-y-6 overflow-y-auto">
           {/* TOP ROW - DUAL DECK SYSTEM */}
           <div className="grid grid-cols-12 gap-6 h-[400px]">
             {/* LEFT DECK A */}
@@ -203,9 +207,9 @@ export default function UltimateDJStudio() {
                   {/* Track Display */}
                   <div className="bg-black/30 rounded-lg p-4 border border-blue-500/30">
                     <div className="text-center mb-3">
-                      <div className="text-lg font-bold text-blue-400">{tracks.deckA.title}</div>
+                      <div className="text-blue-400 font-bold">{tracks.deckA.title}</div>
                       <div className="text-gray-400 text-sm">{tracks.deckA.artist}</div>
-                      <div className="flex justify-center space-x-4 mt-2 text-xs">
+                      <div className="grid grid-cols-3 gap-2 mt-2 text-xs">
                         <span className="text-blue-400">{tracks.deckA.bpm} BPM</span>
                         <span className="text-purple-400">{tracks.deckA.key}</span>
                         <span className="text-green-400">{tracks.deckA.energy}% Energy</span>
@@ -219,18 +223,21 @@ export default function UltimateDJStudio() {
 
                   {/* Deck Controls */}
                   <div className="grid grid-cols-3 gap-2">
-                    <button className="bg-green-500 hover:bg-green-600 text-white py-2 rounded transition-colors">
-                      <Play className="w-4 h-4 mx-auto" />
+                    <button 
+                      onClick={() => handlePlayToggle('deckA')}
+                      className={`p-3 rounded ${tracks.deckA.playing ? 'bg-green-500' : 'bg-gray-700'} hover:opacity-80 transition-all`}
+                    >
+                      {tracks.deckA.playing ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
                     </button>
-                    <button className="bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded transition-colors">
-                      <Pause className="w-4 h-4 mx-auto" />
+                    <button className="p-3 rounded bg-gray-700 hover:bg-gray-600">
+                      <SkipBack className="w-5 h-5" />
                     </button>
-                    <button className="bg-red-500 hover:bg-red-600 text-white py-2 rounded transition-colors">
-                      <Square className="w-4 h-4 mx-auto" />
+                    <button className="p-3 rounded bg-gray-700 hover:bg-gray-600">
+                      <SkipForward className="w-5 h-5" />
                     </button>
                   </div>
                 </div>
-              </HolographicPanel>
+              </div>
             </div>
 
             {/* CENTER MIXER */}
@@ -244,59 +251,65 @@ export default function UltimateDJStudio() {
                   {/* Advanced Crossfader */}
                   <div className="mb-6">
                     <div className="bg-black rounded-lg p-4 border border-purple-500/30 relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/20 to-red-500/10"></div>
-                      <div className="relative">
-                        <div className="mb-3">
-                          <div className="flex justify-between text-xs text-gray-400 mb-1">
-                            <span>DECK A</span>
-                            <span className="text-purple-400 font-bold">AI CROSSFADER</span>
-                            <span>DECK B</span>
-                          </div>
-                          <input
-                            type="range"
-                            min="0"
-                            max="100"
-                            value={crossfaderPosition}
-                            onChange={(e) => setCrossfaderPosition(Number(e.target.value))}
-                            className="w-full h-3 bg-gradient-to-r from-blue-500 via-purple-500 to-red-500 rounded-lg appearance-none cursor-pointer crossfader-slider"
-                          />
-                        </div>
-                        
-                        {/* EQ Section */}
-                        <div className="grid grid-cols-3 gap-3 mt-4">
-                          {['HIGH', 'MID', 'LOW'].map((band) => (
-                            <div key={band} className="text-center">
-                              <div className="text-xs text-gray-400 mb-1">{band}</div>
-                              <input
-                                type="range"
-                                min="0"
-                                max="100"
-                                defaultValue="50"
-                                className="w-full h-20 bg-gray-700 rounded-lg appearance-none cursor-pointer eq-slider"
-                                style={{ writingMode: 'bt-lr', WebkitAppearance: 'slider-vertical' }}
-                              />
-                            </div>
-                          ))}
-                        </div>
+                      <div className="text-center text-purple-400 text-sm mb-2">CROSSFADER POSITION</div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={crossfaderPosition}
+                        onChange={(e) => setCrossfaderPosition(Number(e.target.value))}
+                        className="w-full h-3 bg-gray-700 rounded-lg appearance-none cursor-pointer crossfader-slider"
+                      />
+                      <div className="flex justify-between text-xs text-gray-400 mt-1">
+                        <span>DECK A</span>
+                        <span>{crossfaderPosition}%</span>
+                        <span>DECK B</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Effects */}
-                  <div className="space-y-3">
-                    <h4 className="text-sm font-bold text-yellow-400">MASTER FX</h4>
-                    {['Reverb', 'Delay', 'Filter', 'Distortion'].map((fx) => (
-                      <div key={fx} className="flex items-center space-x-2">
-                        <span className="text-xs w-16">{fx}</span>
-                        <input
-                          type="range"
-                          min="0"
-                          max="100"
-                          defaultValue="0"
-                          className="flex-1 accent-yellow-500"
-                        />
-                      </div>
-                    ))}
+                  {/* EQ CONTROLS */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center">
+                      <div className="text-blue-400 text-sm mb-2">DECK A EQ</div>
+                      {(['high', 'mid', 'low'] as const).map((band) => (
+                        <div key={band} className="mb-2">
+                          <div className="text-xs text-gray-400 mb-1">{band.toUpperCase()}</div>
+                          <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            value={eqSettings.deckA[band]}
+                            onChange={(e) => setEQSettings(prev => ({
+                              ...prev,
+                              deckA: { ...prev.deckA, [band]: Number(e.target.value) }
+                            }))}
+                            className="w-full h-20 bg-gray-700 rounded-lg appearance-none cursor-pointer eq-slider"
+                            style={{ writingMode: 'vertical-lr' }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <div className="text-center">
+                      <div className="text-red-400 text-sm mb-2">DECK B EQ</div>
+                      {(['high', 'mid', 'low'] as const).map((band) => (
+                        <div key={band} className="mb-2">
+                          <div className="text-xs text-gray-400 mb-1">{band.toUpperCase()}</div>
+                          <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            value={eqSettings.deckB[band]}
+                            onChange={(e) => setEQSettings(prev => ({
+                              ...prev,
+                              deckB: { ...prev.deckB, [band]: Number(e.target.value) }
+                            }))}
+                            className="w-full h-20 bg-gray-700 rounded-lg appearance-none cursor-pointer eq-slider"
+                            style={{ writingMode: 'vertical-lr' }}
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -318,10 +331,10 @@ export default function UltimateDJStudio() {
                   {/* Track Display */}
                   <div className="bg-black/30 rounded-lg p-4 border border-red-500/30">
                     <div className="text-center mb-3">
-                      <div className="text-lg font-bold text-red-400">{tracks.deckB.title}</div>
+                      <div className="text-red-400 font-bold">{tracks.deckB.title}</div>
                       <div className="text-gray-400 text-sm">{tracks.deckB.artist}</div>
-                      <div className="flex justify-center space-x-4 mt-2 text-xs">
-                        <span className="text-red-400">{tracks.deckB.bpm} BPM</span>
+                      <div className="grid grid-cols-3 gap-2 mt-2 text-xs">
+                        <span className="text-blue-400">{tracks.deckB.bpm} BPM</span>
                         <span className="text-purple-400">{tracks.deckB.key}</span>
                         <span className="text-green-400">{tracks.deckB.energy}% Energy</span>
                       </div>
@@ -334,95 +347,101 @@ export default function UltimateDJStudio() {
 
                   {/* Deck Controls */}
                   <div className="grid grid-cols-3 gap-2">
-                    <button className="bg-green-500 hover:bg-green-600 text-white py-2 rounded transition-colors">
-                      <Play className="w-4 h-4 mx-auto" />
+                    <button 
+                      onClick={() => handlePlayToggle('deckB')}
+                      className={`p-3 rounded ${tracks.deckB.playing ? 'bg-green-500' : 'bg-gray-700'} hover:opacity-80 transition-all`}
+                    >
+                      {tracks.deckB.playing ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
                     </button>
-                    <button className="bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded transition-colors">
-                      <Pause className="w-4 h-4 mx-auto" />
+                    <button className="p-3 rounded bg-gray-700 hover:bg-gray-600">
+                      <SkipBack className="w-5 h-5" />
                     </button>
-                    <button className="bg-red-500 hover:bg-red-600 text-white py-2 rounded transition-colors">
-                      <Square className="w-4 h-4 mx-auto" />
+                    <button className="p-3 rounded bg-gray-700 hover:bg-gray-600">
+                      <SkipForward className="w-5 h-5" />
                     </button>
                   </div>
                 </div>
-              </HolographicPanel>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* RIGHT PANEL - LIVE VOTING & SOCIAL */}
-        <div className="w-80 bg-gray-900/50 border-l border-gray-700 flex flex-col">
-          <div className="p-4 border-b border-gray-700">
-            <h2 className="text-lg font-bold text-purple-400 flex items-center">
-              <Users className="w-5 h-5 mr-2" />
-              LIVE CROWD REQUESTS
-            </h2>
-            <div className="text-xs text-gray-400 mt-1">
-              {liveRequests.length} requests • ${totalRevenue.toFixed(2)} earned
-            </div>
-          </div>
-          
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
-            {liveRequests.map((request) => (
-              <div 
-                key={request.id}
-                className={`bg-gray-800/70 rounded-lg p-3 border cursor-pointer transition-all hover:scale-105 ${
-                  request.priority === 'high' ? 'border-green-500/50' : 
-                  request.priority === 'medium' ? 'border-yellow-500/50' : 'border-gray-600/50'
-                } ${selectedRequest === request.id.toString() ? 'ring-2 ring-purple-500' : ''}`}
-                onClick={() => setSelectedRequest(request.id.toString())}
-              >
-                <div className="flex justify-between items-start mb-2">
-                  <div className="flex-1">
-                    <div className="font-bold text-white text-sm">{request.song}</div>
-                    <div className="text-gray-400 text-xs">{request.artist}</div>
-                    <div className="text-blue-400 text-xs">by {request.user}</div>
-                  </div>
-                  <div className="text-right">
-                    {request.payment > 0 && (
-                      <div className="text-green-400 font-bold text-sm flex items-center">
-                        <DollarSign className="w-3 h-3" />
-                        {request.payment}
-                      </div>
-                    )}
-                    <div className="text-purple-400 text-xs flex items-center">
-                      <Heart className="w-3 h-3 mr-1" />
-                      {request.votes}
+          {/* BOTTOM SECTION - EFFECTS AND FEATURES */}
+          <div className="grid grid-cols-3 gap-6">
+            {/* EFFECTS PANEL */}
+            <div className="bg-gray-800/50 rounded-lg border border-yellow-500/30 p-4">
+              <h3 className="text-lg font-bold text-yellow-400 mb-4">NEURAL EFFECTS</h3>
+              <div className="space-y-4">
+                {['reverb', 'delay', 'filter', 'echo'].map((effect) => (
+                  <div key={effect}>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-300 capitalize">{effect}</span>
+                      <span className="text-yellow-400">{effects.deckA[effect as keyof typeof effects.deckA]}%</span>
                     </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={effects.deckA[effect as keyof typeof effects.deckA]}
+                      onChange={(e) => setEffects(prev => ({
+                        ...prev,
+                        deckA: { ...prev.deckA, [effect]: Number(e.target.value) }
+                      }))}
+                      className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* AI FEATURES */}
+            <div className="bg-gray-800/50 rounded-lg border border-cyan-500/30 p-4">
+              <h3 className="text-lg font-bold text-cyan-400 mb-4">AI FEATURES</h3>
+              <div className="space-y-3">
+                <button className="w-full p-3 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg hover:opacity-80 transition-all">
+                  <Sparkles className="w-4 h-4 inline mr-2" />
+                  Auto-Mix Transition
+                </button>
+                <button className="w-full p-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg hover:opacity-80 transition-all">
+                  <BarChart3 className="w-4 h-4 inline mr-2" />
+                  BPM Sync Assistant
+                </button>
+                <button className="w-full p-3 bg-gradient-to-r from-green-500 to-yellow-500 rounded-lg hover:opacity-80 transition-all">
+                  <TrendingUp className="w-4 h-4 inline mr-2" />
+                  Key Harmonic Match
+                </button>
+                <button className="w-full p-3 bg-gradient-to-r from-red-500 to-orange-500 rounded-lg hover:opacity-80 transition-all">
+                  <Users className="w-4 h-4 inline mr-2" />
+                  Crowd Energy Boost
+                </button>
+              </div>
+            </div>
+
+            {/* REVENUE TRACKING */}
+            <div className="bg-gray-800/50 rounded-lg border border-green-500/30 p-4">
+              <h3 className="text-lg font-bold text-green-400 mb-4">REVENUE TRACKER</h3>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-300">Tonight's Earnings:</span>
+                  <span className="text-green-400 font-bold">$2,847</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-300">Paid Requests:</span>
+                  <span className="text-blue-400">127</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-300">Tips Received:</span>
+                  <span className="text-yellow-400">$847</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-300">Peak Audience:</span>
+                  <span className="text-purple-400">1,892</span>
+                </div>
+                <div className="bg-green-500/20 rounded p-2 mt-4">
+                  <div className="text-green-400 text-sm font-bold">🎯 Target: $3,000 (95%)</div>
+                  <div className="w-full bg-gray-700 rounded-full h-2 mt-1">
+                    <div className="bg-green-500 h-2 rounded-full" style={{ width: '95%' }}></div>
                   </div>
                 </div>
-                
-                <div className="flex justify-between items-center">
-                  <div className={`px-2 py-1 rounded text-xs font-bold ${
-                    request.priority === 'high' ? 'bg-green-900/50 text-green-400' :
-                    request.priority === 'medium' ? 'bg-yellow-900/50 text-yellow-400' :
-                    'bg-gray-700/50 text-gray-400'
-                  }`}>
-                    {request.priority.toUpperCase()}
-                  </div>
-                  
-                  <div className="flex space-x-1">
-                    <button className="bg-purple-600 hover:bg-purple-700 text-white p-1 rounded text-xs">
-                      <Play className="w-3 h-3" />
-                    </button>
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white p-1 rounded text-xs">
-                      <Zap className="w-3 h-3" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          
-          <div className="p-4 border-t border-gray-700 space-y-3">
-            <div className="bg-gray-800/50 rounded-lg p-3">
-              <div className="flex justify-between text-sm mb-2">
-                <span className="text-gray-400">Total Revenue</span>
-                <span className="text-green-400 font-bold">${totalRevenue.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Avg Mix Rating</span>
-                <span className="text-yellow-400">9.2/10</span>
               </div>
             </div>
           </div>
