@@ -24,6 +24,7 @@ import { visualArtsEngine } from "./visual-arts-engine";
 import { aiWritingAssistant } from "./ai-writing-assistant";
 import { musicSamplingEngine } from "./music-sampling-engine";
 import { socialMediaSamplingEngine } from "./social-media-sampling-engine";
+import { socialMediaAITeam } from "./social-media-ai-team";
 import { advancedAudioEngine } from "./advanced-audio-engine";
 import { collaborativeStudioEngine } from "./collaborative-studio-engine";
 import { streamingIntegrationEngine } from "./streaming-integration-engine";
@@ -873,6 +874,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const status = {
         aiMarketingEngine: aiMarketingEngine.getEngineStatus(),
         aiContentCreator: aiContentCreator.getCreatorStatus(),
+        socialMediaAITeam: socialMediaAITeam.getTeamStatus(),
         features: [
           'Automated Marketing Campaign Creation',
           'AI-Powered Content Generation',
@@ -881,11 +883,115 @@ export async function registerRoutes(app: Express): Promise<Server> {
           'Revenue Stream Analysis',
           'Audience Insights & Segmentation',
           'Content Calendar Management',
-          'Brand Voice Development'
+          'Brand Voice Development',
+          'AI Listener Discovery & Targeting',
+          'Sponsor Matching & Partnership',
+          'Real-time Trend Analysis',
+          'Influencer Network Management',
+          'Community Building & Engagement'
         ],
         timestamp: new Date().toISOString()
       };
       res.json(status);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Social Media AI Team APIs
+  app.post("/api/social/find-listeners", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const { artist_profile, criteria } = req.body;
+      const artistId = req.user?.id.toString() || 'demo';
+      
+      // Add artist ID to profile
+      const profileWithId = {
+        ...artist_profile,
+        id: artistId,
+        followers: artist_profile.followers || 5000,
+        engagement_rate: artist_profile.engagement_rate || 0.035,
+        genres: artist_profile.genres || ['pop', 'indie'],
+        markets: artist_profile.markets || ['US', 'UK', 'Canada']
+      };
+      
+      const result = await socialMediaAITeam.findListeners(profileWithId, criteria);
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/social/find-sponsors", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const { artist_profile, partnership_goals } = req.body;
+      const artistId = req.user?.id.toString() || 'demo';
+      
+      // Add artist ID to profile
+      const profileWithId = {
+        ...artist_profile,
+        id: artistId,
+        followers: artist_profile.followers || 5000,
+        engagement_rate: artist_profile.engagement_rate || 0.035,
+        genres: artist_profile.genres || ['pop', 'indie'],
+        markets: artist_profile.markets || ['US', 'UK', 'Canada']
+      };
+      
+      const result = await socialMediaAITeam.findSponsors(profileWithId, partnership_goals);
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/social/team-status", authenticateToken, async (req, res) => {
+    try {
+      const teamStatus = socialMediaAITeam.getTeamStatus();
+      res.json(teamStatus);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/social/analyze-trends", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const { platforms } = req.body;
+      
+      // Mock trend analysis results for now - fully self-hosted
+      const trendAnalysis = {
+        trending_hashtags: {
+          tiktok: ['#newmusic2024', '#indieartist', '#musicdiscovery'],
+          instagram: ['#musician', '#songwriter', '#livemusic'],
+          youtube: ['#coverversion', '#originalmusic', '#musicvideo']
+        },
+        viral_opportunities: [
+          {
+            platform: 'tiktok',
+            trend: 'Music Challenge',
+            description: 'Create 15-second snippets with dance challenges',
+            estimated_reach: 250000,
+            competition_level: 'medium'
+          },
+          {
+            platform: 'instagram',
+            trend: 'Behind the Scenes',
+            description: 'Studio session content performing well',
+            estimated_reach: 150000,
+            competition_level: 'low'
+          }
+        ],
+        optimal_posting_times: {
+          tiktok: ['7-9pm EST', '12-2pm EST'],
+          instagram: ['6-8am EST', '7-9pm EST'],
+          youtube: ['2-4pm EST', '8-10pm EST']
+        },
+        audience_insights: {
+          peak_activity: 'weekends',
+          engagement_boost: '+45% on music discovery content',
+          recommended_content: ['studio sessions', 'song previews', 'live performances']
+        }
+      };
+      
+      res.json(trendAnalysis);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
