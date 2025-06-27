@@ -27,9 +27,9 @@ function AuthenticatedRouter() {
           <Route path="/login" component={UserLogin} />
           <Route path="/admin-login" component={AdminLogin} />
           <Route path="/admin" component={AdminDashboard} />
-          <Route path="/dj" component={DJStudio} />
-          <Route path="/dj-studio" component={DJStudio} />
-          <Route path="/music-studio" component={MusicStudio} />
+          <Route path="/dj" component={UltimateDJStudio} />
+          <Route path="/dj-studio" component={UltimateDJStudio} />
+          <Route path="/music-studio" component={UltimateMusicStudio} />
           <Route path="/video-studio" component={VideoStudio} />
           <Route path="/visual-studio" component={VisualStudio} />
           <Route path="/collaborative-studio" component={CollaborativeStudio} />

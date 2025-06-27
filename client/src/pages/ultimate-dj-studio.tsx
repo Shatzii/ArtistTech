@@ -8,6 +8,10 @@ import {
   Wand2, BarChart3, Crosshair, Sliders, Filter, Gauge, Activity
 } from 'lucide-react';
 import StudioNavigation from '../components/studio-navigation';
+import { HolographicPanel, HolographicButton, DataStream } from '../components/holographic-ui';
+import AdvancedWaveform from '../components/advanced-waveform';
+import NeuralBackground from '../components/neural-background';
+import AIAssistant from '../components/ai-assistant';
 
 export default function UltimateDJStudio() {
   // AI BEATMATCHING & HARMONIC MIXING
@@ -173,11 +177,12 @@ export default function UltimateDJStudio() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-hidden">
+    <div className="min-h-screen bg-black text-white overflow-hidden relative">
+      <NeuralBackground />
       <StudioNavigation />
       
       {/* STUDIO HEADER */}
-      <div className="bg-gradient-to-r from-black via-blue-900/50 to-black border-b-2 border-blue-500/30 p-3">
+      <div className="bg-gradient-to-r from-black via-blue-900/50 to-black border-b-2 border-blue-500/30 p-3 relative z-10">
         <div className="flex items-center justify-between max-w-[2000px] mx-auto">
           <div className="flex items-center space-x-6">
             <Link href="/admin" className="hover:scale-110 transition-transform">
@@ -413,42 +418,14 @@ export default function UltimateDJStudio() {
                   </div>
                 </div>
 
-                {/* Advanced Waveform Display */}
-                <div className="bg-black rounded p-3 mb-4 h-20 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-cyan-500/30 to-blue-500/20"></div>
-                  <div className="relative flex items-end space-x-px h-full">
-                    {Array.from({ length: 80 }).map((_, i) => {
-                      const height = Math.sin(i * 0.3) * 30 + 30 + Math.random() * 20;
-                      const isPlaying = i < tracks.deckA.position;
-                      return (
-                        <div 
-                          key={i}
-                          className={`w-1 transition-all duration-200 ${
-                            isPlaying 
-                              ? 'bg-gradient-to-t from-cyan-400 to-blue-300 shadow-lg shadow-cyan-500/50' 
-                              : 'bg-gradient-to-t from-blue-600 to-blue-400'
-                          }`}
-                          style={{ height: `${height}px` }}
-                        />
-                      );
-                    })}
-                  </div>
-                  
-                  {/* Playhead */}
-                  <div 
-                    className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg shadow-white/50"
-                    style={{ left: `${tracks.deckA.position}%` }}
-                  />
-                  
-                  {/* Beat Grid */}
-                  {[25, 50, 75].map((pos) => (
-                    <div 
-                      key={pos}
-                      className="absolute top-0 bottom-0 w-px bg-yellow-400/30"
-                      style={{ left: `${pos}%` }}
-                    />
-                  ))}
-                </div>
+                {/* Ultra-Advanced Waveform Display */}
+                <AdvancedWaveform
+                  isPlaying={tracks.deckA.isPlaying}
+                  position={tracks.deckA.position}
+                  color="blue"
+                  title="DECK A - NEURAL WAVEFORM"
+                  height={120}
+                />
 
                 {/* Stem Controls */}
                 <div className="space-y-2 mb-4">
@@ -505,9 +482,10 @@ export default function UltimateDJStudio() {
                 </div>
               </div>
 
-              {/* CENTER MIXER */}
-              <div className="bg-gray-800/50 rounded-lg border border-gray-700 p-4">
-                <h3 className="text-lg font-bold text-purple-400 mb-4 text-center">AI CROSSFADER</h3>
+              {/* CENTER MIXER - ULTRA HIGH-TECH */}
+              <div className="space-y-4">
+                <HolographicPanel title="AI NEURAL CROSSFADER" subtitle="Quantum Audio Processing" glowColor="purple" ai={true}>
+                  <div className="space-y-4">
                 
                 {/* Advanced Crossfader */}
                 <div className="mb-6">
@@ -678,53 +656,26 @@ export default function UltimateDJStudio() {
                   )}
                 </div>
 
-                {/* Advanced Waveform Display B */}
-                <div className="bg-black rounded p-3 mb-4 h-20 relative overflow-hidden">
-                  {tracks.deckB.loaded ? (
-                    <>
-                      <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 via-pink-500/30 to-red-500/20"></div>
-                      <div className="relative flex items-end space-x-px h-full">
-                        {Array.from({ length: 80 }).map((_, i) => {
-                          const height = Math.cos(i * 0.25) * 25 + 35 + Math.random() * 15;
-                          const isPlaying = i < tracks.deckB.position;
-                          return (
-                            <div 
-                              key={i}
-                              className={`w-1 transition-all duration-200 ${
-                                isPlaying 
-                                  ? 'bg-gradient-to-t from-pink-400 to-red-300 shadow-lg shadow-pink-500/50' 
-                                  : 'bg-gradient-to-t from-red-600 to-red-400'
-                              }`}
-                              style={{ height: `${height}px` }}
-                            />
-                          );
-                        })}
-                      </div>
-                      
-                      {/* Playhead */}
-                      <div 
-                        className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg shadow-white/50"
-                        style={{ left: `${tracks.deckB.position}%` }}
-                      />
-                      
-                      {/* Beat Grid */}
-                      {[25, 50, 75].map((pos) => (
-                        <div 
-                          key={pos}
-                          className="absolute top-0 bottom-0 w-px bg-yellow-400/30"
-                          style={{ left: `${pos}%` }}
-                        />
-                      ))}
-                    </>
-                  ) : (
-                    <div className="flex items-center justify-center h-full">
-                      <div className="text-center">
-                        <div className="text-gray-500 text-xs mb-2">LOAD TRACK TO SEE WAVEFORM</div>
-                        <div className="w-full h-2 bg-gray-800 rounded animate-pulse"></div>
-                      </div>
+                {/* Ultra-Advanced Waveform Display B */}
+                {tracks.deckB.loaded ? (
+                  <AdvancedWaveform
+                    isPlaying={tracks.deckB.isPlaying}
+                    position={tracks.deckB.position}
+                    color="red"
+                    title="DECK B - NEURAL WAVEFORM"
+                    height={120}
+                  />
+                ) : (
+                  <HolographicPanel title="DECK B" subtitle="Load track to activate neural analysis">
+                    <div className="text-center py-8">
+                      <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                      <div className="text-gray-400">Drag & drop or click to load</div>
+                      <HolographicButton variant="secondary" size="small">
+                        Browse Files
+                      </HolographicButton>
                     </div>
-                  )}
-                </div>
+                  </HolographicPanel>
+                )}
 
                 {/* Stem Controls */}
                 <div className="space-y-2 mb-4">

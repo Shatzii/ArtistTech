@@ -10,6 +10,8 @@ import {
 } from 'lucide-react';
 import StudioNavigation from '../components/studio-navigation';
 import CuttingEdgeBeatMaker from '../components/cutting-edge-beatmaker';
+import { HolographicPanel, HolographicButton, DataStream } from '../components/holographic-ui';
+import NeuralBackground from '../components/neural-background';
 
 export default function UltimateMusicStudio() {
   // HIT SONG ANALYZER STATE
