@@ -6,6 +6,7 @@ import { aiCollaborationPartner } from "./ai-collaboration-partner";
 import { voiceCreationEngine } from "./voice-creation-engine";
 import { predictiveAnalyticsEngine } from "./predictive-analytics-engine";
 import { spatialInterfaceEngine } from "./spatial-interface-engine";
+import { enterpriseAIManagement } from "./enterprise-ai-management";
 import { LiveStreamingService } from "./websocket";
 import { registerUser, loginUser, authenticateToken, seedDemoAccounts, type AuthRequest } from "./auth";
 import { createCheckoutSession, handleWebhook, getSubscriptionStatus } from "./payments";
@@ -1696,6 +1697,400 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to initialize CMS" });
     }
   });
+
+  // ========================================
+  // ENTERPRISE AI MANAGEMENT ROUTES
+  // Full-Scale Record Label & Film Production
+  // ========================================
+
+  // Talent Scouting & Discovery
+  app.post("/api/management/scout-talent", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const { platforms, criteria } = req.body;
+      
+      // Mock talent discovery for demonstration
+      const discoveries = [
+        {
+          id: `discovery_${Date.now()}_1`,
+          platform: platforms[0] || 'tiktok',
+          username: `rising_artist_${Math.floor(Math.random() * 1000)}`,
+          metrics: {
+            followers: Math.floor(Math.random() * 100000) + 1000,
+            engagement_rate: Math.random() * 0.1 + 0.02,
+            monthly_views: Math.floor(Math.random() * 1000000),
+            growth_rate: Math.random() * 0.5
+          },
+          potential_score: Math.floor(Math.random() * 40) + 60, // 60-100
+          contact_info: { email: 'contact@example.com' },
+          scouted_date: new Date()
+        }
+      ];
+
+      res.json({
+        discoveries,
+        recommendations: ["High potential for hip-hop genre", "Strong social media presence"],
+        market_analysis: {
+          trending_genres: ['afrobeats', 'hyperpop', 'bedroom-pop'],
+          market_saturation: 0.65,
+          opportunity_score: 0.82
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to scout talent" });
+    }
+  });
+
+  // Artist Signing & Contract Management
+  app.post("/api/management/sign-artist", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const { artistData, contractTerms } = req.body;
+      
+      const contract = {
+        id: `contract_${Date.now()}`,
+        artistId: artistData.id,
+        type: contractTerms.type || '360_deal',
+        terms: {
+          duration: contractTerms.duration || 24,
+          royaltyRate: contractTerms.royaltyRate || 0.15,
+          advance: contractTerms.advance || 50000,
+          recoupmentRate: contractTerms.recoupmentRate || 0.5
+        },
+        status: 'pending',
+        signedDate: new Date()
+      };
+
+      const artist = {
+        id: artistData.id || `artist_${Date.now()}`,
+        name: artistData.name,
+        genre: artistData.genre || ['pop'],
+        skillLevel: 'emerging',
+        marketValue: 75000,
+        contracts: [contract]
+      };
+
+      res.json({
+        artist,
+        contract,
+        development_plan: {
+          phase1: "Social media growth (3 months)",
+          phase2: "First single release (6 months)",
+          phase3: "EP production (9 months)",
+          phase4: "Tour planning (12 months)"
+        },
+        next_steps: [
+          "Schedule studio sessions",
+          "Plan social media campaign",
+          "Begin A&R development"
+        ]
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to sign artist" });
+    }
+  });
+
+  // Release Planning & Distribution
+  app.post("/api/management/plan-release", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const { artistId, releaseData } = req.body;
+      
+      const release = {
+        id: `release_${Date.now()}`,
+        artistId,
+        title: releaseData.title,
+        type: releaseData.type || 'single',
+        releaseDate: new Date(releaseData.releaseDate),
+        platforms: ['spotify', 'apple_music', 'youtube', 'soundcloud'],
+        budget: releaseData.budget || 25000
+      };
+
+      const promotionCampaign = {
+        id: `promo_${Date.now()}`,
+        budget: release.budget * 0.4,
+        channels: ['social_media', 'radio', 'streaming_playlists'],
+        targeting: {
+          demographics: ['18-34', 'music_lovers'],
+          geolocation: ['north_america', 'europe']
+        }
+      };
+
+      res.json({
+        release,
+        promotion_campaign: promotionCampaign,
+        distribution_plan: {
+          digital: ['Spotify', 'Apple Music', 'Amazon Music'],
+          physical: ['Vinyl', 'CD'],
+          sync: ['TV', 'Film', 'Advertising']
+        },
+        revenue_projection: {
+          streaming: 15000,
+          physical: 5000,
+          sync: 8000,
+          total: 28000
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to plan release" });
+    }
+  });
+
+  // Tour Booking & Management
+  app.post("/api/management/book-tour", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const { artistId, tourData } = req.body;
+      
+      const venues = [
+        { name: "The Fillmore", city: "San Francisco", capacity: 1150, fee: 15000 },
+        { name: "9:30 Club", city: "Washington DC", capacity: 1200, fee: 18000 },
+        { name: "First Avenue", city: "Minneapolis", capacity: 1550, fee: 22000 }
+      ];
+
+      const tour = {
+        id: `tour_${Date.now()}`,
+        artistId,
+        name: tourData.name || "World Tour 2024",
+        venues: venues.slice(0, tourData.venueCount || 3),
+        totalRevenue: venues.reduce((sum, v) => sum + v.fee, 0),
+        expenses: 35000,
+        profit: venues.reduce((sum, v) => sum + v.fee, 0) - 35000
+      };
+
+      res.json({
+        tour,
+        logistics: {
+          transportation: "Tour bus rental",
+          accommodation: "Hotel bookings",
+          equipment: "Audio/lighting rental"
+        },
+        marketing: {
+          announcement_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          ticket_sale_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to book tour" });
+    }
+  });
+
+  // Film Production Management
+  app.post("/api/management/create-film-project", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const { projectData } = req.body;
+      
+      const project = {
+        id: `film_${Date.now()}`,
+        title: projectData.title,
+        type: projectData.type || 'music_video',
+        budget: projectData.budget || 100000,
+        status: 'development',
+        timeline: [
+          { phase: "Pre-production", duration: "2 weeks", budget: 20000 },
+          { phase: "Production", duration: "1 week", budget: 60000 },
+          { phase: "Post-production", duration: "3 weeks", budget: 20000 }
+        ]
+      };
+
+      const crew = {
+        director: "Available Directors Pool",
+        cinematographer: "Professional DP Network",
+        editor: "Post-production Team",
+        sound: "Audio Specialists"
+      };
+
+      res.json({
+        project,
+        budget_breakdown: {
+          crew: 40000,
+          equipment: 30000,
+          location: 15000,
+          post_production: 15000
+        },
+        timeline: project.timeline,
+        crew_recommendations: crew,
+        distribution_opportunities: [
+          "YouTube Premium", "Vevo", "MTV", "Streaming Platforms"
+        ]
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create film project" });
+    }
+  });
+
+  // Marketing Campaign Creation
+  app.post("/api/management/create-campaign", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const { campaignData } = req.body;
+      
+      const campaign = {
+        id: `campaign_${Date.now()}`,
+        name: campaignData.name,
+        budget: campaignData.budget || 50000,
+        duration: campaignData.duration || 30, // days
+        platforms: ['instagram', 'tiktok', 'youtube', 'spotify'],
+        targeting: {
+          age_range: "18-34",
+          interests: ["music", "concerts", "streaming"],
+          locations: ["US", "UK", "Canada"]
+        }
+      };
+
+      res.json({
+        campaign,
+        content_plan: {
+          social_posts: 20,
+          video_content: 5,
+          influencer_partnerships: 3,
+          playlist_pitches: 10
+        },
+        performance_projection: {
+          reach: 500000,
+          engagement: 25000,
+          conversions: 2500,
+          roi_estimate: 1.8
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create campaign" });
+    }
+  });
+
+  // Global Distribution Network
+  app.post("/api/management/distribute-content", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const { contentData } = req.body;
+      
+      const distribution = {
+        id: `dist_${Date.now()}`,
+        contentId: contentData.id,
+        territories: {
+          north_america: { platforms: 15, revenue_share: 0.85 },
+          europe: { platforms: 12, revenue_share: 0.80 },
+          asia_pacific: { platforms: 8, revenue_share: 0.75 },
+          latin_america: { platforms: 6, revenue_share: 0.78 }
+        },
+        total_platforms: 41,
+        projected_reach: 10000000
+      };
+
+      res.json({
+        distribution,
+        platform_breakdown: {
+          streaming: 25,
+          social_media: 10,
+          broadcast: 4,
+          sync_libraries: 2
+        },
+        revenue_projection: {
+          month_1: 5000,
+          month_6: 25000,
+          year_1: 150000
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to distribute content" });
+    }
+  });
+
+  // Market Analysis & Intelligence
+  app.get("/api/management/market-analysis", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const analysis = {
+        trending_genres: [
+          { genre: "Afrobeats", growth: 45, opportunity: "high" },
+          { genre: "Hyperpop", growth: 38, opportunity: "medium" },
+          { genre: "Bedroom Pop", growth: 22, opportunity: "high" }
+        ],
+        market_opportunities: [
+          { region: "Latin America", growth: 35, potential: "very_high" },
+          { region: "Southeast Asia", growth: 42, potential: "high" },
+          { region: "Africa", growth: 58, potential: "very_high" }
+        ],
+        platform_insights: [
+          { platform: "TikTok", user_growth: 28, monetization: "emerging" },
+          { platform: "Spotify", user_growth: 12, monetization: "mature" },
+          { platform: "Instagram", user_growth: 8, monetization: "stable" }
+        ],
+        industry_forecast: {
+          streaming_revenue: { current: "23.1B", projected: "28.5B", growth: 23 },
+          live_events: { current: "25.1B", projected: "31.2B", growth: 24 },
+          sync_licensing: { current: "2.8B", projected: "4.1B", growth: 46 }
+        }
+      };
+
+      res.json(analysis);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to analyze market" });
+    }
+  });
+
+  // Financial Management & Analytics
+  app.get("/api/management/financial-overview", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const overview = {
+        total_revenue: 2850000,
+        total_expenses: 1720000,
+        net_profit: 1130000,
+        profit_margin: 0.396,
+        revenue_streams: {
+          streaming: { amount: 1200000, percentage: 42.1 },
+          touring: { amount: 980000, percentage: 34.4 },
+          merchandise: { amount: 340000, percentage: 11.9 },
+          sync_licensing: { amount: 230000, percentage: 8.1 },
+          nft_sales: { amount: 100000, percentage: 3.5 }
+        },
+        artist_breakdown: [
+          { name: "Artist Alpha", revenue: 850000, profit: 340000 },
+          { name: "Artist Beta", revenue: 620000, profit: 248000 },
+          { name: "Artist Gamma", revenue: 480000, profit: 192000 }
+        ],
+        growth_metrics: {
+          monthly_growth: 0.085,
+          yearly_projection: 4200000,
+          roi_on_investment: 2.3
+        }
+      };
+
+      res.json(overview);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get financial overview" });
+    }
+  });
+
+  // Legal & Compliance Management
+  app.post("/api/management/legal-review", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const { documentType, content } = req.body;
+      
+      const review = {
+        id: `legal_${Date.now()}`,
+        document_type: documentType,
+        status: "reviewed",
+        compliance_score: 0.92,
+        recommendations: [
+          "Update jurisdiction clause for international distribution",
+          "Add force majeure provision for tour contracts",
+          "Include streaming platform terms compliance"
+        ],
+        risk_assessment: {
+          copyright: "low",
+          contract_disputes: "medium",
+          regulatory: "low",
+          financial: "low"
+        },
+        next_steps: [
+          "Lawyer review scheduled",
+          "Artist approval pending",
+          "Final signatures required"
+        ]
+      };
+
+      res.json(review);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to perform legal review" });
+    }
+  });
+
+  // Initialize Enterprise AI Management WebSocket server
+  enterpriseAIManagement.setupManagementServer(httpServer);
 
   return httpServer;
 }
