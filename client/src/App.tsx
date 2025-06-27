@@ -17,6 +17,7 @@ import AICareerManager from "./pages/ai-career-manager";
 import NotFound from "./pages/not-found";
 import UltimateMusicStudio from "./pages/ultimate-music-studio";
 import UltimateDJStudio from "./pages/ultimate-dj-studio";
+import CMSAdmin from "./pages/cms-admin";
 
 function AuthenticatedRouter() {
   return (
@@ -27,6 +28,7 @@ function AuthenticatedRouter() {
           <Route path="/login" component={UserLogin} />
           <Route path="/admin-login" component={AdminLogin} />
           <Route path="/admin" component={AdminDashboard} />
+          <Route path="/cms-admin" component={CMSAdmin} />
           <Route path="/dj" component={UltimateDJStudio} />
           <Route path="/dj-studio" component={UltimateDJStudio} />
           <Route path="/music-studio" component={UltimateMusicStudio} />

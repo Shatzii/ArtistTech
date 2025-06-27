@@ -1352,5 +1352,345 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // CMS API Routes for logo management and feature configuration
+  
+  // CMS Settings Routes (for logo and site configuration)
+  app.get("/api/cms/settings", async (req, res) => {
+    try {
+      const settings = await storage.getCmsSettings();
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch CMS settings" });
+    }
+  });
+
+  app.get("/api/cms/settings/:key", async (req, res) => {
+    try {
+      const setting = await storage.getCmsSetting(req.params.key);
+      if (!setting) {
+        return res.status(404).json({ message: "Setting not found" });
+      }
+      res.json(setting);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch setting" });
+    }
+  });
+
+  app.post("/api/cms/settings", async (req, res) => {
+    try {
+      const setting = await storage.createCmsSetting(req.body);
+      res.status(201).json(setting);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid setting data" });
+    }
+  });
+
+  app.put("/api/cms/settings/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const setting = await storage.updateCmsSetting(id, req.body);
+      if (!setting) {
+        return res.status(404).json({ message: "Setting not found" });
+      }
+      res.json(setting);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid setting data" });
+    }
+  });
+
+  // CMS Features Routes (for enabling/disabling site features)
+  app.get("/api/cms/features", async (req, res) => {
+    try {
+      const features = await storage.getCmsFeatures();
+      res.json(features);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch features" });
+    }
+  });
+
+  app.get("/api/cms/features/enabled", async (req, res) => {
+    try {
+      const features = await storage.getEnabledCmsFeatures();
+      res.json(features);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch enabled features" });
+    }
+  });
+
+  app.post("/api/cms/features", async (req, res) => {
+    try {
+      const feature = await storage.createCmsFeature(req.body);
+      res.status(201).json(feature);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid feature data" });
+    }
+  });
+
+  app.put("/api/cms/features/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const feature = await storage.updateCmsFeature(id, req.body);
+      if (!feature) {
+        return res.status(404).json({ message: "Feature not found" });
+      }
+      res.json(feature);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid feature data" });
+    }
+  });
+
+  // CMS Media Routes (for logo and asset uploads)
+  app.get("/api/cms/media", async (req, res) => {
+    try {
+      const media = await storage.getCmsMediaList();
+      res.json(media);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch media" });
+    }
+  });
+
+  app.post("/api/cms/media", upload.single('file'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const mediaData = {
+        filename: req.file.filename,
+        originalName: req.file.originalname,
+        filePath: req.file.path,
+        fileSize: req.file.size,
+        mimeType: req.file.mimetype,
+        alt: req.body.alt || '',
+        caption: req.body.caption || '',
+        uploadedBy: req.body.uploadedBy ? parseInt(req.body.uploadedBy) : null,
+        isPublic: req.body.isPublic === 'true',
+        tags: req.body.tags ? JSON.parse(req.body.tags) : null
+      };
+
+      const media = await storage.createCmsMedia(mediaData);
+      res.status(201).json(media);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid media data" });
+    }
+  });
+
+  app.get("/api/cms/media/:id/serve", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const media = await storage.getCmsMedia(id);
+      if (!media) {
+        return res.status(404).json({ message: "Media not found" });
+      }
+
+      if (!fs.existsSync(media.filePath)) {
+        return res.status(404).json({ message: "File not found on disk" });
+      }
+
+      res.setHeader('Content-Type', media.mimeType);
+      res.setHeader('Content-Length', media.fileSize);
+      
+      if (media.width && media.height) {
+        res.setHeader('X-Image-Width', media.width.toString());
+        res.setHeader('X-Image-Height', media.height.toString());
+      }
+      
+      const stream = fs.createReadStream(media.filePath);
+      stream.pipe(res);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to serve media file" });
+    }
+  });
+
+  // CMS Pages Routes (for content management)
+  app.get("/api/cms/pages", async (req, res) => {
+    try {
+      const pages = await storage.getCmsPages();
+      res.json(pages);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch pages" });
+    }
+  });
+
+  app.get("/api/cms/pages/published", async (req, res) => {
+    try {
+      const pages = await storage.getPublishedCmsPages();
+      res.json(pages);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch published pages" });
+    }
+  });
+
+  app.post("/api/cms/pages", async (req, res) => {
+    try {
+      const page = await storage.createCmsPage(req.body);
+      res.status(201).json(page);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid page data" });
+    }
+  });
+
+  app.put("/api/cms/pages/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const page = await storage.updateCmsPage(id, req.body);
+      if (!page) {
+        return res.status(404).json({ message: "Page not found" });
+      }
+      res.json(page);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid page data" });
+    }
+  });
+
+  // CMS Navigation Routes (for menu management)
+  app.get("/api/cms/navigation", async (req, res) => {
+    try {
+      const navigation = await storage.getCmsNavigationList();
+      res.json(navigation);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch navigation" });
+    }
+  });
+
+  app.get("/api/cms/navigation/active", async (req, res) => {
+    try {
+      const navigation = await storage.getActiveCmsNavigation();
+      res.json(navigation);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch active navigation" });
+    }
+  });
+
+  app.post("/api/cms/navigation", async (req, res) => {
+    try {
+      const nav = await storage.createCmsNavigation(req.body);
+      res.status(201).json(nav);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid navigation data" });
+    }
+  });
+
+  app.put("/api/cms/navigation/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const nav = await storage.updateCmsNavigation(id, req.body);
+      if (!nav) {
+        return res.status(404).json({ message: "Navigation item not found" });
+      }
+      res.json(nav);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid navigation data" });
+    }
+  });
+
+  // Initialize default CMS data
+  app.post("/api/cms/initialize", async (req, res) => {
+    try {
+      // Create default settings for logo and branding
+      const defaultSettings = [
+        {
+          key: 'site_logo',
+          value: '',
+          type: 'image',
+          category: 'branding',
+          description: 'Main site logo'
+        },
+        {
+          key: 'site_title',
+          value: 'Artist Tech',
+          type: 'text',
+          category: 'branding',
+          description: 'Site title/name'
+        },
+        {
+          key: 'theme_color',
+          value: '#3B82F6',
+          type: 'text',
+          category: 'branding',
+          description: 'Primary theme color'
+        },
+        {
+          key: 'enable_ai_features',
+          value: 'true',
+          type: 'boolean',
+          category: 'features',
+          description: 'Enable AI-powered features'
+        }
+      ];
+
+      // Create default features
+      const defaultFeatures = [
+        {
+          key: 'ultimate_dj_studio',
+          name: 'Ultimate DJ Studio',
+          description: 'Professional DJ mixing interface with AI analytics',
+          category: 'studio',
+          isEnabled: true,
+          config: { version: '2.0', maxDecks: 4 }
+        },
+        {
+          key: 'ultimate_music_studio',
+          name: 'Ultimate Music Studio',
+          description: 'Complete music production suite',
+          category: 'studio',
+          isEnabled: true,
+          config: { version: '2.0', maxTracks: 64 }
+        },
+        {
+          key: 'ai_video_generation',
+          name: 'AI Video Generation',
+          description: 'Text-to-video and AI-powered video creation',
+          category: 'ai',
+          isEnabled: true,
+          config: { models: ['stable-video-diffusion'], maxDuration: 30 }
+        },
+        {
+          key: 'neural_audio_synthesis',
+          name: 'Neural Audio Synthesis',
+          description: 'AI-powered audio generation and voice cloning',
+          category: 'ai',
+          isEnabled: true,
+          config: { models: ['musicgen', 'audiogen'], maxLength: 120 }
+        },
+        {
+          key: 'collaborative_studio',
+          name: 'Collaborative Studio',
+          description: 'Real-time multi-user creative collaboration',
+          category: 'collaboration',
+          isEnabled: true,
+          config: { maxUsers: 10, allowGuests: true }
+        }
+      ];
+
+      // Insert settings and features if they don't exist
+      for (const setting of defaultSettings) {
+        try {
+          const existing = await storage.getCmsSetting(setting.key);
+          if (!existing) {
+            await storage.createCmsSetting(setting);
+          }
+        } catch (error) {
+          // Continue if setting already exists
+        }
+      }
+
+      for (const feature of defaultFeatures) {
+        try {
+          const existing = await storage.getCmsFeatureByKey(feature.key);
+          if (!existing) {
+            await storage.createCmsFeature(feature);
+          }
+        } catch (error) {
+          // Continue if feature already exists
+        }
+      }
+
+      res.json({ message: "CMS initialized successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to initialize CMS" });
+    }
+  });
+
   return httpServer;
 }
