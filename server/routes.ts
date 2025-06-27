@@ -1,6 +1,11 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { creativeEconomyEngine } from "./creative-economy-engine";
+import { aiCollaborationPartner } from "./ai-collaboration-partner";
+import { voiceCreationEngine } from "./voice-creation-engine";
+import { predictiveAnalyticsEngine } from "./predictive-analytics-engine";
+import { spatialInterfaceEngine } from "./spatial-interface-engine";
 import { LiveStreamingService } from "./websocket";
 import { registerUser, loginUser, authenticateToken, seedDemoAccounts, type AuthRequest } from "./auth";
 import { createCheckoutSession, handleWebhook, getSubscriptionStatus } from "./payments";
