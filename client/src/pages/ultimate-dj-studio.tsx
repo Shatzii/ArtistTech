@@ -6,7 +6,7 @@ import {
   Heart, MessageCircle, Share2, DollarSign, 
   Zap, Sliders, Settings, Radio, Sparkles 
 } from 'lucide-react';
-import StudioNavigation from '@/components/ui/studio-navigation';
+import StudioNavigation from '@/components/studio-navigation';
 import NeuralBackground from '@/components/neural-background';
 import HolographicPanel from '@/components/holographic-ui';
 import AdvancedWaveform from '@/components/advanced-waveform';
