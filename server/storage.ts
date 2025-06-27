@@ -3,14 +3,29 @@ import {
   projects, 
   audioFiles, 
   videoFiles,
+  cmsSettings,
+  cmsPages,
+  cmsFeatures,
+  cmsMedia,
+  cmsNavigation,
   type User,
   type Project, 
   type AudioFile, 
   type VideoFile,
+  type CmsSetting,
+  type CmsPage,
+  type CmsFeature,
+  type CmsMedia,
+  type CmsNavigation,
   type InsertUser,
   type InsertProject, 
   type InsertAudioFile, 
-  type InsertVideoFile
+  type InsertVideoFile,
+  type InsertCmsSetting,
+  type InsertCmsPage,
+  type InsertCmsFeature,
+  type InsertCmsMedia,
+  type InsertCmsNavigation
 } from "../shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
@@ -80,6 +95,49 @@ export interface IStorage {
   // Chat Messages
   getChatMessagesByLesson(lessonId: number): Promise<ChatMessage[]>;
   createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
+
+  // CMS Settings
+  getCmsSetting(key: string): Promise<CmsSetting | undefined>;
+  getCmsSettings(): Promise<CmsSetting[]>;
+  getCmsSettingsByCategory(category: string): Promise<CmsSetting[]>;
+  createCmsSetting(setting: InsertCmsSetting): Promise<CmsSetting>;
+  updateCmsSetting(id: number, setting: Partial<InsertCmsSetting>): Promise<CmsSetting | undefined>;
+  deleteCmsSetting(id: number): Promise<boolean>;
+
+  // CMS Pages
+  getCmsPage(id: number): Promise<CmsPage | undefined>;
+  getCmsPageBySlug(slug: string): Promise<CmsPage | undefined>;
+  getCmsPages(): Promise<CmsPage[]>;
+  getPublishedCmsPages(): Promise<CmsPage[]>;
+  createCmsPage(page: InsertCmsPage): Promise<CmsPage>;
+  updateCmsPage(id: number, page: Partial<InsertCmsPage>): Promise<CmsPage | undefined>;
+  deleteCmsPage(id: number): Promise<boolean>;
+
+  // CMS Features
+  getCmsFeature(id: number): Promise<CmsFeature | undefined>;
+  getCmsFeatureByKey(key: string): Promise<CmsFeature | undefined>;
+  getCmsFeatures(): Promise<CmsFeature[]>;
+  getEnabledCmsFeatures(): Promise<CmsFeature[]>;
+  getCmsFeaturesByCategory(category: string): Promise<CmsFeature[]>;
+  createCmsFeature(feature: InsertCmsFeature): Promise<CmsFeature>;
+  updateCmsFeature(id: number, feature: Partial<InsertCmsFeature>): Promise<CmsFeature | undefined>;
+  deleteCmsFeature(id: number): Promise<boolean>;
+
+  // CMS Media
+  getCmsMedia(id: number): Promise<CmsMedia | undefined>;
+  getCmsMediaList(): Promise<CmsMedia[]>;
+  getPublicCmsMedia(): Promise<CmsMedia[]>;
+  createCmsMedia(media: InsertCmsMedia): Promise<CmsMedia>;
+  updateCmsMedia(id: number, media: Partial<InsertCmsMedia>): Promise<CmsMedia | undefined>;
+  deleteCmsMedia(id: number): Promise<boolean>;
+
+  // CMS Navigation
+  getCmsNavigation(id: number): Promise<CmsNavigation | undefined>;
+  getCmsNavigationList(): Promise<CmsNavigation[]>;
+  getActiveCmsNavigation(): Promise<CmsNavigation[]>;
+  createCmsNavigation(nav: InsertCmsNavigation): Promise<CmsNavigation>;
+  updateCmsNavigation(id: number, nav: Partial<InsertCmsNavigation>): Promise<CmsNavigation | undefined>;
+  deleteCmsNavigation(id: number): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -305,6 +363,165 @@ export class DatabaseStorage implements IStorage {
   async createChatMessage(insertMessage: InsertChatMessage): Promise<ChatMessage> {
     const [message] = await db.insert(chatMessages).values(insertMessage).returning();
     return message;
+  }
+
+  // CMS Settings implementation
+  async getCmsSetting(key: string): Promise<CmsSetting | undefined> {
+    const [setting] = await db.select().from(cmsSettings).where(eq(cmsSettings.key, key));
+    return setting;
+  }
+
+  async getCmsSettings(): Promise<CmsSetting[]> {
+    return await db.select().from(cmsSettings);
+  }
+
+  async getCmsSettingsByCategory(category: string): Promise<CmsSetting[]> {
+    return await db.select().from(cmsSettings).where(eq(cmsSettings.category, category));
+  }
+
+  async createCmsSetting(setting: InsertCmsSetting): Promise<CmsSetting> {
+    const [newSetting] = await db.insert(cmsSettings).values(setting).returning();
+    return newSetting;
+  }
+
+  async updateCmsSetting(id: number, setting: Partial<InsertCmsSetting>): Promise<CmsSetting | undefined> {
+    const [updated] = await db.update(cmsSettings).set(setting).where(eq(cmsSettings.id, id)).returning();
+    return updated;
+  }
+
+  async deleteCmsSetting(id: number): Promise<boolean> {
+    const result = await db.delete(cmsSettings).where(eq(cmsSettings.id, id));
+    return (result.rowCount || 0) > 0;
+  }
+
+  // CMS Pages implementation
+  async getCmsPage(id: number): Promise<CmsPage | undefined> {
+    const [page] = await db.select().from(cmsPages).where(eq(cmsPages.id, id));
+    return page;
+  }
+
+  async getCmsPageBySlug(slug: string): Promise<CmsPage | undefined> {
+    const [page] = await db.select().from(cmsPages).where(eq(cmsPages.slug, slug));
+    return page;
+  }
+
+  async getCmsPages(): Promise<CmsPage[]> {
+    return await db.select().from(cmsPages);
+  }
+
+  async getPublishedCmsPages(): Promise<CmsPage[]> {
+    return await db.select().from(cmsPages).where(eq(cmsPages.status, 'published'));
+  }
+
+  async createCmsPage(page: InsertCmsPage): Promise<CmsPage> {
+    const [newPage] = await db.insert(cmsPages).values(page).returning();
+    return newPage;
+  }
+
+  async updateCmsPage(id: number, page: Partial<InsertCmsPage>): Promise<CmsPage | undefined> {
+    const [updated] = await db.update(cmsPages).set(page).where(eq(cmsPages.id, id)).returning();
+    return updated;
+  }
+
+  async deleteCmsPage(id: number): Promise<boolean> {
+    const result = await db.delete(cmsPages).where(eq(cmsPages.id, id));
+    return (result.rowCount || 0) > 0;
+  }
+
+  // CMS Features implementation
+  async getCmsFeature(id: number): Promise<CmsFeature | undefined> {
+    const [feature] = await db.select().from(cmsFeatures).where(eq(cmsFeatures.id, id));
+    return feature;
+  }
+
+  async getCmsFeatureByKey(key: string): Promise<CmsFeature | undefined> {
+    const [feature] = await db.select().from(cmsFeatures).where(eq(cmsFeatures.key, key));
+    return feature;
+  }
+
+  async getCmsFeatures(): Promise<CmsFeature[]> {
+    return await db.select().from(cmsFeatures);
+  }
+
+  async getEnabledCmsFeatures(): Promise<CmsFeature[]> {
+    return await db.select().from(cmsFeatures).where(eq(cmsFeatures.isEnabled, true));
+  }
+
+  async getCmsFeaturesByCategory(category: string): Promise<CmsFeature[]> {
+    return await db.select().from(cmsFeatures).where(eq(cmsFeatures.category, category));
+  }
+
+  async createCmsFeature(feature: InsertCmsFeature): Promise<CmsFeature> {
+    const [newFeature] = await db.insert(cmsFeatures).values(feature).returning();
+    return newFeature;
+  }
+
+  async updateCmsFeature(id: number, feature: Partial<InsertCmsFeature>): Promise<CmsFeature | undefined> {
+    const [updated] = await db.update(cmsFeatures).set(feature).where(eq(cmsFeatures.id, id)).returning();
+    return updated;
+  }
+
+  async deleteCmsFeature(id: number): Promise<boolean> {
+    const result = await db.delete(cmsFeatures).where(eq(cmsFeatures.id, id));
+    return (result.rowCount || 0) > 0;
+  }
+
+  // CMS Media implementation
+  async getCmsMedia(id: number): Promise<CmsMedia | undefined> {
+    const [media] = await db.select().from(cmsMedia).where(eq(cmsMedia.id, id));
+    return media;
+  }
+
+  async getCmsMediaList(): Promise<CmsMedia[]> {
+    return await db.select().from(cmsMedia);
+  }
+
+  async getPublicCmsMedia(): Promise<CmsMedia[]> {
+    return await db.select().from(cmsMedia).where(eq(cmsMedia.isPublic, true));
+  }
+
+  async createCmsMedia(media: InsertCmsMedia): Promise<CmsMedia> {
+    const [newMedia] = await db.insert(cmsMedia).values(media).returning();
+    return newMedia;
+  }
+
+  async updateCmsMedia(id: number, media: Partial<InsertCmsMedia>): Promise<CmsMedia | undefined> {
+    const [updated] = await db.update(cmsMedia).set(media).where(eq(cmsMedia.id, id)).returning();
+    return updated;
+  }
+
+  async deleteCmsMedia(id: number): Promise<boolean> {
+    const result = await db.delete(cmsMedia).where(eq(cmsMedia.id, id));
+    return (result.rowCount || 0) > 0;
+  }
+
+  // CMS Navigation implementation
+  async getCmsNavigation(id: number): Promise<CmsNavigation | undefined> {
+    const [nav] = await db.select().from(cmsNavigation).where(eq(cmsNavigation.id, id));
+    return nav;
+  }
+
+  async getCmsNavigationList(): Promise<CmsNavigation[]> {
+    return await db.select().from(cmsNavigation);
+  }
+
+  async getActiveCmsNavigation(): Promise<CmsNavigation[]> {
+    return await db.select().from(cmsNavigation).where(eq(cmsNavigation.isActive, true));
+  }
+
+  async createCmsNavigation(nav: InsertCmsNavigation): Promise<CmsNavigation> {
+    const [newNav] = await db.insert(cmsNavigation).values(nav).returning();
+    return newNav;
+  }
+
+  async updateCmsNavigation(id: number, nav: Partial<InsertCmsNavigation>): Promise<CmsNavigation | undefined> {
+    const [updated] = await db.update(cmsNavigation).set(nav).where(eq(cmsNavigation.id, id)).returning();
+    return updated;
+  }
+
+  async deleteCmsNavigation(id: number): Promise<boolean> {
+    const result = await db.delete(cmsNavigation).where(eq(cmsNavigation.id, id));
+    return (result.rowCount || 0) > 0;
   }
 }
 
