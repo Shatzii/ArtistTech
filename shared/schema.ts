@@ -336,3 +336,262 @@ export type InsertCmsMedia = z.infer<typeof insertCmsMediaSchema>;
 
 export type CmsNavigation = typeof cmsNavigation.$inferSelect;
 export type InsertCmsNavigation = z.infer<typeof insertCmsNavigationSchema>;
+
+// ARTIST TECH CREATIVE ECONOMY SYSTEM
+// Revolutionary cryptocurrency and creative rewards platform
+
+// Creative Currency System (ARTIST tokens)
+export const creativeCurrency = pgTable("creative_currency", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  balance: decimal("balance", { precision: 18, scale: 8 }).notNull().default('0'),
+  totalEarned: decimal("total_earned", { precision: 18, scale: 8 }).notNull().default('0'),
+  totalSpent: decimal("total_spent", { precision: 18, scale: 8 }).notNull().default('0'),
+  stakingAmount: decimal("staking_amount", { precision: 18, scale: 8 }).notNull().default('0'),
+  stakingRewards: decimal("staking_rewards", { precision: 18, scale: 8 }).notNull().default('0'),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Listening Rewards & Engagement Mining
+export const listeningRewards = pgTable("listening_rewards", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  contentId: integer("content_id").notNull(), // References projects, audio, or video
+  contentType: varchar("content_type", { length: 50 }).notNull(), // 'audio', 'video', 'project'
+  artistId: integer("artist_id").references(() => users.id).notNull(),
+  listeningDuration: integer("listening_duration").notNull(), // in seconds
+  qualityScore: decimal("quality_score", { precision: 5, scale: 2 }).notNull(), // 0-100 engagement quality
+  rewardAmount: decimal("reward_amount", { precision: 18, scale: 8 }).notNull(),
+  artistEarning: decimal("artist_earning", { precision: 18, scale: 8 }).notNull(),
+  platformShare: decimal("platform_share", { precision: 18, scale: 8 }).notNull(),
+  bonusMultiplier: decimal("bonus_multiplier", { precision: 3, scale: 2 }).notNull().default('1.0'),
+  deviceType: varchar("device_type", { length: 50 }),
+  location: varchar("location", { length: 100 }),
+  sessionId: varchar("session_id", { length: 255 }),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Artist Revenue Streams
+export const artistEarnings = pgTable("artist_earnings", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  artistId: integer("artist_id").references(() => users.id).notNull(),
+  earningType: varchar("earning_type", { length: 50 }).notNull(), // 'streaming', 'tips', 'nft', 'collaboration', 'royalties'
+  amount: decimal("amount", { precision: 18, scale: 8 }).notNull(),
+  sourceUserId: integer("source_user_id").references(() => users.id),
+  sourceContentId: integer("source_content_id"),
+  transactionHash: varchar("transaction_hash", { length: 255 }),
+  payoutStatus: varchar("payout_status", { length: 50 }).notNull().default('pending'),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+  processedAt: timestamp("processed_at"),
+});
+
+// Creative Staking & Governance
+export const creativeStaking = pgTable("creative_staking", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  stakingType: varchar("staking_type", { length: 50 }).notNull(), // 'artist', 'content', 'platform', 'governance'
+  stakedAmount: decimal("staked_amount", { precision: 18, scale: 8 }).notNull(),
+  targetId: integer("target_id"), // Artist or content being staked on
+  lockPeriod: integer("lock_period").notNull(), // in days
+  expectedReturn: decimal("expected_return", { precision: 5, scale: 2 }).notNull(),
+  currentRewards: decimal("current_rewards", { precision: 18, scale: 8 }).notNull().default('0'),
+  status: varchar("status", { length: 50 }).notNull().default('active'),
+  startDate: timestamp("start_date").defaultNow(),
+  endDate: timestamp("end_date"),
+  autoRenew: boolean("auto_renew").default(false),
+});
+
+// NFT & Digital Collectibles
+export const creativeNFTs = pgTable("creative_nfts", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  creatorId: integer("creator_id").references(() => users.id).notNull(),
+  ownerId: integer("owner_id").references(() => users.id).notNull(),
+  contentId: integer("content_id"), // References original content
+  tokenId: varchar("token_id", { length: 255 }).unique().notNull(),
+  contractAddress: varchar("contract_address", { length: 255 }),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  imageUrl: varchar("image_url", { length: 500 }),
+  audioUrl: varchar("audio_url", { length: 500 }),
+  videoUrl: varchar("video_url", { length: 500 }),
+  metadata: jsonb("metadata"),
+  rarity: varchar("rarity", { length: 50 }).notNull().default('common'), // common, rare, epic, legendary
+  totalSupply: integer("total_supply").notNull().default(1),
+  currentSupply: integer("current_supply").notNull().default(1),
+  royaltyPercentage: decimal("royalty_percentage", { precision: 5, scale: 2 }).notNull().default('10'),
+  mintPrice: decimal("mint_price", { precision: 18, scale: 8 }),
+  floorPrice: decimal("floor_price", { precision: 18, scale: 8 }),
+  lastSalePrice: decimal("last_sale_price", { precision: 18, scale: 8 }),
+  tradingVolume: decimal("trading_volume", { precision: 18, scale: 8 }).notNull().default('0'),
+  isListed: boolean("is_listed").default(false),
+  listingPrice: decimal("listing_price", { precision: 18, scale: 8 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Creator Fund & Grants
+export const creatorFund = pgTable("creator_fund", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  recipientId: integer("recipient_id").references(() => users.id).notNull(),
+  fundType: varchar("fund_type", { length: 50 }).notNull(), // 'grant', 'advance', 'prize', 'bonus'
+  amount: decimal("amount", { precision: 18, scale: 8 }).notNull(),
+  criteria: text("criteria"),
+  projectDescription: text("project_description"),
+  milestones: jsonb("milestones"),
+  status: varchar("status", { length: 50 }).notNull().default('pending'), // pending, approved, disbursed, completed
+  approvedBy: integer("approved_by").references(() => users.id),
+  disbursedAmount: decimal("disbursed_amount", { precision: 18, scale: 8 }).notNull().default('0'),
+  completionPercentage: decimal("completion_percentage", { precision: 5, scale: 2 }).notNull().default('0'),
+  applicationDate: timestamp("application_date").defaultNow(),
+  approvalDate: timestamp("approval_date"),
+  completionDate: timestamp("completion_date"),
+});
+
+// Collaboration Revenue Sharing
+export const collaborationSharing = pgTable("collaboration_sharing", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  projectId: integer("project_id").references(() => projects.id).notNull(),
+  primaryArtistId: integer("primary_artist_id").references(() => users.id).notNull(),
+  collaboratorId: integer("collaborator_id").references(() => users.id).notNull(),
+  sharePercentage: decimal("share_percentage", { precision: 5, scale: 2 }).notNull(),
+  roleType: varchar("role_type", { length: 50 }).notNull(), // 'vocalist', 'producer', 'mixer', 'songwriter', 'featured'
+  contributionDescription: text("contribution_description"),
+  totalEarnings: decimal("total_earnings", { precision: 18, scale: 8 }).notNull().default('0'),
+  paidOut: decimal("paid_out", { precision: 18, scale: 8 }).notNull().default('0'),
+  status: varchar("status", { length: 50 }).notNull().default('active'),
+  agreementHash: varchar("agreement_hash", { length: 255 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Platform Governance & Voting
+export const governanceVoting = pgTable("governance_voting", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  proposalId: varchar("proposal_id", { length: 100 }).unique().notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description").notNull(),
+  proposalType: varchar("proposal_type", { length: 50 }).notNull(), // 'feature', 'economic', 'governance', 'emergency'
+  proposerId: integer("proposer_id").references(() => users.id).notNull(),
+  votingPower: decimal("voting_power", { precision: 18, scale: 8 }).notNull(),
+  options: jsonb("options").notNull(),
+  currentVotes: jsonb("current_votes").notNull().default('{}'),
+  totalVotes: decimal("total_votes", { precision: 18, scale: 8 }).notNull().default('0'),
+  requiredQuorum: decimal("required_quorum", { precision: 18, scale: 8 }).notNull(),
+  status: varchar("status", { length: 50 }).notNull().default('active'), // active, passed, failed, executed
+  startDate: timestamp("start_date").defaultNow(),
+  endDate: timestamp("end_date").notNull(),
+  executionDate: timestamp("execution_date"),
+});
+
+// Transaction History
+export const currencyTransactions = pgTable("currency_transactions", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  fromUserId: integer("from_user_id").references(() => users.id),
+  toUserId: integer("to_user_id").references(() => users.id),
+  transactionType: varchar("transaction_type", { length: 50 }).notNull(), // 'listening_reward', 'tip', 'purchase', 'staking', 'withdrawal'
+  amount: decimal("amount", { precision: 18, scale: 8 }).notNull(),
+  fee: decimal("fee", { precision: 18, scale: 8 }).notNull().default('0'),
+  status: varchar("status", { length: 50 }).notNull().default('pending'), // pending, confirmed, failed, refunded
+  reference: varchar("reference", { length: 255 }), // External transaction reference
+  metadata: jsonb("metadata"),
+  blockchainTxHash: varchar("blockchain_tx_hash", { length: 255 }),
+  gasUsed: decimal("gas_used", { precision: 18, scale: 8 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  confirmedAt: timestamp("confirmed_at"),
+});
+
+// Marketplace & Trading
+export const marketplaceListing = pgTable("marketplace_listing", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  sellerId: integer("seller_id").references(() => users.id).notNull(),
+  itemType: varchar("item_type", { length: 50 }).notNull(), // 'nft', 'beat', 'sample', 'preset', 'service'
+  itemId: integer("item_id").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  price: decimal("price", { precision: 18, scale: 8 }).notNull(),
+  currency: varchar("currency", { length: 20 }).notNull().default('ARTIST'),
+  category: varchar("category", { length: 50 }),
+  tags: jsonb("tags"),
+  imageUrl: varchar("image_url", { length: 500 }),
+  previewUrl: varchar("preview_url", { length: 500 }),
+  downloads: integer("downloads").notNull().default(0),
+  rating: decimal("rating", { precision: 3, scale: 2 }),
+  ratingCount: integer("rating_count").notNull().default(0),
+  isExclusive: boolean("is_exclusive").default(false),
+  licenseType: varchar("license_type", { length: 50 }).notNull().default('standard'),
+  status: varchar("status", { length: 50 }).notNull().default('active'), // active, sold, removed, suspended
+  listedAt: timestamp("listed_at").defaultNow(),
+  soldAt: timestamp("sold_at"),
+});
+
+// Purchase History
+export const marketplacePurchases = pgTable("marketplace_purchases", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  buyerId: integer("buyer_id").references(() => users.id).notNull(),
+  sellerId: integer("seller_id").references(() => users.id).notNull(),
+  listingId: integer("listing_id").references(() => marketplaceListing.id).notNull(),
+  itemType: varchar("item_type", { length: 50 }).notNull(),
+  itemId: integer("item_id").notNull(),
+  price: decimal("price", { precision: 18, scale: 8 }).notNull(),
+  currency: varchar("currency", { length: 20 }).notNull(),
+  platformFee: decimal("platform_fee", { precision: 18, scale: 8 }).notNull(),
+  royaltyFee: decimal("royalty_fee", { precision: 18, scale: 8 }).notNull().default('0'),
+  licenseGranted: varchar("license_granted", { length: 50 }).notNull(),
+  downloadUrl: varchar("download_url", { length: 500 }),
+  transactionHash: varchar("transaction_hash", { length: 255 }),
+  purchasedAt: timestamp("purchased_at").defaultNow(),
+});
+
+// Creative Economy Schema Validation
+export const insertCreativeCurrencySchema = createInsertSchema(creativeCurrency).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertListeningRewardSchema = createInsertSchema(listeningRewards).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertArtistEarningSchema = createInsertSchema(artistEarnings).omit({
+  id: true,
+  createdAt: true,
+  processedAt: true,
+});
+
+export const insertCreativeNFTSchema = createInsertSchema(creativeNFTs).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertMarketplaceListingSchema = createInsertSchema(marketplaceListing).omit({
+  id: true,
+  listedAt: true,
+  soldAt: true,
+});
+
+// Creative Economy Types
+export type CreativeCurrency = typeof creativeCurrency.$inferSelect;
+export type InsertCreativeCurrency = z.infer<typeof insertCreativeCurrencySchema>;
+
+export type ListeningReward = typeof listeningRewards.$inferSelect;
+export type InsertListeningReward = z.infer<typeof insertListeningRewardSchema>;
+
+export type ArtistEarning = typeof artistEarnings.$inferSelect;
+export type InsertArtistEarning = z.infer<typeof insertArtistEarningSchema>;
+
+export type CreativeNFT = typeof creativeNFTs.$inferSelect;
+export type InsertCreativeNFT = z.infer<typeof insertCreativeNFTSchema>;
+
+export type CreativeStaking = typeof creativeStaking.$inferSelect;
+export type CreatorFund = typeof creatorFund.$inferSelect;
+export type CollaborationSharing = typeof collaborationSharing.$inferSelect;
+export type GovernanceVoting = typeof governanceVoting.$inferSelect;
+export type CurrencyTransaction = typeof currencyTransactions.$inferSelect;
+export type MarketplaceListing = typeof marketplaceListing.$inferSelect;
+export type InsertMarketplaceListing = z.infer<typeof insertMarketplaceListingSchema>;
+export type MarketplacePurchase = typeof marketplacePurchases.$inferSelect;
