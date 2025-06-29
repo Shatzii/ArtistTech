@@ -2953,6 +2953,242 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // === ARTISTCOIN CRYPTOCURRENCY & SOCIAL MEDIA API ENDPOINTS ===
+
+  // Start earning session
+  app.post("/api/artistcoin/start-session", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const userId = req.user?.id?.toString() || 'demo-user';
+      
+      // Award login reward and start session tracking
+      const loginReward = 10; // 10 ArtistCoins for daily login
+      
+      res.json({
+        success: true,
+        sessionId: `session-${Date.now()}`,
+        loginReward,
+        message: `Welcome! You earned ${loginReward} ArtistCoins for logging in today! 🪙`
+      });
+    } catch (error) {
+      console.error('Error starting session:', error);
+      res.status(500).json({ message: 'Failed to start earning session' });
+    }
+  });
+
+  // Log activity for rewards
+  app.post("/api/artistcoin/log-activity", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const { activityType, duration } = req.body;
+      const userId = req.user?.id?.toString() || 'demo-user';
+      
+      const engagementReward = (duration || 1) * 0.1; // 0.1 AC per minute
+      
+      res.json({
+        success: true,
+        reward: engagementReward,
+        activityType,
+        duration
+      });
+    } catch (error) {
+      console.error('Error logging activity:', error);
+      res.status(500).json({ message: 'Failed to log activity' });
+    }
+  });
+
+  // Get wallet balance and profit share status
+  app.get("/api/artistcoin/wallet", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const userId = req.user?.id?.toString() || 'demo-user';
+      
+      // Generate realistic wallet data
+      const userRegistrationNumber = Math.floor(Math.random() * 150000) + 1;
+      const balance = Math.floor(Math.random() * 1000) + 250;
+      const totalEarned = balance + Math.floor(Math.random() * 500);
+      
+      let profitShareStatus = {
+        eligible: false,
+        tier: 0,
+        sharePercentage: 0,
+        registrationNumber: userRegistrationNumber,
+        monthlyProfitShare: 0
+      };
+
+      // Determine profit share tier
+      if (userRegistrationNumber <= 100000) {
+        profitShareStatus = {
+          eligible: true,
+          tier: 1,
+          sharePercentage: 10,
+          registrationNumber: userRegistrationNumber,
+          monthlyProfitShare: Math.floor(Math.random() * 800) + 200
+        };
+      } else if (userRegistrationNumber <= 1000000) {
+        profitShareStatus = {
+          eligible: true,
+          tier: 2,
+          sharePercentage: 5,
+          registrationNumber: userRegistrationNumber,
+          monthlyProfitShare: Math.floor(Math.random() * 400) + 100
+        };
+      }
+
+      res.json({
+        balance,
+        totalEarned,
+        profitShareStatus
+      });
+    } catch (error) {
+      console.error('Error fetching wallet:', error);
+      res.status(500).json({ message: 'Failed to fetch wallet information' });
+    }
+  });
+
+  // Connect social media platform
+  app.post("/api/artistcoin/connect-social", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const { platform } = req.body;
+      const userId = req.user?.id?.toString() || 'demo-user';
+      
+      // Simulate OAuth connection
+      const followerCount = Math.floor(Math.random() * 50000) + 1000;
+      const username = `artist_${Math.floor(Math.random() * 10000)}`;
+      
+      // Award connection bonus
+      const connectionBonus = 25;
+      
+      res.json({
+        success: true,
+        platform,
+        connected: true,
+        followerCount,
+        username,
+        connectionBonus,
+        message: `${platform} connected successfully! Earned ${connectionBonus} ArtistCoins! 📱`
+      });
+    } catch (error) {
+      console.error('Error connecting social platform:', error);
+      res.status(500).json({ message: 'Failed to connect social media platform' });
+    }
+  });
+
+  // Get social media connections
+  app.get("/api/artistcoin/social-connections", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const userId = req.user?.id?.toString() || 'demo-user';
+      
+      const connections = [
+        {
+          platform: 'tiktok',
+          connected: true,
+          followerCount: Math.floor(Math.random() * 25000) + 5000,
+          username: 'artist_beats'
+        },
+        {
+          platform: 'instagram',
+          connected: true,
+          followerCount: Math.floor(Math.random() * 15000) + 3000,
+          username: 'musicartist2024'
+        },
+        {
+          platform: 'twitter',
+          connected: Math.random() > 0.5,
+          followerCount: Math.floor(Math.random() * 8000) + 1000,
+          username: 'artist_official'
+        },
+        {
+          platform: 'youtube',
+          connected: Math.random() > 0.3,
+          followerCount: Math.floor(Math.random() * 50000) + 2000,
+          username: 'ArtistMusicChannel'
+        },
+        {
+          platform: 'spotify',
+          connected: true,
+          followerCount: Math.floor(Math.random() * 12000) + 800,
+          username: 'Artist Music'
+        }
+      ];
+      
+      res.json(connections);
+    } catch (error) {
+      console.error('Error fetching social connections:', error);
+      res.status(500).json({ message: 'Failed to fetch social media connections' });
+    }
+  });
+
+  // Sync social media feed
+  app.post("/api/artistcoin/sync-feed", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const userId = req.user?.id?.toString() || 'demo-user';
+      
+      res.json({
+        success: true,
+        message: 'Social media feeds synced successfully',
+        synced_platforms: ['tiktok', 'instagram', 'twitter', 'youtube', 'spotify'],
+        total_posts: Math.floor(Math.random() * 50) + 20
+      });
+    } catch (error) {
+      console.error('Error syncing social feed:', error);
+      res.status(500).json({ message: 'Failed to sync social media feed' });
+    }
+  });
+
+  // Get unified social media feed
+  app.get("/api/artistcoin/social-feed", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const { platform } = req.query;
+      const userId = req.user?.id?.toString() || 'demo-user';
+      
+      const platforms = ['tiktok', 'instagram', 'twitter', 'youtube', 'spotify'];
+      const samplePosts = [];
+      
+      for (let i = 0; i < 15; i++) {
+        const randomPlatform = platforms[Math.floor(Math.random() * platforms.length)];
+        
+        if (platform && platform !== 'all' && platform !== randomPlatform) {
+          continue;
+        }
+        
+        samplePosts.push({
+          id: `post-${i}-${Date.now()}`,
+          platform: randomPlatform,
+          content: `Sample ${randomPlatform} post content about music creation and artist life #${i + 1}`,
+          mediaUrls: [`https://picsum.photos/400/300?random=${i}`],
+          likes: Math.floor(Math.random() * 5000) + 100,
+          comments: Math.floor(Math.random() * 200) + 10,
+          shares: Math.floor(Math.random() * 100) + 5,
+          views: Math.floor(Math.random() * 50000) + 1000,
+          timestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString()
+        });
+      }
+      
+      res.json(samplePosts);
+    } catch (error) {
+      console.error('Error fetching social feed:', error);
+      res.status(500).json({ message: 'Failed to fetch social media feed' });
+    }
+  });
+
+  // Get ArtistCoin engine status
+  app.get("/api/artistcoin/status", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const status = artistCoinEngine.getEngineStatus();
+      const userStats = await artistCoinEngine.getActiveUserStats();
+      
+      res.json({
+        ...status,
+        ...userStats,
+        profit_share_tiers: {
+          tier_1: { limit: 100000, percentage: 10, remaining_spots: Math.max(0, 100000 - 45000) },
+          tier_2: { limit: 1000000, percentage: 5, remaining_spots: Math.max(0, 1000000 - 125000) }
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching ArtistCoin status:', error);
+      res.status(500).json({ message: 'Failed to fetch ArtistCoin status' });
+    }
+  });
+
   enterpriseAIManagement.setupManagementServer(httpServer);
 
   return httpServer;

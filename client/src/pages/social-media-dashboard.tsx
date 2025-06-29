@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
+import { apiRequest } from '../lib/queryClient';
 import { 
   Coins, TrendingUp, Users, Heart, MessageCircle, Share, 
   Eye, Play, Instagram, Twitter, Youtube, Music,
@@ -24,7 +24,7 @@ interface SocialPost {
   comments: number;
   shares: number;
   views: number;
-  timestamp: Date;
+  timestamp: string;
 }
 
 interface WalletInfo {
@@ -54,18 +54,18 @@ export default function SocialMediaDashboard() {
   ];
 
   // Fetch wallet info
-  const { data: walletInfo } = useQuery({
+  const { data: walletInfo = {} as WalletInfo } = useQuery<WalletInfo>({
     queryKey: ['/api/artistcoin/wallet'],
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
   // Fetch social connections
-  const { data: connections = [] } = useQuery({
+  const { data: connections = [] } = useQuery<SocialConnection[]>({
     queryKey: ['/api/artistcoin/social-connections'],
   });
 
   // Fetch unified social feed
-  const { data: socialFeed = [] } = useQuery({
+  const { data: socialFeed = [] } = useQuery<SocialPost[]>({
     queryKey: ['/api/artistcoin/social-feed', selectedPlatform],
   });
 

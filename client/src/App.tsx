@@ -28,6 +28,7 @@ import GenreRemixer from "./pages/genre-remixer";
 import ArtistCollaboration from "./pages/artist-collaboration";
 import AdvancedVideoEditor from "./pages/advanced-video-editor";
 import EnhancedLanding from "./pages/enhanced-landing";
+import SocialMediaDashboard from "./pages/social-media-dashboard";
 
 function AuthenticatedRouter() {
   return (
@@ -56,6 +57,7 @@ function AuthenticatedRouter() {
           <Route path="/genre-remixer" component={GenreRemixer} />
           <Route path="/artist-collaboration" component={ArtistCollaboration} />
           <Route path="/advanced-video-editor" component={AdvancedVideoEditor} />
+          <Route path="/social-media-dashboard" component={SocialMediaDashboard} />
           <Route path="/ultimate-music-studio" component={UltimateMusicStudio} />
           <Route path="/ultimate-dj-studio" component={UltimateDJStudio} />
           <Route path="/enterprise-management" component={EnterpriseManagement} />
