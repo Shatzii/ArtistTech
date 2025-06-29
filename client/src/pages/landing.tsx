@@ -357,6 +357,15 @@ export default function Landing() {
                 <p className="text-sm text-gray-300 mb-3">Transform any track into any genre with AI-powered suggestions</p>
                 <div className="text-xs text-pink-400">Replaces: Manual remixing workflows</div>
               </div>
+
+              <div className="bg-gradient-to-br from-cyan-800/30 to-blue-800/30 border border-cyan-500/30 rounded-xl p-6 hover:border-cyan-400 transition-all transform hover:scale-105">
+                <div className="w-12 h-12 bg-cyan-500 rounded-lg flex items-center justify-center mb-4">
+                  <Users className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">Artist Collaboration Network</h3>
+                <p className="text-sm text-gray-300 mb-3">AI-powered cross-genre matchmaking for creative partnerships</p>
+                <div className="text-xs text-cyan-400">Replaces: Manual networking, MySpace</div>
+              </div>
             </div>
 
             <div className="text-center mt-12">
