@@ -79,11 +79,12 @@ export default function ProfessionalInstruments() {
     retry: false
   });
 
-  // Fetch MIDI status for integration
-  const { data: midiStatus } = useQuery({
-    queryKey: ["/api/midi/status"],
-    retry: false
-  });
+  // Mock MIDI status until API is fully integrated
+  const midiStatus = {
+    connectedDevices: [
+      { name: "Akai MPK Mini MK3", type: "controller", id: "akai_mpk_mini_001", status: "connected" }
+    ]
+  };
 
   // Initialize audio engine
   useEffect(() => {
@@ -512,7 +513,7 @@ export default function ProfessionalInstruments() {
           <Card className="bg-black/30 border-purple-500/20">
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-purple-400">
-                {midiStatus?.connectedDevices || 0}
+                {midiStatus?.connectedDevices?.length || 0}
               </div>
               <div className="text-sm text-gray-300">MIDI Devices</div>
             </CardContent>
