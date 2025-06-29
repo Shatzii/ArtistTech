@@ -31,6 +31,7 @@ import { advancedAudioEngine } from "./advanced-audio-engine";
 import { collaborativeStudioEngine } from "./collaborative-studio-engine";
 import { streamingIntegrationEngine } from "./streaming-integration-engine";
 import { artistCollaborationEngine } from "./artist-collaboration-engine";
+import { premiumPodcastEngine } from "./premium-podcast-engine";
 import { insertProjectSchema, insertAudioFileSchema, insertVideoFileSchema } from "../shared/schema";
 import multer from "multer";
 import path from "path";
@@ -2808,6 +2809,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/collaboration/status", async (req, res) => {
     try {
       const status = artistCollaborationEngine.getEngineStatus();
+      res.json(status);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Premium Podcast Engine APIs
+  app.post("/api/podcast/start-recording", async (req, res) => {
+    try {
+      const { title, description, guests, template, liveStream } = req.body;
+      const episodeId = await premiumPodcastEngine.startPodcastRecording({
+        title,
+        description, 
+        guests: guests || [],
+        template,
+        liveStream
+      });
+      res.json({ episodeId, status: 'recording_started' });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/podcast/generate-transcript/:episodeId", async (req, res) => {
+    try {
+      const { episodeId } = req.params;
+      const transcript = await premiumPodcastEngine.generateTranscript(episodeId, Buffer.alloc(0));
+      res.json({ episodeId, transcript });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/podcast/generate-show-notes/:episodeId", async (req, res) => {
+    try {
+      const { episodeId } = req.params;
+      const showNotes = await premiumPodcastEngine.generateShowNotes(episodeId);
+      res.json({ episodeId, showNotes });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/podcast/create-social-clips/:episodeId", async (req, res) => {
+    try {
+      const { episodeId } = req.params;
+      const { clipCount = 3 } = req.body;
+      const clips = await premiumPodcastEngine.createSocialClips(episodeId, clipCount);
+      res.json({ episodeId, clips });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/podcast/publish/:episodeId", async (req, res) => {
+    try {
+      const { episodeId } = req.params;
+      const { platforms } = req.body;
+      const publications = await premiumPodcastEngine.publishToPlatforms(episodeId, platforms);
+      res.json({ episodeId, publications });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/podcast/status", async (req, res) => {
+    try {
+      const status = premiumPodcastEngine.getEngineStatus();
       res.json(status);
     } catch (error: any) {
       res.status(500).json({ error: error.message });

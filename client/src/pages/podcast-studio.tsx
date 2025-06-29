@@ -1,20 +1,27 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useToast } from '../hooks/use-toast';
 import { 
   Mic, Headphones, Volume2, Play, Pause, Square, Circle, Settings,
   BarChart3, Users, Upload, Download, Share2, Edit3,
   Filter, Sliders, Music, Camera, Video, Eye, Clock, Calendar,
   TrendingUp, Star, Crown, Globe, Instagram, Twitter, Youtube,
-  Zap, Brain, Target, Award, Bell, MessageCircle, Heart, Rss
+  Zap, Brain, Target, Award, Bell, MessageCircle, Heart, Rss,
+  FileText, Scissors, RadioIcon, Sparkles, Wand2, RefreshCw
 } from 'lucide-react';
 
 export default function PodcastStudio() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
   // PROFESSIONAL PODCAST STATE
   const [podcastSession, setPodcastSession] = useState({
     isRecording: false,
     isLive: false,
     currentTime: 0,
     totalTime: 3600, // 1 hour
+    currentEpisodeId: null as string | null,
     participants: [
       { id: '1', name: 'Host (You)', role: 'Host', muted: false, volume: 85, color: '#3b82f6' },
       { id: '2', name: 'Sarah Mitchell', role: 'Guest', muted: false, volume: 78, color: '#10b981' },
@@ -23,6 +30,156 @@ export default function PodcastStudio() {
     listeners: 1247,
     chatActive: true
   });
+
+  // NEW: Episode Management State
+  const [newEpisode, setNewEpisode] = useState({
+    title: '',
+    description: '',
+    guests: [],
+    liveStream: false
+  });
+
+  // NEW: AI Processing State
+  const [aiFeatures, setAiFeatures] = useState({
+    transcript: '',
+    showNotes: '',
+    socialClips: [],
+    isGeneratingTranscript: false,
+    isGeneratingShowNotes: false,
+    isGeneratingSocialClips: false
+  });
+
+  // Backend Integration Mutations
+  const startRecordingMutation = useMutation({
+    mutationFn: async (episodeData: any) => {
+      const response = await fetch('/api/podcast/start-recording', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(episodeData)
+      });
+      if (!response.ok) throw new Error('Failed to start recording');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setPodcastSession(prev => ({ 
+        ...prev, 
+        isRecording: true, 
+        currentEpisodeId: data.episodeId 
+      }));
+      toast({
+        title: "Recording Started",
+        description: "Professional podcast recording is now active"
+      });
+    }
+  });
+
+  const generateTranscriptMutation = useMutation({
+    mutationFn: async (episodeId: string) => {
+      const response = await fetch(`/api/podcast/generate-transcript/${episodeId}`, {
+        method: 'POST'
+      });
+      if (!response.ok) throw new Error('Failed to generate transcript');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setAiFeatures(prev => ({ 
+        ...prev, 
+        transcript: data.transcript,
+        isGeneratingTranscript: false 
+      }));
+      toast({
+        title: "AI Transcript Generated",
+        description: "Professional transcript with timestamps ready"
+      });
+    }
+  });
+
+  const generateShowNotesMutation = useMutation({
+    mutationFn: async (episodeId: string) => {
+      const response = await fetch(`/api/podcast/generate-show-notes/${episodeId}`, {
+        method: 'POST'
+      });
+      if (!response.ok) throw new Error('Failed to generate show notes');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setAiFeatures(prev => ({ 
+        ...prev, 
+        showNotes: data.showNotes,
+        isGeneratingShowNotes: false 
+      }));
+      toast({
+        title: "AI Show Notes Generated",
+        description: "Professional show notes with chapters and links ready"
+      });
+    }
+  });
+
+  const createSocialClipsMutation = useMutation({
+    mutationFn: async ({ episodeId, clipCount }: { episodeId: string, clipCount: number }) => {
+      const response = await fetch(`/api/podcast/create-social-clips/${episodeId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clipCount })
+      });
+      if (!response.ok) throw new Error('Failed to create social clips');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setAiFeatures(prev => ({ 
+        ...prev, 
+        socialClips: data.clips,
+        isGeneratingSocialClips: false 
+      }));
+      toast({
+        title: "Social Clips Created",
+        description: `${data.clips.length} optimized clips ready for TikTok, Instagram, YouTube`
+      });
+    }
+  });
+
+  // Professional Podcast Functions
+  const handleStartRecording = () => {
+    if (!newEpisode.title) {
+      toast({
+        title: "Episode Title Required",
+        description: "Please enter an episode title before recording",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    startRecordingMutation.mutate({
+      title: newEpisode.title,
+      description: newEpisode.description,
+      guests: newEpisode.guests,
+      liveStream: newEpisode.liveStream
+    });
+  };
+
+  const handleGenerateTranscript = () => {
+    if (!podcastSession.currentEpisodeId) return;
+    
+    setAiFeatures(prev => ({ ...prev, isGeneratingTranscript: true }));
+    generateTranscriptMutation.mutate(podcastSession.currentEpisodeId);
+  };
+
+  const handleGenerateShowNotes = () => {
+    if (!podcastSession.currentEpisodeId) return;
+    
+    setAiFeatures(prev => ({ ...prev, isGeneratingShowNotes: true }));
+    generateShowNotesMutation.mutate(podcastSession.currentEpisodeId);
+  };
+
+  const handleCreateSocialClips = () => {
+    if (!podcastSession.currentEpisodeId) return;
+    
+    setAiFeatures(prev => ({ ...prev, isGeneratingSocialClips: true }));
+    createSocialClipsMutation.mutate({ 
+      episodeId: podcastSession.currentEpisodeId, 
+      clipCount: 3 
+    });
+  };
 
   // AUDIO PROCESSING TOOLS
   const [audioTools, setAudioTools] = useState([
@@ -110,13 +267,11 @@ export default function PodcastStudio() {
     }
   });
 
-  // AI EPISODE FEATURES
-  const [aiFeatures, setAiFeatures] = useState({
+  // AI EPISODE FEATURES (merged with professional features above)
+  const [episodeFeatures, setEpisodeFeatures] = useState({
     autoEdit: false,
     highlightReel: true,
     chapterMarks: true,
-    socialClips: true,
-    transcriptSEO: true,
     contentSuggestions: true
   });
 
