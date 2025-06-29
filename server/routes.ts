@@ -904,6 +904,125 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Revolutionary Social Media & Viewer Rewards API - World's First Pay-to-View Platform
+  app.post("/api/social/start-viewing", async (req, res) => {
+    try {
+      const { contentId, platform, contentType } = req.body;
+      
+      const session = {
+        id: `session_${Date.now()}`,
+        contentId,
+        platform,
+        contentType,
+        startTime: new Date(),
+        earnedCoins: 0,
+        status: 'active'
+      };
+      
+      res.json({
+        success: true,
+        sessionId: session.id,
+        rewardRate: 1.0,
+        message: "Started earning ArtistCoins! Keep watching to earn more."
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to start viewing session" });
+    }
+  });
+
+  app.post("/api/social/update-viewing", async (req, res) => {
+    try {
+      const { sessionId, watchTime, engagements } = req.body;
+      
+      const baseReward = Math.floor(watchTime / 60) * 1.0;
+      const engagementBonus = engagements.reduce((total, engagement) => {
+        switch (engagement.type) {
+          case 'like': return total + 2;
+          case 'share': return total + 5;
+          case 'comment': return total + 3;
+          case 'follow': return total + 10;
+          default: return total;
+        }
+      }, 0);
+      
+      const totalReward = baseReward + engagementBonus;
+      
+      res.json({
+        success: true,
+        earnedCoins: totalReward,
+        breakdown: {
+          viewingReward: baseReward,
+          engagementBonus: engagementBonus,
+          total: totalReward
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update viewing session" });
+    }
+  });
+
+  app.get("/api/social/viewer-earnings/:userId", async (req, res) => {
+    try {
+      const earnings = {
+        totalEarned: 2847.32,
+        viewingRewards: 1523.45,
+        creationRewards: 892.18,
+        engagementRewards: 431.69,
+        dailyStreak: 23,
+        rank: "Gold Creator",
+        nextRankProgress: 73,
+        platformBreakdown: [
+          { platform: "TikTok", earnings: 892.34, growth: 23.4 },
+          { platform: "Instagram", earnings: 743.21, growth: 18.7 },
+          { platform: "YouTube", earnings: 654.87, growth: 15.2 },
+          { platform: "Twitch", earnings: 387.45, growth: 31.8 },
+          { platform: "Spotify", earnings: 169.45, growth: 12.3 }
+        ]
+      };
+      
+      res.json(earnings);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch viewer earnings" });
+    }
+  });
+
+  app.get("/api/social/platform-comparison", async (req, res) => {
+    try {
+      const comparison = {
+        artistTech: {
+          name: "Artist Tech",
+          payoutPer1KPlays: 50.00,
+          viewerRewards: true,
+          instantPayouts: true,
+          creatorRevenue: "85%",
+          features: ["AI Studio", "Live Rewards", "Cross-Platform", "NFT Support"]
+        },
+        competitors: [
+          {
+            name: "Spotify",
+            payoutPer1KPlays: 3.00,
+            viewerRewards: false,
+            instantPayouts: false,
+            creatorRevenue: "70%",
+            features: ["Audio Only", "Limited Analytics"]
+          },
+          {
+            name: "TikTok",
+            payoutPer1KPlays: 2.50,
+            viewerRewards: false,
+            instantPayouts: false,
+            creatorRevenue: "50%",
+            features: ["Short Videos", "Algorithm Dependent"]
+          }
+        ]
+      };
+      
+      res.json(comparison);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch platform comparison" });
+    }
+  });
+
   // Social Media AI Team APIs
   app.post("/api/social/find-listeners", authenticateToken, async (req: AuthRequest, res) => {
     try {

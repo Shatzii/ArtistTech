@@ -30,13 +30,15 @@ import AdvancedVideoEditor from "./pages/advanced-video-editor";
 import EnhancedLanding from "./pages/enhanced-landing";
 import SocialMediaDashboard from "./pages/social-media-dashboard";
 import SocialMediaStudio from "./pages/social-media-studio";
+import SocialMediaHub from "./pages/social-media-hub";
 
 function AuthenticatedRouter() {
   return (
     <div className="min-h-screen">
       <main>
         <Switch>
-          <Route path="/" component={Landing} />
+          <Route path="/" component={SocialMediaHub} />
+          <Route path="/landing" component={Landing} />
           <Route path="/login" component={UserLogin} />
           <Route path="/admin-login" component={AdminLogin} />
           <Route path="/admin" component={AdminDashboard} />
@@ -60,6 +62,7 @@ function AuthenticatedRouter() {
           <Route path="/advanced-video-editor" component={AdvancedVideoEditor} />
           <Route path="/social-media-dashboard" component={SocialMediaDashboard} />
           <Route path="/social-media-studio" component={SocialMediaStudio} />
+          <Route path="/social-media-hub" component={SocialMediaHub} />
           <Route path="/ultimate-music-studio" component={UltimateMusicStudio} />
           <Route path="/ultimate-dj-studio" component={UltimateDJStudio} />
           <Route path="/enterprise-management" component={EnterpriseManagement} />

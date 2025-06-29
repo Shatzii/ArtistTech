@@ -2,7 +2,7 @@
 
 ## Overview
 
-Artist Tech is the world's most advanced AI-powered multimedia creation platform, combining cutting-edge artificial intelligence with professional music production, video editing, and immersive media creation. The platform features 15 revolutionary AI engines including neural audio synthesis, real-time motion capture, 360-degree video creation, adaptive learning systems, and enterprise white-label solutions. Built entirely with self-hosted open source models, it eliminates external dependencies while delivering professional-grade capabilities that rival industry standards.
+Artist Tech is the WORLD'S FIRST platform that pays users to view AND create content. This revolutionary "pay to view" model disrupts traditional social media by rewarding every minute users spend consuming content with ArtistCoins. The platform combines 15 cutting-edge AI engines with comprehensive social media management, positioning itself as the ultimate replacement for TikTok, Instagram, YouTube, and Spotify. Built with self-hosted AI models, it delivers 10x higher creator payouts ($50+ per 1K plays vs Spotify's $3) while creating the first sustainable content consumption economy.
 
 ### Authentication System
 - **User Login**: Standard user access at `/login` with credentials user@artisttech.com / demo123
