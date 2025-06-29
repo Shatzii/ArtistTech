@@ -63,6 +63,20 @@ export default function Landing() {
       premium: true
     },
     {
+      id: 'ai-career-dashboard',
+      title: 'AI Career Dashboard',
+      description: 'Real-time analytics and predictive insights for optimal career growth',
+      icon: '📈',
+      new: true
+    },
+    {
+      id: 'producer-revenue',
+      title: 'Producer Revenue Hub',
+      description: 'Complete job marketplace with 13 revenue streams and rate optimization',
+      icon: '💰',
+      new: true
+    },
+    {
       id: 'nft-marketplace',
       title: 'NFT Marketplace',
       description: 'Blockchain integration with automated royalty distribution',

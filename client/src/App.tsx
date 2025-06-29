@@ -14,6 +14,8 @@ import CollaborativeStudio from "./pages/collaborative-studio";
 import NFTMarketplace from "./pages/nft-marketplace";
 import PodcastStudio from "./pages/podcast-studio";
 import AICareerManager from "./pages/ai-career-manager";
+import AICareerDashboard from "./pages/ai-career-dashboard";
+import ProducerRevenueDashboard from "./pages/producer-revenue-dashboard";
 import NotFound from "./pages/not-found";
 import UltimateMusicStudio from "./pages/ultimate-music-studio";
 import UltimateDJStudio from "./pages/ultimate-dj-studio";
@@ -39,6 +41,8 @@ function AuthenticatedRouter() {
           <Route path="/nft-marketplace" component={NFTMarketplace} />
           <Route path="/podcast-studio" component={PodcastStudio} />
           <Route path="/ai-career-manager" component={AICareerManager} />
+          <Route path="/ai-career-dashboard" component={AICareerDashboard} />
+          <Route path="/producer-revenue" component={ProducerRevenueDashboard} />
           <Route path="/ultimate-music-studio" component={UltimateMusicStudio} />
           <Route path="/ultimate-dj-studio" component={UltimateDJStudio} />
           <Route path="/enterprise-management" component={EnterpriseManagement} />
