@@ -62,7 +62,7 @@
       "url": "/",
       "icons": [
         {
-          "src": "/generated-icon.png",
+          "src": "/artist-tech-logo.jpeg",
           "sizes": "96x96"
         }
       ]
@@ -74,7 +74,7 @@
       "url": "/music-studio",
       "icons": [
         {
-          "src": "/generated-icon.png", 
+          "src": "/artist-tech-logo.jpeg", 
           "sizes": "96x96"
         }
       ]
@@ -86,7 +86,7 @@
       "url": "/dj-studio",
       "icons": [
         {
-          "src": "/generated-icon.png",
+          "src": "/artist-tech-logo.jpeg",
           "sizes": "96x96"
         }
       ]
@@ -98,7 +98,7 @@
       "url": "/artistcoin-viral",
       "icons": [
         {
-          "src": "/generated-icon.png",
+          "src": "/artist-tech-logo.jpeg",
           "sizes": "96x96"
         }
       ]
