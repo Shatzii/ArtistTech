@@ -387,7 +387,7 @@ export class SocialMediaAITeam {
 
   private setupSocialMediaServer() {
     // WebSocket server for real-time social media AI operations
-    this.socialWSS = new WebSocketServer({ port: 8095 });
+    this.socialWSS = new WebSocketServer({ port: 8096 });
     
     this.socialWSS.on('connection', (ws: WebSocket) => {
       ws.on('message', (data: Buffer) => {
@@ -400,7 +400,7 @@ export class SocialMediaAITeam {
       });
     });
 
-    console.log('🌐 Social Media AI server started on port 8095');
+    console.log('🌐 Social Media AI server started on port 8096');
   }
 
   private loadKnowledgeBases() {

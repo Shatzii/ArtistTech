@@ -25,6 +25,7 @@ import { aiWritingAssistant } from "./ai-writing-assistant";
 import { musicSamplingEngine } from "./music-sampling-engine";
 import { socialMediaSamplingEngine } from "./social-media-sampling-engine";
 import { socialMediaAITeam } from "./social-media-ai-team";
+import { producerBusinessEngine } from "./producer-business-engine";
 import { advancedAudioEngine } from "./advanced-audio-engine";
 import { collaborativeStudioEngine } from "./collaborative-studio-engine";
 import { streamingIntegrationEngine } from "./streaming-integration-engine";
@@ -992,6 +993,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       res.json(trendAnalysis);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Producer Business Engine APIs
+  app.post("/api/producer/find-jobs", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const { preferences } = req.body;
+      const producerId = req.user?.id.toString() || 'demo_producer';
+      
+      const jobs = await producerBusinessEngine.findJobOpportunities(producerId, preferences);
+      res.json({
+        jobs,
+        total_opportunities: jobs.length,
+        estimated_weekly_earnings: jobs.reduce((sum, job) => sum + job.budget.amount, 0)
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/producer/revenue-streams", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const producerId = req.user?.id.toString() || 'demo_producer';
+      
+      const streams = await producerBusinessEngine.getRevenueStreamRecommendations(producerId);
+      res.json({
+        recommended_streams: streams,
+        total_streams_available: streams.length
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/producer/marketplaces", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const producerId = req.user?.id.toString() || 'demo_producer';
+      
+      const marketplaces = await producerBusinessEngine.getMarketplaceRecommendations(producerId);
+      res.json({
+        recommended_marketplaces: marketplaces,
+        total_platforms: marketplaces.length
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/producer/optimize-rates", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const producerId = req.user?.id.toString() || 'demo_producer';
+      
+      const optimizedRates = await producerBusinessEngine.optimizeProducerRates(producerId);
+      res.json({
+        optimized_rates: optimizedRates,
+        market_analysis: 'Rates optimized based on experience level and market data'
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/producer/business-plan", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const producerId = req.user?.id.toString() || 'demo_producer';
+      
+      const businessPlan = await producerBusinessEngine.generateBusinessPlan(producerId);
+      res.json(businessPlan);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/producer/engine-status", authenticateToken, async (req, res) => {
+    try {
+      const status = producerBusinessEngine.getEngineStatus();
+      res.json(status);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
