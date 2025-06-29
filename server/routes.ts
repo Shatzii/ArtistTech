@@ -30,6 +30,7 @@ import { producerBusinessEngine } from "./producer-business-engine";
 import { advancedAudioEngine } from "./advanced-audio-engine";
 import { collaborativeStudioEngine } from "./collaborative-studio-engine";
 import { streamingIntegrationEngine } from "./streaming-integration-engine";
+import { artistCollaborationEngine } from "./artist-collaboration-engine";
 import { insertProjectSchema, insertAudioFileSchema, insertVideoFileSchema } from "../shared/schema";
 import multer from "multer";
 import path from "path";
@@ -2718,6 +2719,95 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { genreRemixerEngine } = await import('./genre-remixer-engine');
       const status = genreRemixerEngine.getEngineStatus();
+      res.json(status);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Artist Collaboration Engine APIs
+  app.get("/api/collaboration/artists", async (req, res) => {
+    try {
+      const artists = artistCollaborationEngine.getAllArtistProfiles();
+      res.json({
+        artists,
+        total: artists.length
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/collaboration/artist/:artistId", async (req, res) => {
+    try {
+      const { artistId } = req.params;
+      const artist = artistCollaborationEngine.getArtistProfile(artistId);
+      
+      if (!artist) {
+        return res.status(404).json({ error: "Artist not found" });
+      }
+      
+      res.json(artist);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/collaboration/artist", async (req, res) => {
+    try {
+      const profileData = req.body;
+      const artist = await artistCollaborationEngine.createArtistProfile(profileData);
+      res.json(artist);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.put("/api/collaboration/artist/:artistId", async (req, res) => {
+    try {
+      const { artistId } = req.params;
+      const updates = req.body;
+      const artist = await artistCollaborationEngine.updateArtistProfile(artistId, updates);
+      
+      if (!artist) {
+        return res.status(404).json({ error: "Artist not found" });
+      }
+      
+      res.json(artist);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/collaboration/matches/:artistId", async (req, res) => {
+    try {
+      const { artistId } = req.params;
+      const matches = await artistCollaborationEngine.findCollaborationMatches(artistId);
+      res.json({
+        matches,
+        total: matches.length
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/collaboration/opportunities/:artistId", async (req, res) => {
+    try {
+      const { artistId } = req.params;
+      const opportunities = await artistCollaborationEngine.getCrossGenreOpportunities(artistId);
+      res.json({
+        opportunities,
+        total: opportunities.length
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/collaboration/status", async (req, res) => {
+    try {
+      const status = artistCollaborationEngine.getEngineStatus();
       res.json(status);
     } catch (error: any) {
       res.status(500).json({ error: error.message });

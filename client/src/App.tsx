@@ -25,6 +25,7 @@ import EnterpriseManagement from "./pages/enterprise-management";
 import MIDIController from "./pages/midi-controller";
 import ProfessionalInstruments from "./pages/professional-instruments";
 import GenreRemixer from "./pages/genre-remixer";
+import ArtistCollaboration from "./pages/artist-collaboration";
 
 function AuthenticatedRouter() {
   return (
@@ -51,6 +52,7 @@ function AuthenticatedRouter() {
           <Route path="/midi-controller" component={MIDIController} />
           <Route path="/professional-instruments" component={ProfessionalInstruments} />
           <Route path="/genre-remixer" component={GenreRemixer} />
+          <Route path="/artist-collaboration" component={ArtistCollaboration} />
           <Route path="/ultimate-music-studio" component={UltimateMusicStudio} />
           <Route path="/ultimate-dj-studio" component={UltimateDJStudio} />
           <Route path="/enterprise-management" component={EnterpriseManagement} />
