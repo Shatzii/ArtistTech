@@ -273,6 +273,17 @@ export default function Landing() {
                 <div className="text-xs text-red-400">Replaces: OBS, Streamlabs</div>
               </div>
 
+              <Link href="/social-media-deployment">
+                <div className="bg-gradient-to-br from-teal-800/30 to-cyan-800/30 border border-teal-500/30 rounded-xl p-6 hover:border-teal-400 transition-all transform hover:scale-105 cursor-pointer">
+                  <div className="w-12 h-12 bg-teal-500 rounded-lg flex items-center justify-center mb-4">
+                    <Globe className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-white mb-2">Social Media Deploy</h3>
+                  <p className="text-sm text-gray-300 mb-3">Direct deployment to TikTok, Twitter, Instagram with AI optimization</p>
+                  <div className="text-xs text-teal-400">Replaces: Creator Studio, Buffer</div>
+                </div>
+              </Link>
+
               {/* Business & Collaboration */}
               <div className="bg-gradient-to-br from-emerald-800/30 to-green-800/30 border border-emerald-500/30 rounded-xl p-6 hover:border-emerald-400 transition-all transform hover:scale-105">
                 <div className="w-12 h-12 bg-emerald-500 rounded-lg flex items-center justify-center mb-4">

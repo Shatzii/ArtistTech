@@ -44,6 +44,7 @@ function AuthenticatedRouter() {
           <Route path="/ai-career-manager" component={AICareerManager} />
           <Route path="/ai-career-dashboard" component={AICareerDashboard} />
           <Route path="/producer-revenue" component={ProducerRevenueDashboard} />
+          <Route path="/social-media-deployment" component={SocialMediaDeployment} />
           <Route path="/ultimate-music-studio" component={UltimateMusicStudio} />
           <Route path="/ultimate-dj-studio" component={UltimateDJStudio} />
           <Route path="/enterprise-management" component={EnterpriseManagement} />
