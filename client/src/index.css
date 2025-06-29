@@ -168,30 +168,31 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    /* Artist Tech Dark Theme */
+    --background: 220 25% 3%;
+    --foreground: 180 100% 90%;
+    --card: 220 30% 5%;
+    --card-foreground: 180 95% 85%;
+    --popover: 220 35% 8%;
+    --popover-foreground: 180 90% 90%;
+    --primary: 195 100% 60%;
+    --primary-foreground: 220 25% 5%;
+    --secondary: 210 40% 12%;
+    --secondary-foreground: 180 90% 80%;
+    --muted: 215 25% 12%;
+    --muted-foreground: 180 30% 60%;
+    --accent: 200 75% 50%;
+    --accent-foreground: 220 25% 8%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --border: 210 25% 18%;
+    --input: 210 25% 12%;
+    --ring: 195 100% 60%;
+    --chart-1: 195 100% 60%;
+    --chart-2: 180 80% 50%;
+    --chart-3: 200 70% 55%;
+    --chart-4: 210 60% 60%;
+    --chart-5: 220 75% 65%;
   }
 }
 
