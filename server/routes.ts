@@ -2537,7 +2537,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // ===== PROFESSIONAL INSTRUMENTS API ROUTES =====
 
   // Get instrument presets
-  app.get("/api/instruments/presets", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/instruments/presets", async (req, res) => {
     try {
       const { professionalInstrumentsEngine } = await import('./professional-instruments-engine');
       const presets = professionalInstrumentsEngine.getAllPresets();
@@ -2549,7 +2549,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get presets by category
-  app.get("/api/instruments/presets/:category", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/instruments/presets/:category", async (req, res) => {
     try {
       const { category } = req.params;
       const { professionalInstrumentsEngine } = await import('./professional-instruments-engine');
@@ -2562,7 +2562,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get specific preset
-  app.get("/api/instruments/preset/:id", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/instruments/preset/:id", async (req, res) => {
     try {
       const { id } = req.params;
       const { professionalInstrumentsEngine } = await import('./professional-instruments-engine');
@@ -2579,7 +2579,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get audio samples
-  app.get("/api/instruments/samples", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/instruments/samples", async (req, res) => {
     try {
       const { professionalInstrumentsEngine } = await import('./professional-instruments-engine');
       const samples = professionalInstrumentsEngine.getAllSamples();
@@ -2591,7 +2591,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get samples by category
-  app.get("/api/instruments/samples/:category", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/instruments/samples/:category", async (req, res) => {
     try {
       const { category } = req.params;
       const { professionalInstrumentsEngine } = await import('./professional-instruments-engine');
@@ -2604,7 +2604,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get instruments engine status
-  app.get("/api/instruments/status", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/instruments/status", async (req, res) => {
     try {
       const { professionalInstrumentsEngine } = await import('./professional-instruments-engine');
       const status = professionalInstrumentsEngine.getEngineStatus();
