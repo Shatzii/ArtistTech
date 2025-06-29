@@ -16,6 +16,7 @@ import PodcastStudio from "./pages/podcast-studio";
 import AICareerManager from "./pages/ai-career-manager";
 import AICareerDashboard from "./pages/ai-career-dashboard";
 import ProducerRevenueDashboard from "./pages/producer-revenue-dashboard";
+import SocialMediaDeployment from "./pages/social-media-deployment";
 import NotFound from "./pages/not-found";
 import UltimateMusicStudio from "./pages/ultimate-music-studio";
 import UltimateDJStudio from "./pages/ultimate-dj-studio";

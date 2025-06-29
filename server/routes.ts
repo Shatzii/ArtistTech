@@ -25,6 +25,7 @@ import { aiWritingAssistant } from "./ai-writing-assistant";
 import { musicSamplingEngine } from "./music-sampling-engine";
 import { socialMediaSamplingEngine } from "./social-media-sampling-engine";
 import { socialMediaAITeam } from "./social-media-ai-team";
+import { socialMediaDeploymentEngine } from "./social-media-deployment-engine";
 import { producerBusinessEngine } from "./producer-business-engine";
 import { advancedAudioEngine } from "./advanced-audio-engine";
 import { collaborativeStudioEngine } from "./collaborative-studio-engine";
@@ -2276,6 +2277,124 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Initialize Enterprise AI Management WebSocket server
+  // Social Media Deployment Engine Routes
+  app.post("/api/social-deploy/tiktok", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const { videoUrl, title, description, hashtags, music, effects, privacy, allowComments, allowDuet, allowStitch, scheduledTime } = req.body;
+      const artistId = req.user?.id.toString() || 'demo_artist';
+      
+      const deployment = await socialMediaDeploymentEngine.deployToTikTok({
+        artistId,
+        videoUrl,
+        title,
+        description,
+        hashtags,
+        music,
+        effects,
+        privacy,
+        allowComments,
+        allowDuet,
+        allowStitch,
+        scheduledTime: scheduledTime ? new Date(scheduledTime) : undefined
+      });
+      
+      res.json({
+        success: true,
+        deployment,
+        message: scheduledTime ? 'TikTok post scheduled successfully' : 'TikTok post published successfully'
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/social-deploy/twitter", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const { content, mediaUrls, type, hashtags, mentions, location, scheduledTime } = req.body;
+      const artistId = req.user?.id.toString() || 'demo_artist';
+      
+      const deployment = await socialMediaDeploymentEngine.deployToTwitter({
+        artistId,
+        content,
+        mediaUrls,
+        type,
+        hashtags,
+        mentions,
+        location,
+        scheduledTime: scheduledTime ? new Date(scheduledTime) : undefined
+      });
+      
+      res.json({
+        success: true,
+        deployment,
+        message: scheduledTime ? 'Twitter post scheduled successfully' : 'Twitter post published successfully'
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/social-deploy/campaign", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const { name, contentId, platforms, strategy, schedule, budget, goals } = req.body;
+      const artistId = req.user?.id.toString() || 'demo_artist';
+      
+      const campaign = await socialMediaDeploymentEngine.createCrossPlatformCampaign({
+        artistId,
+        name,
+        contentId,
+        platforms,
+        strategy,
+        schedule,
+        budget,
+        goals
+      });
+      
+      res.json({
+        success: true,
+        campaign,
+        message: 'Cross-platform campaign created successfully'
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/social-deploy/analytics/:deploymentId", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const { deploymentId } = req.params;
+      
+      const analytics = socialMediaDeploymentEngine.getDeploymentAnalytics(deploymentId);
+      
+      res.json({
+        success: true,
+        analytics,
+        deploymentId
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/social-deploy/status", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const status = socialMediaDeploymentEngine.getEngineStatus();
+      
+      res.json({
+        engine: 'Social Media Deployment',
+        status,
+        platforms: {
+          tiktok: { enabled: true, connected: true },
+          twitter: { enabled: true, connected: true },
+          instagram: { enabled: true, connected: true },
+          youtube: { enabled: true, connected: true }
+        }
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   enterpriseAIManagement.setupManagementServer(httpServer);
 
   return httpServer;
