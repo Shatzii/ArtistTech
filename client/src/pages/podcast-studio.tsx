@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '../hooks/use-toast';
+import { apiRequest } from '../lib/queryClient';
 import { 
   Mic, Headphones, Volume2, Play, Pause, Square, Circle, Settings,
   BarChart3, Users, Upload, Download, Share2, Edit3,
@@ -452,7 +453,7 @@ export default function PodcastStudio() {
                     <RefreshCw className="w-4 h-4 animate-spin" />
                   ) : (
                     <>
-                      <Instagram className="w-4 h-4 mr-2" />
+                      <Scissors className="w-4 h-4 mr-2" />
                       Create Social Clips
                     </>
                   )}
