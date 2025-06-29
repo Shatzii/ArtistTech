@@ -51,8 +51,8 @@ export default function Landing() {
       platforms: ['Better than Google Docs', 'Replaces Zoom Studio']
     },
     {
-      id: 'cash',
-      title: 'MAKE CASH',
+      id: 'cash-out',
+      title: 'CASH OUT',
       subtitle: '13 Revenue Streams',
       description: 'Earn 10x more than Spotify. Direct fan funding, NFTs, sync licensing, live performances, and more.',
       icon: DollarSign,
@@ -105,7 +105,7 @@ export default function Landing() {
             
             <div className="mt-8 text-center">
               <h3 className="text-2xl font-bold text-white mb-4">
-                🔥 CONNECT • CREATE • COLLAB • MAKE CASH 🔥
+                🔥 CONNECT • CREATE • COLLAB • CASH OUT 🔥
               </h3>
               <p className="text-lg text-gray-300 mb-6">
                 The first platform designed for creators to actually get rich
