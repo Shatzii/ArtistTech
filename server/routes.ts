@@ -2955,6 +2955,335 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // === ARTISTCOIN CRYPTOCURRENCY & SOCIAL MEDIA API ENDPOINTS ===
 
+  // === VIEWER REWARD SYSTEM ===
+  
+  // Award coins for viewing content
+  app.post("/api/artistcoin/view-content", async (req, res) => {
+    try {
+      const { contentId, platform, duration } = req.body;
+      const viewerId = 'demo-viewer';
+      
+      // Calculate reward based on view duration
+      const baseReward = 1; // 1 AC per minute of viewing
+      const durationMinutes = Math.max(1, Math.floor(duration / 60));
+      const coinsEarned = baseReward * durationMinutes;
+      
+      res.json({
+        success: true,
+        coinsEarned,
+        message: `Earned ${coinsEarned} ArtistCoins for viewing content`,
+        viewerBalance: Math.floor(Math.random() * 1000) + coinsEarned
+      });
+    } catch (error) {
+      console.error('View reward error:', error);
+      res.status(500).json({ message: 'Failed to process view reward' });
+    }
+  });
+
+  // Award coins for engagement (likes, comments, shares)
+  app.post("/api/artistcoin/engage-content", async (req, res) => {
+    try {
+      const { contentId, platform, engagementType } = req.body;
+      const viewerId = 'demo-viewer';
+      
+      // Engagement rewards
+      const rewards = {
+        like: 2,
+        comment: 3,
+        share: 5,
+        follow: 10
+      };
+      
+      const coinsEarned = rewards[engagementType as keyof typeof rewards] || 1;
+      
+      res.json({
+        success: true,
+        coinsEarned,
+        engagementType,
+        message: `Earned ${coinsEarned} ArtistCoins for ${engagementType}`,
+        viewerBalance: Math.floor(Math.random() * 1000) + coinsEarned
+      });
+    } catch (error) {
+      console.error('Engagement reward error:', error);
+      res.status(500).json({ message: 'Failed to process engagement reward' });
+    }
+  });
+
+  // === SOCIAL MEDIA STUDIO API ENDPOINTS ===
+  
+  // Create and optimize post for multiple platforms
+  app.post("/api/social-studio/create-post", async (req, res) => {
+    try {
+      const { content, platforms, mediaType, scheduledTime, autoOptimize } = req.body;
+      const userId = 'demo-user';
+      
+      const optimizedPosts = platforms.map((platform: string) => {
+        let optimizedContent = content;
+        
+        // Platform-specific optimizations
+        if (autoOptimize) {
+          switch (platform) {
+            case 'tiktok':
+              optimizedContent += ' #fyp #viral #music #beats #artisttech';
+              break;
+            case 'instagram':
+              optimizedContent += ' #music #producer #beats #studio #artisttech';
+              break;
+            case 'youtube':
+              optimizedContent += '\n\n🔔 Subscribe for more!\n👍 Like if you enjoyed!\n#artisttech';
+              break;
+            case 'twitter':
+              optimizedContent = optimizedContent.slice(0, 240) + ' #music #beats #artisttech';
+              break;
+            case 'facebook':
+              optimizedContent += '\n\nFollow for daily music content! #artisttech';
+              break;
+          }
+        }
+        
+        return {
+          id: Date.now().toString() + platform,
+          platform,
+          content: optimizedContent,
+          mediaType: mediaType !== 'none' ? mediaType : undefined,
+          timestamp: scheduledTime || new Date().toISOString(),
+          likes: 0,
+          comments: 0,
+          shares: 0,
+          views: 0,
+          earnings: 0,
+          optimized: autoOptimize,
+          scheduled: scheduledTime,
+          status: scheduledTime ? 'scheduled' : 'published'
+        };
+      });
+      
+      res.json({
+        success: true,
+        posts: optimizedPosts,
+        message: `Created ${optimizedPosts.length} optimized posts`
+      });
+    } catch (error) {
+      console.error('Create post error:', error);
+      res.status(500).json({ message: 'Failed to create posts' });
+    }
+  });
+
+  // Get unified social media feed
+  app.get("/api/social-studio/super-feed", async (req, res) => {
+    try {
+      const { platform, sortBy = 'timestamp', limit = 20 } = req.query;
+      const userId = 'demo-user';
+      
+      // Mock super feed data
+      const feedPosts = [
+        {
+          id: '1',
+          platform: 'tiktok',
+          content: 'New beat preview! 🔥 This track is going to be legendary #NewMusic #Producer #fyp #viral #music #beats #artisttech',
+          mediaUrl: '/api/placeholder/video',
+          mediaType: 'video',
+          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+          likes: 15420,
+          comments: 342,
+          shares: 1205,
+          views: 89450,
+          earnings: 89.45,
+          optimized: true,
+          engagement: 8.5
+        },
+        {
+          id: '2',
+          platform: 'instagram',
+          content: 'Studio session vibes ✨ Working on something special for you all #music #producer #beats #studio #artisttech',
+          mediaUrl: '/api/placeholder/image',
+          mediaType: 'image',
+          timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+          likes: 8920,
+          comments: 156,
+          shares: 445,
+          views: 34520,
+          earnings: 34.52,
+          optimized: true,
+          engagement: 6.2
+        },
+        {
+          id: '3',
+          platform: 'youtube',
+          content: 'HOW TO MAKE BEATS LIKE THE PROS - Full Tutorial\n\n🔔 Subscribe for more!\n👍 Like if you enjoyed!\n#artisttech',
+          mediaUrl: '/api/placeholder/video',
+          mediaType: 'video',
+          timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+          likes: 2340,
+          comments: 89,
+          shares: 234,
+          views: 12450,
+          earnings: 124.50,
+          optimized: true,
+          engagement: 12.1
+        },
+        {
+          id: '4',
+          platform: 'twitter',
+          content: 'Working on fire beats in the studio right now 🔥 Who wants a sneak peek? #music #beats #artisttech',
+          timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+          likes: 892,
+          comments: 45,
+          shares: 123,
+          views: 5420,
+          earnings: 5.42,
+          optimized: true,
+          engagement: 4.8
+        }
+      ];
+      
+      let filteredFeed = feedPosts;
+      
+      // Filter by platform if specified
+      if (platform && platform !== 'all') {
+        filteredFeed = feedPosts.filter(post => post.platform === platform);
+      }
+      
+      // Sort feed
+      if (sortBy === 'engagement') {
+        filteredFeed.sort((a, b) => (b.engagement || 0) - (a.engagement || 0));
+      } else if (sortBy === 'earnings') {
+        filteredFeed.sort((a, b) => b.earnings - a.earnings);
+      } else {
+        filteredFeed.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+      }
+      
+      // Apply limit
+      filteredFeed = filteredFeed.slice(0, Number(limit));
+      
+      res.json({
+        success: true,
+        posts: filteredFeed,
+        totalEarnings: feedPosts.reduce((sum, post) => sum + post.earnings, 0),
+        totalViews: feedPosts.reduce((sum, post) => sum + post.views, 0),
+        totalEngagement: feedPosts.reduce((sum, post) => sum + post.likes + post.comments + post.shares, 0)
+      });
+    } catch (error) {
+      console.error('Super feed error:', error);
+      res.status(500).json({ message: 'Failed to fetch super feed' });
+    }
+  });
+
+  // Start live streaming session
+  app.post("/api/social-studio/start-live", async (req, res) => {
+    try {
+      const { platforms, title, description } = req.body;
+      const userId = 'demo-user';
+      
+      const liveSession = {
+        id: Date.now().toString(),
+        platforms,
+        title,
+        description,
+        startTime: new Date().toISOString(),
+        viewers: Math.floor(Math.random() * 50) + 10,
+        earnings: 0,
+        coinsGenerated: 0,
+        status: 'live'
+      };
+      
+      res.json({
+        success: true,
+        session: liveSession,
+        message: `Live session started on ${platforms.length} platforms`
+      });
+    } catch (error) {
+      console.error('Start live error:', error);
+      res.status(500).json({ message: 'Failed to start live session' });
+    }
+  });
+
+  // End live streaming session
+  app.post("/api/social-studio/end-live", async (req, res) => {
+    try {
+      const { sessionId } = req.body;
+      const userId = 'demo-user';
+      
+      // Calculate final earnings and stats
+      const finalStats = {
+        sessionId,
+        duration: '00:45:32',
+        peakViewers: Math.floor(Math.random() * 200) + 50,
+        totalViews: Math.floor(Math.random() * 1000) + 200,
+        earnings: Math.floor(Math.random() * 50) + 25,
+        coinsGenerated: Math.floor(Math.random() * 500) + 100,
+        status: 'ended'
+      };
+      
+      res.json({
+        success: true,
+        stats: finalStats,
+        message: 'Live session ended successfully'
+      });
+    } catch (error) {
+      console.error('End live error:', error);
+      res.status(500).json({ message: 'Failed to end live session' });
+    }
+  });
+
+  // Get platform analytics
+  app.get("/api/social-studio/analytics", async (req, res) => {
+    try {
+      const { timeframe = '30d' } = req.query;
+      const userId = 'demo-user';
+      
+      const analytics = {
+        totalReach: 2400000,
+        totalEarnings: 3248.50,
+        viewerRewardsGiven: 45290,
+        uniqueViewers: 185420,
+        platforms: [
+          {
+            id: 'tiktok',
+            name: 'TikTok',
+            followers: 125000,
+            engagement: 8.5,
+            earnings: 1450.20,
+            viewerRewards: 15230
+          },
+          {
+            id: 'instagram',
+            name: 'Instagram',
+            followers: 85000,
+            engagement: 6.2,
+            earnings: 890.30,
+            viewerRewards: 9840
+          },
+          {
+            id: 'youtube',
+            name: 'YouTube',
+            followers: 45000,
+            engagement: 12.1,
+            earnings: 650.80,
+            viewerRewards: 12450
+          },
+          {
+            id: 'twitter',
+            name: 'Twitter/X',
+            followers: 32000,
+            engagement: 4.8,
+            earnings: 257.20,
+            viewerRewards: 7770
+          }
+        ]
+      };
+      
+      res.json({
+        success: true,
+        analytics,
+        timeframe
+      });
+    } catch (error) {
+      console.error('Analytics error:', error);
+      res.status(500).json({ message: 'Failed to fetch analytics' });
+    }
+  });
+
   // Start earning session
   app.post("/api/artistcoin/start-session", async (req, res) => {
     try {

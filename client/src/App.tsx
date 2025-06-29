@@ -29,6 +29,7 @@ import ArtistCollaboration from "./pages/artist-collaboration";
 import AdvancedVideoEditor from "./pages/advanced-video-editor";
 import EnhancedLanding from "./pages/enhanced-landing";
 import SocialMediaDashboard from "./pages/social-media-dashboard";
+import SocialMediaStudio from "./pages/social-media-studio";
 
 function AuthenticatedRouter() {
   return (
