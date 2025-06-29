@@ -1063,6 +1063,174 @@ export class MIDIControllerEngine {
     console.log(`Imported ${mappings.length} MIDI mappings`);
   }
 
+  // Enhanced DJ Controller Methods
+  private handleDJCrossfader(value: number) {
+    console.log(`🎛️ Crossfader: ${value}`);
+    
+    // Calculate left/right deck mix
+    const leftGain = Math.max(0, 1 - value);
+    const rightGain = Math.max(0, value);
+    
+    // Send to audio engine
+    this.broadcastToMIDIClients({
+      type: 'dj_crossfader_update',
+      leftGain,
+      rightGain,
+      position: value
+    });
+  }
+
+  private handleDJJogWheel(deck: 'A' | 'B', value: number, touch: boolean) {
+    console.log(`🎛️ Jog Wheel ${deck}: ${value} (touch: ${touch})`);
+    
+    if (touch) {
+      // Scratch mode - immediate tempo change
+      const scratchAmount = (value - 64) / 64; // -1 to 1 range
+      this.broadcastToMIDIClients({
+        type: 'dj_scratch',
+        deck,
+        amount: scratchAmount
+      });
+    } else {
+      // Pitch bend mode - temporary tempo adjustment
+      const pitchBend = (value - 64) * 0.1; // ±6.4% pitch range
+      this.broadcastToMIDIClients({
+        type: 'dj_pitch_bend',
+        deck,
+        amount: pitchBend
+      });
+    }
+  }
+
+  private handleDJDeckControl(deck: 'A' | 'B', control: string, value: number) {
+    console.log(`🎛️ Deck ${deck} ${control}: ${value}`);
+    
+    switch (control) {
+      case 'play':
+        this.broadcastToMIDIClients({
+          type: 'dj_transport',
+          deck,
+          action: value > 0 ? 'play' : 'pause'
+        });
+        break;
+      case 'cue':
+        this.broadcastToMIDIClients({
+          type: 'dj_transport',
+          deck,
+          action: 'cue',
+          active: value > 0
+        });
+        break;
+      case 'volume':
+        this.broadcastToMIDIClients({
+          type: 'dj_volume',
+          deck,
+          level: value / 127
+        });
+        break;
+      case 'eq_high':
+      case 'eq_mid':
+      case 'eq_low':
+        this.broadcastToMIDIClients({
+          type: 'dj_eq',
+          deck,
+          band: control.split('_')[1],
+          value: value / 127
+        });
+        break;
+      case 'filter':
+        this.broadcastToMIDIClients({
+          type: 'dj_filter',
+          deck,
+          value: (value - 64) / 64 // -1 to 1 range
+        });
+        break;
+    }
+  }
+
+  private autoMapController(deviceId: string, ws: WebSocket) {
+    const device = this.connectedDevices.get(deviceId);
+    if (!device) return;
+
+    console.log(`🎛️ Auto-mapping ${device.name}...`);
+
+    // Create automatic mappings based on device type
+    const mappings: MIDIMapping[] = [];
+
+    if (device.name.includes('DDJ') || device.name.includes('Prime') || device.name.includes('Traktor')) {
+      // DJ Controller mappings
+      mappings.push(
+        {
+          id: 'auto_crossfader',
+          midiCC: 8,
+          midiChannel: 1,
+          targetType: 'custom',
+          targetParameter: 'crossfader',
+          valueMapping: { inputMin: 0, inputMax: 127, outputMin: 0, outputMax: 1, curve: 'linear' },
+          feedbackEnabled: true,
+          feedbackColor: 'blue'
+        },
+        {
+          id: 'auto_deck_a_volume',
+          midiCC: 7,
+          midiChannel: 1,
+          targetType: 'mixer',
+          targetParameter: 'deck_a_volume',
+          valueMapping: { inputMin: 0, inputMax: 127, outputMin: 0, outputMax: 1, curve: 'linear' },
+          feedbackEnabled: true,
+          feedbackColor: 'red'
+        },
+        {
+          id: 'auto_deck_b_volume',
+          midiCC: 7,
+          midiChannel: 2,
+          targetType: 'mixer',
+          targetParameter: 'deck_b_volume',
+          valueMapping: { inputMin: 0, inputMax: 127, outputMin: 0, outputMax: 1, curve: 'linear' },
+          feedbackEnabled: true,
+          feedbackColor: 'green'
+        }
+      );
+    }
+
+    // Apply mappings
+    mappings.forEach(mapping => {
+      this.messageMappings.set(mapping.id, mapping);
+    });
+
+    // Send confirmation
+    ws.send(JSON.stringify({
+      type: 'auto_map_complete',
+      deviceId,
+      mappingsCreated: mappings.length,
+      mappings
+    }));
+
+    console.log(`✅ Auto-mapped ${mappings.length} controls for ${device.name}`);
+  }
+
+  private handleBPMSync(deck1: 'A' | 'B', deck2: 'A' | 'B') {
+    console.log(`🎛️ Syncing BPM: ${deck1} → ${deck2}`);
+    
+    this.broadcastToMIDIClients({
+      type: 'dj_bpm_sync',
+      source: deck1,
+      target: deck2,
+      timestamp: Date.now()
+    });
+  }
+
+  private handleLoopControl(deck: 'A' | 'B', size: number) {
+    console.log(`🎛️ Loop ${deck}: ${size} beats`);
+    
+    this.broadcastToMIDIClients({
+      type: 'dj_loop',
+      deck,
+      size,
+      action: 'set'
+    });
+  }
+
   getEngineStatus() {
     return {
       connectedDevices: this.connectedDevices.size,
@@ -1071,10 +1239,15 @@ export class MIDIControllerEngine {
       supportedProfiles: this.hardwareProfiles.size,
       recordingMode: this.recordingMode,
       recordedMessages: this.recordedMessages.length,
+      djControllersConnected: Array.from(this.connectedDevices.values())
+        .filter(d => d.name.includes('DDJ') || d.name.includes('Prime') || d.name.includes('Traktor')).length,
+      supportedControllers: ['Pioneer DDJ Series', 'Denon Prime Series', 'Native Instruments Traktor', 'Universal MIDI'],
       capabilities: [
         'Professional MIDI Controller Support',
-        'Hardware-Specific Profiles',
-        'Real-time MIDI Mapping',
+        'Universal DJ Hardware Compatibility',
+        'Real-time MIDI Mapping & Auto-Detection',
+        'Crossfader, Jog Wheels & EQ Control',
+        'BPM Sync & Loop Management',
         'Visual Feedback & Motor Faders',
         'AI Engine Integration',
         'Custom Preset Management',
