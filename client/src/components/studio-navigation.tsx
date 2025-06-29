@@ -1,7 +1,8 @@
 import { Link, useLocation } from 'wouter';
 import { 
   Music, Disc3, Video, Palette, Users, Mic, Briefcase, Radio,
-  Crown, Brain, Sparkles, Zap, Star, ChevronDown, Menu, X
+  Crown, Brain, Sparkles, Zap, Star, ChevronDown, Menu, X,
+  TrendingUp, DollarSign, Building
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -12,6 +13,7 @@ interface Studio {
   description: string;
   color: string;
   premium?: boolean;
+  new?: boolean;
 }
 
 const studios: Studio[] = [
@@ -65,6 +67,30 @@ const studios: Studio[] = [
     icon: Briefcase,
     description: 'Career Analytics • Industry Connections • Revenue Optimization',
     color: 'from-teal-500 to-blue-500'
+  },
+  {
+    name: 'AI Career Dashboard',
+    path: '/ai-career-dashboard',
+    icon: TrendingUp,
+    description: 'Real-time Analytics • Predictive Insights • Growth Tracking',
+    color: 'from-purple-500 to-pink-500',
+    new: true
+  },
+  {
+    name: 'Producer Revenue Hub',
+    path: '/producer-revenue',
+    icon: DollarSign,
+    description: 'Job Marketplace • 13 Revenue Streams • Rate Optimization',
+    color: 'from-orange-500 to-red-500',
+    new: true
+  },
+  {
+    name: 'Enterprise Management',
+    path: '/enterprise-management',
+    icon: Building,
+    description: 'Record Label Operations • Film Production • Global Distribution',
+    color: 'from-gray-500 to-slate-500',
+    premium: true
   },
   {
     name: 'NFT Marketplace',
