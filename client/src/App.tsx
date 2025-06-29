@@ -1,6 +1,8 @@
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { MobileOptimizedLayout } from "./components/MobileOptimizedLayout";
+import { PerformanceIndicator } from "./components/AdaptiveComponents";
 import Landing from "./pages/landing";
 import DJStudio from "./pages/dj-studio";
 import SimpleVotingDemo from "./pages/simple-voting-demo";
@@ -35,7 +37,7 @@ import ArtistCoinViralDashboard from "./pages/artistcoin-viral-dashboard";
 
 function AuthenticatedRouter() {
   return (
-    <div className="min-h-screen">
+    <MobileOptimizedLayout>
       <main>
         <Switch>
           <Route path="/" component={SocialMediaHub} />
@@ -73,7 +75,8 @@ function AuthenticatedRouter() {
           <Route component={NotFound} />
         </Switch>
       </main>
-    </div>
+      <PerformanceIndicator />
+    </MobileOptimizedLayout>
   );
 }
 
