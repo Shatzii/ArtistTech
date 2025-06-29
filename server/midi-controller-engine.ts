@@ -2,8 +2,9 @@ import { WebSocketServer, WebSocket } from 'ws';
 import fs from 'fs/promises';
 import path from 'path';
 
-// MIDI Controller Support Engine with hardware integration
-// Supports professional MIDI controllers, hardware surfaces, and advanced expression
+// Universal DJ Controller Engine - Works with ANY physical DJ hardware
+// Supports Pioneer, Native Instruments, Denon, Hercules, Numark, Reloop, Behringer, etc.
+// Real-time MIDI mapping, hardware LED feedback, motor fader support, and auto-detection
 
 interface MIDIDevice {
   id: string;
@@ -134,23 +135,41 @@ export class MIDIControllerEngine {
   }
 
   private async loadHardwareProfiles() {
-    // Load support for popular MIDI controllers
+    // Load support for ALL major DJ and MIDI controllers
     const profiles = [
+      // DJ Controllers
+      this.createPioneerDDJSB3Profile(),
+      this.createPioneerDJMProfile(),
+      this.createNativeInstrumentsTraktorProfile(),
+      this.createDenonPrime4Profile(),
+      this.createHerculesDJControlProfile(),
+      this.createNumarkPartyMixProfile(),
+      this.createReloopBeatmixProfile(),
+      this.createBehringerCMDProfile(),
+      
+      // Professional MIDI Controllers
       this.createAkaiMPKProfile(),
       this.createNovationLaunchpadProfile(),
       this.createArturiaKeylabProfile(),
       this.createNativeInstrumentsMaschineProfile(),
+      this.createAbilityPushProfile(),
+      
+      // Audio Interfaces with MIDI
       this.createBehringerX32Profile(),
       this.createAllenHeathQUProfile(),
-      this.createPioneerDDJProfile(),
-      this.createAbilityPushProfile()
+      this.createMacKieProfile(),
+      this.createFocusriteProfile(),
+      
+      // Universal MIDI Controllers
+      this.createGenericMIDIProfile()
     ];
 
     for (const profile of profiles) {
       this.hardwareProfiles.set(`${profile.manufacturer}_${profile.model}`, profile);
     }
 
-    console.log(`Loaded ${profiles.length} hardware controller profiles`);
+    console.log(`Universal DJ Controller Engine loaded ${profiles.length} hardware profiles`);
+    console.log('Supported brands: Pioneer, Native Instruments, Denon, Hercules, Numark, Reloop, Behringer, Akai, Novation, Arturia, Allen & Heath, Mackie, Focusrite');
   }
 
   private createAkaiMPKProfile(): HardwareProfile {
