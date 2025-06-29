@@ -3044,10 +3044,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Connect social media platform
-  app.post("/api/artistcoin/connect-social", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/artistcoin/connect-social", async (req, res) => {
     try {
       const { platform } = req.body;
-      const userId = req.user?.id?.toString() || 'demo-user';
+      const userId = 'demo-user';
       
       // Simulate OAuth connection
       const followerCount = Math.floor(Math.random() * 50000) + 1000;
@@ -3072,7 +3072,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get social media connections
-  app.get("/api/artistcoin/social-connections", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/artistcoin/social-connections", async (req, res) => {
     try {
       const userId = req.user?.id?.toString() || 'demo-user';
       
@@ -3117,7 +3117,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Sync social media feed
-  app.post("/api/artistcoin/sync-feed", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/artistcoin/sync-feed", async (req, res) => {
     try {
       const userId = req.user?.id?.toString() || 'demo-user';
       
@@ -3134,7 +3134,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get unified social media feed
-  app.get("/api/artistcoin/social-feed", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/artistcoin/social-feed", async (req, res) => {
     try {
       const { platform } = req.query;
       const userId = req.user?.id?.toString() || 'demo-user';
@@ -3170,7 +3170,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get ArtistCoin engine status
-  app.get("/api/artistcoin/status", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/artistcoin/status", async (req, res) => {
     try {
       const status = artistCoinEngine.getEngineStatus();
       const userStats = await artistCoinEngine.getActiveUserStats();
