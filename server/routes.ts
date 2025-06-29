@@ -4038,6 +4038,565 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Unified Social Media Platform APIs
+  app.get("/api/platforms/unified-feed", async (req, res) => {
+    try {
+      const { platforms, limit = 20 } = req.query;
+      
+      // Generate unified feed from all platforms
+      const unifiedFeed = [
+        {
+          id: 'tiktok-001',
+          platform: 'TikTok',
+          icon: 'SiTiktok',
+          user: '@musicproducer_jay',
+          content: 'New beat drop! 🔥 This one\'s going viral...',
+          engagement: { likes: '2.3M', shares: '45K', comments: '12K' },
+          timestamp: new Date(Date.now() - 2 * 60 * 1000),
+          reward: 8,
+          mediaType: 'video',
+          color: 'from-pink-500 to-red-500'
+        },
+        {
+          id: 'instagram-001',
+          platform: 'Instagram',
+          icon: 'SiInstagram',
+          user: '@studio_sessions',
+          content: 'Behind the scenes at our latest recording session. The energy is unmatched! 🎵',
+          engagement: { likes: '847K', shares: '23K', comments: '5.2K' },
+          timestamp: new Date(Date.now() - 5 * 60 * 1000),
+          reward: 6,
+          mediaType: 'image',
+          color: 'from-purple-500 to-pink-500'
+        },
+        {
+          id: 'youtube-001',
+          platform: 'YouTube',
+          icon: 'SiYoutube',
+          user: 'Beat Academy',
+          content: 'How to make VIRAL beats in 2025 - Complete Tutorial',
+          engagement: { likes: '156K', shares: '8.4K', comments: '2.1K' },
+          timestamp: new Date(Date.now() - 12 * 60 * 1000),
+          reward: 12,
+          mediaType: 'video',
+          color: 'from-red-500 to-red-600'
+        },
+        {
+          id: 'discord-001',
+          platform: 'Discord',
+          icon: 'SiDiscord',
+          user: 'Producer Community',
+          content: 'New collab opportunity: Looking for vocalists for trap beat #4',
+          engagement: { likes: '47', shares: '12', comments: '23' },
+          timestamp: new Date(Date.now() - 18 * 60 * 1000),
+          reward: 4,
+          mediaType: 'text',
+          color: 'from-indigo-500 to-purple-600'
+        },
+        {
+          id: 'whatsapp-001',
+          platform: 'WhatsApp',
+          icon: 'SiWhatsapp',
+          user: 'Studio Crew',
+          content: 'Studio session tonight! Who\'s ready to create magic? 🎤',
+          engagement: { likes: '24', shares: '8', comments: '15' },
+          timestamp: new Date(Date.now() - 25 * 60 * 1000),
+          reward: 3,
+          mediaType: 'text',
+          color: 'from-green-500 to-green-600'
+        }
+      ];
+
+      res.json({ 
+        success: true, 
+        feed: unifiedFeed,
+        totalRewards: unifiedFeed.reduce((sum, item) => sum + item.reward, 0),
+        platformStats: {
+          'TikTok': { newPosts: 47, color: 'from-pink-500 to-red-500' },
+          'Instagram': { newPosts: 23, color: 'from-purple-500 to-pink-500' },
+          'YouTube': { newPosts: 15, color: 'from-red-500 to-red-600' },
+          'X/Twitter': { newPosts: 89, color: 'from-blue-400 to-blue-600' },
+          'Facebook': { newPosts: 12, color: 'from-blue-600 to-blue-700' },
+          'Twitch': { liveStreams: 5, color: 'from-purple-600 to-indigo-600' },
+          'Discord': { messages: 34, color: 'from-indigo-500 to-purple-600' },
+          'WhatsApp': { chats: 8, color: 'from-green-500 to-green-600' }
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching unified feed:', error);
+      res.status(500).json({ message: 'Failed to fetch unified feed' });
+    }
+  });
+
+  app.get("/api/platforms/discord/servers", async (req, res) => {
+    try {
+      const servers = [
+        { 
+          id: 'server-1',
+          name: 'Music Producers Hub', 
+          members: '45.2K', 
+          online: '3.4K', 
+          unread: 12,
+          icon: '🎵'
+        },
+        { 
+          id: 'server-2',
+          name: 'Beat Makers United', 
+          members: '23.8K', 
+          online: '1.8K', 
+          unread: 5,
+          icon: '🎧'
+        },
+        { 
+          id: 'server-3',
+          name: 'AI Music Creation', 
+          members: '18.6K', 
+          online: '2.1K', 
+          unread: 0,
+          icon: '🤖'
+        },
+        { 
+          id: 'server-4',
+          name: 'Artist Collaboration', 
+          members: '32.4K', 
+          online: '4.2K', 
+          unread: 23,
+          icon: '🎤'
+        }
+      ];
+
+      res.json({ success: true, servers });
+    } catch (error) {
+      console.error('Error fetching Discord servers:', error);
+      res.status(500).json({ message: 'Failed to fetch Discord servers' });
+    }
+  });
+
+  app.get("/api/platforms/discord/messages/:serverId", async (req, res) => {
+    try {
+      const { serverId } = req.params;
+      
+      const messages = [
+        { 
+          id: 'msg-1',
+          user: 'BeatMaker2025', 
+          message: 'Just dropped a new track! Check it out 🔥', 
+          timestamp: new Date(Date.now() - 4 * 60 * 1000), 
+          avatar: '🎵' 
+        },
+        { 
+          id: 'msg-2',
+          user: 'ProducerLife', 
+          message: 'Anyone know good VSTs for trap beats?', 
+          timestamp: new Date(Date.now() - 3 * 60 * 1000), 
+          avatar: '🎹' 
+        },
+        { 
+          id: 'msg-3',
+          user: 'SoundEngineer', 
+          message: 'Try Serum with the new preset pack', 
+          timestamp: new Date(Date.now() - 2 * 60 * 1000), 
+          avatar: '🔊' 
+        }
+      ];
+
+      res.json({ success: true, messages, serverId });
+    } catch (error) {
+      console.error('Error fetching Discord messages:', error);
+      res.status(500).json({ message: 'Failed to fetch Discord messages' });
+    }
+  });
+
+  app.get("/api/platforms/whatsapp/chats", async (req, res) => {
+    try {
+      const chats = [
+        { 
+          id: 'chat-1',
+          name: 'Studio Crew 🎵', 
+          lastMessage: 'Session at 7 PM tonight!', 
+          timestamp: new Date(Date.now() - 15 * 60 * 1000), 
+          unread: 3, 
+          online: true 
+        },
+        { 
+          id: 'chat-2',
+          name: 'Mom', 
+          lastMessage: 'How\'s the music going?', 
+          timestamp: new Date(Date.now() - 90 * 60 * 1000), 
+          unread: 1, 
+          online: false 
+        },
+        { 
+          id: 'chat-3',
+          name: 'Collaboration Group', 
+          lastMessage: 'New beat ideas?', 
+          timestamp: new Date(Date.now() - 135 * 60 * 1000), 
+          unread: 0, 
+          online: true 
+        },
+        { 
+          id: 'chat-4',
+          name: 'Record Label', 
+          lastMessage: 'Contract details attached', 
+          timestamp: new Date(Date.now() - 180 * 60 * 1000), 
+          unread: 5, 
+          online: true 
+        }
+      ];
+
+      res.json({ success: true, chats });
+    } catch (error) {
+      console.error('Error fetching WhatsApp chats:', error);
+      res.status(500).json({ message: 'Failed to fetch WhatsApp chats' });
+    }
+  });
+
+  app.get("/api/platforms/whatsapp/messages/:chatId", async (req, res) => {
+    try {
+      const { chatId } = req.params;
+      
+      const messages = [
+        { 
+          id: 'msg-1',
+          user: 'Mike', 
+          message: 'Studio session at 7 PM tonight! 🎤', 
+          timestamp: new Date(Date.now() - 30 * 60 * 1000), 
+          avatar: '🎸', 
+          side: 'left' 
+        },
+        { 
+          id: 'msg-2',
+          user: 'Sarah', 
+          message: 'Count me in! What should I bring?', 
+          timestamp: new Date(Date.now() - 28 * 60 * 1000), 
+          avatar: '🎹', 
+          side: 'left' 
+        },
+        { 
+          id: 'msg-3',
+          user: 'You', 
+          message: 'Just your energy! Equipment is covered 🔥', 
+          timestamp: new Date(Date.now() - 27 * 60 * 1000), 
+          avatar: '🎵', 
+          side: 'right' 
+        },
+        { 
+          id: 'msg-4',
+          user: 'DJ Alex', 
+          message: 'This is going to be epic! 🚀', 
+          timestamp: new Date(Date.now() - 26 * 60 * 1000), 
+          avatar: '🎧', 
+          side: 'left' 
+        }
+      ];
+
+      res.json({ success: true, messages, chatId });
+    } catch (error) {
+      console.error('Error fetching WhatsApp messages:', error);
+      res.status(500).json({ message: 'Failed to fetch WhatsApp messages' });
+    }
+  });
+
+  app.get("/api/platforms/unified-messages", async (req, res) => {
+    try {
+      const unifiedMessages = [
+        { 
+          id: 'msg-1',
+          platform: 'Instagram', 
+          icon: 'SiInstagram', 
+          user: '@fanpage_music', 
+          message: 'Love your latest track!', 
+          unread: 3, 
+          color: 'purple',
+          timestamp: new Date(Date.now() - 10 * 60 * 1000)
+        },
+        { 
+          id: 'msg-2',
+          platform: 'X/Twitter', 
+          icon: 'SiX', 
+          user: '@producer_jay', 
+          message: 'Collab opportunity?', 
+          unread: 1, 
+          color: 'blue',
+          timestamp: new Date(Date.now() - 20 * 60 * 1000)
+        },
+        { 
+          id: 'msg-3',
+          platform: 'TikTok', 
+          icon: 'SiTiktok', 
+          user: '@viral_beats', 
+          message: 'Can I use your beat?', 
+          unread: 5, 
+          color: 'pink',
+          timestamp: new Date(Date.now() - 35 * 60 * 1000)
+        },
+        { 
+          id: 'msg-4',
+          platform: 'Telegram', 
+          icon: 'SiTelegram', 
+          user: 'Music Group', 
+          message: 'New beat challenge!', 
+          unread: 2, 
+          color: 'blue',
+          timestamp: new Date(Date.now() - 45 * 60 * 1000)
+        }
+      ];
+
+      res.json({ success: true, messages: unifiedMessages });
+    } catch (error) {
+      console.error('Error fetching unified messages:', error);
+      res.status(500).json({ message: 'Failed to fetch unified messages' });
+    }
+  });
+
+  app.get("/api/platforms/live-chat/rooms", async (req, res) => {
+    try {
+      const rooms = [
+        { 
+          id: 'room-1',
+          name: '🔥 Beat Battles', 
+          users: 1247, 
+          active: true, 
+          topic: 'Weekly beat competition' 
+        },
+        { 
+          id: 'room-2',
+          name: '🎤 Collaboration Hub', 
+          users: 892, 
+          active: true, 
+          topic: 'Find your next collab partner' 
+        },
+        { 
+          id: 'room-3',
+          name: '💰 Money Talks', 
+          users: 2134, 
+          active: true, 
+          topic: 'Revenue and business tips' 
+        },
+        { 
+          id: 'room-4',
+          name: '🎵 New Releases', 
+          users: 567, 
+          active: false, 
+          topic: 'Share your latest drops' 
+        }
+      ];
+
+      res.json({ success: true, rooms });
+    } catch (error) {
+      console.error('Error fetching live chat rooms:', error);
+      res.status(500).json({ message: 'Failed to fetch live chat rooms' });
+    }
+  });
+
+  app.get("/api/platforms/live-chat/messages/:roomId", async (req, res) => {
+    try {
+      const { roomId } = req.params;
+      
+      const messages = [
+        { 
+          id: 'msg-1',
+          user: 'BeatGod2025', 
+          message: 'This week\'s theme is TRAP! Let\'s go! 🔥', 
+          timestamp: new Date(Date.now() - 15 * 60 * 1000), 
+          badge: 'Moderator', 
+          reward: 5 
+        },
+        { 
+          id: 'msg-2',
+          user: 'ProducerKing', 
+          message: 'Just dropped my entry! Check it out', 
+          timestamp: new Date(Date.now() - 14 * 60 * 1000), 
+          badge: 'Pro', 
+          reward: 3 
+        },
+        { 
+          id: 'msg-3',
+          user: 'NewbieMaker', 
+          message: 'First time joining! Excited to compete 🎵', 
+          timestamp: new Date(Date.now() - 13 * 60 * 1000), 
+          badge: 'New', 
+          reward: 2 
+        },
+        { 
+          id: 'msg-4',
+          user: 'VoteBot', 
+          message: '🏆 Voting opens in 30 minutes! Get your beats ready!', 
+          timestamp: new Date(Date.now() - 12 * 60 * 1000), 
+          badge: 'Bot', 
+          reward: 1, 
+          isBot: true 
+        },
+        { 
+          id: 'msg-5',
+          user: 'MusicFan123', 
+          message: 'Love the energy in here! ArtistCoin to the moon! 🚀', 
+          timestamp: new Date(Date.now() - 11 * 60 * 1000), 
+          badge: 'Fan', 
+          reward: 4 
+        }
+      ];
+
+      res.json({ success: true, messages, roomId });
+    } catch (error) {
+      console.error('Error fetching live chat messages:', error);
+      res.status(500).json({ message: 'Failed to fetch live chat messages' });
+    }
+  });
+
+  app.get("/api/platforms/all-platforms", async (req, res) => {
+    try {
+      const platforms = [
+        { 
+          platform: 'TikTok', 
+          icon: 'SiTiktok', 
+          followers: '2.3M', 
+          posts: 47, 
+          engagement: '94%', 
+          earnings: '$2,847', 
+          color: 'from-pink-500 to-red-500',
+          connected: true 
+        },
+        { 
+          platform: 'Instagram', 
+          icon: 'SiInstagram', 
+          followers: '1.8M', 
+          posts: 23, 
+          engagement: '87%', 
+          earnings: '$1,924', 
+          color: 'from-purple-500 to-pink-500',
+          connected: true 
+        },
+        { 
+          platform: 'YouTube', 
+          icon: 'SiYoutube', 
+          followers: '945K', 
+          posts: 15, 
+          engagement: '91%', 
+          earnings: '$3,256', 
+          color: 'from-red-500 to-red-600',
+          connected: true 
+        },
+        { 
+          platform: 'Twitter/X', 
+          icon: 'SiX', 
+          followers: '756K', 
+          posts: 89, 
+          engagement: '76%', 
+          earnings: '$1,485', 
+          color: 'from-blue-400 to-blue-600',
+          connected: true 
+        },
+        { 
+          platform: 'Discord', 
+          icon: 'SiDiscord', 
+          followers: '45K', 
+          posts: 34, 
+          engagement: '98%', 
+          earnings: '$658', 
+          color: 'from-indigo-500 to-purple-600',
+          connected: true 
+        },
+        { 
+          platform: 'WhatsApp', 
+          icon: 'SiWhatsapp', 
+          followers: 'Private', 
+          posts: 8, 
+          engagement: '100%', 
+          earnings: '$245', 
+          color: 'from-green-500 to-green-600',
+          connected: true 
+        },
+        { 
+          platform: 'Twitch', 
+          icon: 'SiTwitch', 
+          followers: '234K', 
+          posts: 5, 
+          engagement: '89%', 
+          earnings: '$1,789', 
+          color: 'from-purple-600 to-indigo-600',
+          connected: true 
+        },
+        { 
+          platform: 'Spotify', 
+          icon: 'SiSpotify', 
+          followers: '1.2M', 
+          posts: 12, 
+          engagement: '85%', 
+          earnings: '$4,125', 
+          color: 'from-green-400 to-green-600',
+          connected: true 
+        }
+      ];
+
+      const totalEarnings = platforms.reduce((sum, platform) => {
+        const earning = parseFloat(platform.earnings.replace('$', '').replace(',', ''));
+        return sum + earning;
+      }, 0);
+
+      res.json({ 
+        success: true, 
+        platforms,
+        totalEarnings: `$${totalEarnings.toLocaleString()}`,
+        connectedPlatforms: platforms.filter(p => p.connected).length,
+        totalFollowers: '8.7M+'
+      });
+    } catch (error) {
+      console.error('Error fetching all platforms:', error);
+      res.status(500).json({ message: 'Failed to fetch platform data' });
+    }
+  });
+
+  // Post content to multiple platforms
+  app.post("/api/platforms/post-content", async (req, res) => {
+    try {
+      const { content, platforms, mediaUrls } = req.body;
+      
+      const results = platforms.map((platform: string) => ({
+        platform,
+        success: true,
+        postId: `${platform.toLowerCase()}-${Date.now()}`,
+        scheduledTime: new Date(Date.now() + Math.random() * 60 * 60 * 1000),
+        estimatedReach: Math.floor(Math.random() * 100000) + 10000,
+        artistCoinReward: Math.floor(Math.random() * 15) + 5
+      }));
+
+      res.json({ 
+        success: true, 
+        results,
+        totalPlatforms: platforms.length,
+        totalRewards: results.reduce((sum, result) => sum + result.artistCoinReward, 0)
+      });
+    } catch (error) {
+      console.error('Error posting content:', error);
+      res.status(500).json({ message: 'Failed to post content' });
+    }
+  });
+
+  // Send unified message across platforms
+  app.post("/api/platforms/send-message", async (req, res) => {
+    try {
+      const { message, platforms, recipients } = req.body;
+      
+      const results = platforms.map((platform: string) => ({
+        platform,
+        success: true,
+        messageId: `${platform.toLowerCase()}-msg-${Date.now()}`,
+        deliveredAt: new Date(),
+        artistCoinReward: Math.floor(Math.random() * 5) + 1
+      }));
+
+      res.json({ 
+        success: true, 
+        results,
+        totalRewards: results.reduce((sum, result) => sum + result.artistCoinReward, 0)
+      });
+    } catch (error) {
+      console.error('Error sending message:', error);
+      res.status(500).json({ message: 'Failed to send message' });
+    }
+  });
+
   enterpriseAIManagement.setupManagementServer(httpServer);
 
   return httpServer;
