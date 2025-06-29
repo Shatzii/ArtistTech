@@ -213,6 +213,12 @@ export default function SocialMediaHub() {
               )}
             </Button>
             
+            <Link href="/artistcoin-viral">
+              <Button size="lg" className="px-8 py-4 text-lg font-bold bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 border-2 border-yellow-400/50 shadow-yellow-400/20 shadow-lg">
+                <Coins className="mr-2 animate-spin" /> ArtistCoin Hub
+              </Button>
+            </Link>
+            
             <Link href="/social-media-studio">
               <Button size="lg" variant="outline" className="px-8 py-4 text-lg font-bold border-white text-white hover:bg-white hover:text-black">
                 <Rocket className="mr-2" /> Full Studio
