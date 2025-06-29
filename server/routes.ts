@@ -2616,7 +2616,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Record audio performance
-  app.post("/api/instruments/record/start", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/instruments/record/start", async (req, res) => {
     try {
       const { format, quality, presetId } = req.body;
       
@@ -2637,7 +2637,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Stop recording
-  app.post("/api/instruments/record/stop", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/instruments/record/stop", async (req, res) => {
     try {
       const { sessionId } = req.body;
       
