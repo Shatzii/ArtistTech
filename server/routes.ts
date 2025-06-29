@@ -1023,6 +1023,407 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ArtistCoin Viral Features APIs - Making Cryptocurrency Fun & Popular
+  app.get("/api/artistcoin/viral-challenges", async (req, res) => {
+    try {
+      const challenges = [
+        {
+          id: 'beat_drop_challenge',
+          title: 'Beat Drop Challenge',
+          description: 'Create a 15-second beat drop that gets people moving',
+          reward: 1000,
+          participantCount: 12540,
+          timeRemaining: 48,
+          difficulty: 'medium',
+          type: 'creative',
+          requirements: ['Original beat', 'Under 15 seconds', 'Include #BeatDrop'],
+          trending: true
+        },
+        {
+          id: 'collab_remix',
+          title: 'Collaboration Remix',
+          description: 'Remix another artist\'s track and split the rewards',
+          reward: 2000,
+          participantCount: 8920,
+          timeRemaining: 72,
+          difficulty: 'hard',
+          type: 'collaborative',
+          requirements: ['Use AI remix tools', 'Get original artist approval', 'Credit collaborators'],
+          trending: true
+        },
+        {
+          id: 'viral_dance',
+          title: 'Viral Dance Challenge',
+          description: 'Create a dance that could go viral with your music',
+          reward: 1500,
+          participantCount: 15780,
+          timeRemaining: 36,
+          difficulty: 'medium',
+          type: 'social',
+          requirements: ['Original choreography', 'Use your music', 'Film in vertical'],
+          trending: true
+        }
+      ];
+      
+      res.json({ success: true, challenges });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch viral challenges" });
+    }
+  });
+
+  app.get("/api/artistcoin/gamification", async (req, res) => {
+    try {
+      const gamificationData = {
+        achievements: [
+          {
+            id: 'first_earn',
+            title: 'First ArtistCoin',
+            description: 'Earn your first ArtistCoin',
+            icon: '🪙',
+            reward: 10,
+            rarity: 'common',
+            unlockedBy: 95,
+            category: 'earning'
+          },
+          {
+            id: 'viral_creator',
+            title: 'Viral Creator',
+            description: 'Create content that gets 10K+ views',
+            icon: '🚀',
+            reward: 500,
+            rarity: 'epic',
+            unlockedBy: 15,
+            category: 'creation'
+          },
+          {
+            id: 'whale_status',
+            title: 'ArtistCoin Whale',
+            description: 'Accumulate 10,000+ ArtistCoins',
+            icon: '🐋',
+            reward: 1000,
+            rarity: 'legendary',
+            unlockedBy: 2,
+            category: 'wealth'
+          }
+        ],
+        leaderboards: [
+          {
+            id: 'top_earners',
+            title: 'Top ArtistCoin Earners',
+            timeframe: 'weekly',
+            category: 'earning',
+            topUsers: [
+              { rank: 1, username: 'CryptoArtist', score: 15420, avatar: '🎨', change: 2 },
+              { rank: 2, username: 'ViralCreator', score: 12890, avatar: '🚀', change: -1 },
+              { rank: 3, username: 'MusicMogul', score: 11750, avatar: '🎵', change: 1 },
+              { rank: 4, username: 'BeatMaster', score: 10200, avatar: '🎧', change: 3 },
+              { rank: 5, username: 'SoundWave', score: 9580, avatar: '🌊', change: -2 }
+            ],
+            rewards: [
+              { position: '1st', reward: 5000 },
+              { position: '2nd-5th', reward: 2000 },
+              { position: '6th-20th', reward: 500 }
+            ]
+          }
+        ],
+        dailyQuests: [
+          {
+            id: 'daily_view',
+            title: 'Content Connoisseur',
+            description: 'Watch 30 minutes of content',
+            reward: 50,
+            progress: 18,
+            maxProgress: 30,
+            timeLimit: 24,
+            difficulty: 'easy',
+            category: 'viewing'
+          },
+          {
+            id: 'daily_create',
+            title: 'Daily Creator',
+            description: 'Upload 1 piece of content',
+            reward: 100,
+            progress: 0,
+            maxProgress: 1,
+            timeLimit: 24,
+            difficulty: 'medium',
+            category: 'creation'
+          },
+          {
+            id: 'social_share',
+            title: 'Social Butterfly',
+            description: 'Share content on 3 different platforms',
+            reward: 75,
+            progress: 1,
+            maxProgress: 3,
+            timeLimit: 24,
+            difficulty: 'easy',
+            category: 'social'
+          }
+        ],
+        powerUps: [
+          {
+            id: 'earnings_2x',
+            name: '2x Earnings Booster',
+            description: 'Double your ArtistCoin earnings for 1 hour',
+            cost: 100,
+            duration: 60,
+            effect: { type: 'earning_multiplier', value: 2 },
+            rarity: 'rare'
+          },
+          {
+            id: 'viral_boost',
+            name: 'Viral Boost',
+            description: 'Increase content reach by 500% for 30 minutes',
+            cost: 250,
+            duration: 30,
+            effect: { type: 'social_boost', value: 5 },
+            rarity: 'epic'
+          },
+          {
+            id: 'lucky_drop',
+            name: 'Lucky Drop',
+            description: 'Increase rare reward chances by 300% for 2 hours',
+            cost: 150,
+            duration: 120,
+            effect: { type: 'rare_drop', value: 3 },
+            rarity: 'rare'
+          }
+        ]
+      };
+      
+      res.json({ success: true, gamificationData });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch gamification data" });
+    }
+  });
+
+  app.get("/api/artistcoin/influencer-campaigns", async (req, res) => {
+    try {
+      const campaigns = [
+        {
+          id: 'tech_guru_campaign',
+          influencer: {
+            name: 'TechGuru',
+            platform: 'YouTube',
+            followers: 2500000,
+            avatar: '👨‍💻',
+            verified: true
+          },
+          campaign: {
+            title: 'Why ArtistCoin is Revolutionary',
+            reward: 50000,
+            duration: 30,
+            requirements: ['Honest review', 'Show earning process', 'Demo platform']
+          },
+          status: 'active',
+          engagement: {
+            views: 850000,
+            likes: 95000,
+            shares: 12000,
+            comments: 8500
+          }
+        },
+        {
+          id: 'music_producer_series',
+          influencer: {
+            name: 'BeatMaker Pro',
+            platform: 'TikTok',
+            followers: 1800000,
+            avatar: '🎵',
+            verified: true
+          },
+          campaign: {
+            title: 'Making Money While Making Music',
+            reward: 35000,
+            duration: 14,
+            requirements: ['Live earning demo', 'Tutorial series', 'Community interaction']
+          },
+          status: 'active',
+          engagement: {
+            views: 1200000,
+            likes: 180000,
+            shares: 45000,
+            comments: 15000
+          }
+        },
+        {
+          id: 'crypto_expert',
+          influencer: {
+            name: 'CryptoQueen',
+            platform: 'Instagram',
+            followers: 950000,
+            avatar: '👑',
+            verified: true
+          },
+          campaign: {
+            title: 'First Crypto That Pays You to Watch',
+            reward: 25000,
+            duration: 21,
+            requirements: ['Educational content', 'Live Q&A', 'Portfolio tracking']
+          },
+          status: 'active',
+          engagement: {
+            views: 650000,
+            likes: 120000,
+            shares: 28000,
+            comments: 15500
+          }
+        }
+      ];
+      
+      res.json({ success: true, campaigns });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch influencer campaigns" });
+    }
+  });
+
+  app.get("/api/artistcoin/social-features", async (req, res) => {
+    try {
+      const socialFeatures = {
+        referralProgram: {
+          referralBonus: 50,
+          refereeBonus: 25,
+          tieredRewards: [
+            { referrals: 5, bonus: 100, title: 'Friend Connector' },
+            { referrals: 20, bonus: 500, title: 'Community Builder' },
+            { referrals: 100, bonus: 2500, title: 'Viral Ambassador' }
+          ],
+          yourReferrals: 12,
+          totalEarned: 625
+        },
+        communityGoals: [
+          {
+            id: 'million_coins',
+            title: 'Community Million',
+            description: 'Collectively earn 1 million ArtistCoins',
+            target: 1000000,
+            current: 750000,
+            reward: 10000,
+            deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            participants: 15420
+          },
+          {
+            id: 'viral_content',
+            title: 'Viral Content Goal',
+            description: 'Create 1000 pieces of viral content',
+            target: 1000,
+            current: 687,
+            reward: 5000,
+            deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+            participants: 8920
+          }
+        ],
+        trendingHashtags: [
+          { tag: '#ArtistCoinChallenge', posts: 45820, reward: 10 },
+          { tag: '#EarnWhileYouWatch', posts: 32150, reward: 15 },
+          { tag: '#ViralCreator', posts: 28940, reward: 12 },
+          { tag: '#CryptoArtist', posts: 24670, reward: 8 }
+        ]
+      };
+      
+      res.json({ success: true, socialFeatures });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch social features" });
+    }
+  });
+
+  app.post("/api/artistcoin/join-challenge", async (req, res) => {
+    try {
+      const { challengeId, userId } = req.body;
+      
+      const response = {
+        success: true,
+        challengeId,
+        message: `Successfully joined challenge! Earn ArtistCoins by completing it.`,
+        bonus: 25, // Participation bonus
+        timeRemaining: 48,
+        requirements: ['Complete within deadline', 'Follow challenge rules', 'Use required hashtags']
+      };
+      
+      res.json(response);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to join challenge" });
+    }
+  });
+
+  app.post("/api/artistcoin/use-powerup", async (req, res) => {
+    try {
+      const { powerUpId, userId } = req.body;
+      
+      const powerUps = {
+        'earnings_2x': {
+          name: '2x Earnings Booster',
+          effect: 'Double earnings for 1 hour',
+          duration: 60,
+          cost: 100
+        },
+        'viral_boost': {
+          name: 'Viral Boost',
+          effect: '5x content reach for 30 minutes',
+          duration: 30,
+          cost: 250
+        },
+        'lucky_drop': {
+          name: 'Lucky Drop',
+          effect: '3x rare reward chances for 2 hours',
+          duration: 120,
+          cost: 150
+        }
+      };
+      
+      const powerUp = powerUps[powerUpId];
+      
+      if (powerUp) {
+        const response = {
+          success: true,
+          powerUp: powerUp,
+          message: `${powerUp.name} activated! ${powerUp.effect}`,
+          duration: powerUp.duration,
+          timeActivated: new Date().toISOString()
+        };
+        
+        res.json(response);
+      } else {
+        res.status(404).json({ message: "Power-up not found" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Failed to use power-up" });
+    }
+  });
+
+  app.get("/api/artistcoin/stats", async (req, res) => {
+    try {
+      const stats = {
+        totalUsers: 156420,
+        totalCoinsEarned: 12500000,
+        activeChallenges: 15,
+        completedChallenges: 342,
+        averageDaily: 85000,
+        topEarningDay: 245000,
+        marketCap: 50000000,
+        dailyGrowth: 23.5,
+        platformComparison: {
+          artistCoin: {
+            userRewards: true,
+            payoutPer1KViews: 50,
+            instantPayouts: true,
+            gamification: true
+          },
+          competitors: {
+            youtube: { userRewards: false, payoutPer1KViews: 2.5 },
+            tiktok: { userRewards: false, payoutPer1KViews: 1.8 },
+            spotify: { userRewards: false, payoutPer1KViews: 3.0 }
+          }
+        }
+      };
+      
+      res.json({ success: true, stats });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch ArtistCoin stats" });
+    }
+  });
+
   // Social Media AI Team APIs
   app.post("/api/social/find-listeners", authenticateToken, async (req: AuthRequest, res) => {
     try {

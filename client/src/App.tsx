@@ -31,6 +31,7 @@ import EnhancedLanding from "./pages/enhanced-landing";
 import SocialMediaDashboard from "./pages/social-media-dashboard";
 import SocialMediaStudio from "./pages/social-media-studio";
 import SocialMediaHub from "./pages/social-media-hub";
+import ArtistCoinViralDashboard from "./pages/artistcoin-viral-dashboard";
 
 function AuthenticatedRouter() {
   return (
@@ -63,6 +64,7 @@ function AuthenticatedRouter() {
           <Route path="/social-media-dashboard" component={SocialMediaDashboard} />
           <Route path="/social-media-studio" component={SocialMediaStudio} />
           <Route path="/social-media-hub" component={SocialMediaHub} />
+          <Route path="/artistcoin-viral" component={ArtistCoinViralDashboard} />
           <Route path="/ultimate-music-studio" component={UltimateMusicStudio} />
           <Route path="/ultimate-dj-studio" component={UltimateDJStudio} />
           <Route path="/enterprise-management" component={EnterpriseManagement} />
