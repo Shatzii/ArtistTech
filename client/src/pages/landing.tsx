@@ -6,7 +6,7 @@ import {
   Instagram, Twitter, Youtube, Play, ArrowRight, Star,
   Crown, Globe, Sparkles, Target, Award, Heart,
   Disc, Mic, Volume2, Palette, Camera, Coins, BarChart3,
-  Brain, Gamepad2
+  Brain, Gamepad2, Shuffle
 } from 'lucide-react';
 
 export default function Landing() {
@@ -347,6 +347,15 @@ export default function Landing() {
                 <h3 className="text-lg font-bold text-white mb-2">Social Media AI Team</h3>
                 <p className="text-sm text-gray-300 mb-3">5 AI agents for content creation, trends, and viral optimization</p>
                 <div className="text-xs text-amber-400">Replaces: Hootsuite, Buffer</div>
+              </div>
+
+              <div className="bg-gradient-to-br from-pink-800/30 to-purple-800/30 border border-pink-500/30 rounded-xl p-6 hover:border-pink-400 transition-all transform hover:scale-105">
+                <div className="w-12 h-12 bg-pink-500 rounded-lg flex items-center justify-center mb-4">
+                  <Shuffle className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">AI Genre Remixer</h3>
+                <p className="text-sm text-gray-300 mb-3">Transform any track into any genre with AI-powered suggestions</p>
+                <div className="text-xs text-pink-400">Replaces: Manual remixing workflows</div>
               </div>
             </div>
 

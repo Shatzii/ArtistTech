@@ -20,7 +20,7 @@ import {
   Zap, 
   Target, 
   Lightbulb,
-  Radio,
+  AudioLines,
   Settings,
   Download,
   Upload,
@@ -293,7 +293,7 @@ export default function GenreRemixer() {
                         </Button>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Waveform className="w-4 h-4 text-cyan-400" />
+                        <AudioLines className="w-4 h-4 text-cyan-400" />
                         <div className="flex-1 h-2 bg-gray-600 rounded-full overflow-hidden">
                           <div className="h-full bg-gradient-to-r from-cyan-400 to-purple-400 w-1/3"></div>
                         </div>
