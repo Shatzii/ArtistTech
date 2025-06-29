@@ -22,6 +22,7 @@ import UltimateMusicStudio from "./pages/ultimate-music-studio";
 import UltimateDJStudio from "./pages/ultimate-dj-studio";
 import CMSAdmin from "./pages/cms-admin";
 import EnterpriseManagement from "./pages/enterprise-management";
+import MIDIController from "./pages/midi-controller";
 
 function AuthenticatedRouter() {
   return (
@@ -45,6 +46,7 @@ function AuthenticatedRouter() {
           <Route path="/ai-career-dashboard" component={AICareerDashboard} />
           <Route path="/producer-revenue" component={ProducerRevenueDashboard} />
           <Route path="/social-media-deployment" component={SocialMediaDeployment} />
+          <Route path="/midi-controller" component={MIDIController} />
           <Route path="/ultimate-music-studio" component={UltimateMusicStudio} />
           <Route path="/ultimate-dj-studio" component={UltimateDJStudio} />
           <Route path="/enterprise-management" component={EnterpriseManagement} />
