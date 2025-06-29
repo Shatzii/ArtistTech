@@ -33,6 +33,7 @@ import { streamingIntegrationEngine } from "./streaming-integration-engine";
 import { artistCollaborationEngine } from "./artist-collaboration-engine";
 import { premiumPodcastEngine } from "./premium-podcast-engine";
 import { professionalVideoEngine } from "./professional-video-engine";
+import { artistCoinEngine } from "./artistcoin-engine";
 import { insertProjectSchema, insertAudioFileSchema, insertVideoFileSchema } from "../shared/schema";
 import multer from "multer";
 import path from "path";
