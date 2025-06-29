@@ -110,12 +110,20 @@ export default function Landing() {
               <p className="text-lg text-gray-300 mb-6">
                 The first platform designed for creators to actually get rich
               </p>
-              <Link href="/login">
-                <button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-4 rounded-lg text-xl font-bold transition-all transform hover:scale-105 shadow-2xl">
-                  START MAKING MONEY NOW
-                  <ArrowRight className="w-6 h-6 ml-2 inline" />
-                </button>
-              </Link>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/login">
+                  <button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-4 rounded-lg text-xl font-bold transition-all transform hover:scale-105 shadow-2xl">
+                    START MAKING MONEY NOW
+                    <ArrowRight className="w-6 h-6 ml-2 inline" />
+                  </button>
+                </Link>
+                <Link href="/admin">
+                  <button className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-8 py-4 rounded-lg text-xl font-bold transition-all transform hover:scale-105 shadow-2xl">
+                    ADMIN ACCESS
+                    <Crown className="w-6 h-6 ml-2 inline" />
+                  </button>
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -224,7 +232,7 @@ export default function Landing() {
               </Link>
               <Link href="/admin" className="w-full md:w-auto">
                 <button className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-4 rounded-lg text-xl font-bold transition-all transform hover:scale-105 shadow-2xl">
-                  💰 START MAKING CASH
+                  💰 CASH OUT NOW
                 </button>
               </Link>
             </div>
