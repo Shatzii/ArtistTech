@@ -334,7 +334,136 @@ export default function PodcastStudio() {
         </div>
       </div>
 
-      <div className="flex h-[calc(100vh-64px)]">
+      {/* NEW AI-POWERED PODCAST CONTROL CENTER */}
+      <div className="bg-gradient-to-r from-purple-900/30 via-blue-900/30 to-purple-900/30 border-y border-purple-500/30 p-4">
+        <div className="max-w-[2000px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            
+            {/* Episode Setup */}
+            <div className="bg-gray-900/50 rounded-lg border border-purple-500/30 p-4">
+              <h3 className="text-purple-400 font-bold mb-3 flex items-center">
+                <Sparkles className="w-4 h-4 mr-2" />
+                Episode Setup
+              </h3>
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  placeholder="Episode Title"
+                  value={newEpisode.title}
+                  onChange={(e) => setNewEpisode(prev => ({...prev, title: e.target.value}))}
+                  className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white placeholder-gray-400"
+                />
+                <textarea
+                  placeholder="Episode Description"
+                  value={newEpisode.description}
+                  onChange={(e) => setNewEpisode(prev => ({...prev, description: e.target.value}))}
+                  className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white placeholder-gray-400 h-16 resize-none"
+                />
+                <button
+                  onClick={handleStartRecording}
+                  disabled={startRecordingMutation.isPending}
+                  className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-2 px-4 rounded transition-all duration-200 flex items-center justify-center"
+                >
+                  {startRecordingMutation.isPending ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Circle className="w-4 h-4 mr-2 fill-current" />
+                      Start Recording
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* AI Transcript Generation */}
+            <div className="bg-gray-900/50 rounded-lg border border-blue-500/30 p-4">
+              <h3 className="text-blue-400 font-bold mb-3 flex items-center">
+                <FileText className="w-4 h-4 mr-2" />
+                AI Transcript
+              </h3>
+              <div className="space-y-2">
+                <div className="bg-gray-800/50 rounded p-2 h-16 text-xs text-gray-300 overflow-y-auto">
+                  {aiFeatures.transcript || "AI transcript will appear here after generation..."}
+                </div>
+                <button
+                  onClick={handleGenerateTranscript}
+                  disabled={!podcastSession.currentEpisodeId || aiFeatures.isGeneratingTranscript}
+                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded transition-all duration-200 flex items-center justify-center disabled:opacity-50"
+                >
+                  {aiFeatures.isGeneratingTranscript ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Wand2 className="w-4 h-4 mr-2" />
+                      Generate Transcript
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* AI Show Notes */}
+            <div className="bg-gray-900/50 rounded-lg border border-green-500/30 p-4">
+              <h3 className="text-green-400 font-bold mb-3 flex items-center">
+                <Edit3 className="w-4 h-4 mr-2" />
+                AI Show Notes
+              </h3>
+              <div className="space-y-2">
+                <div className="bg-gray-800/50 rounded p-2 h-16 text-xs text-gray-300 overflow-y-auto">
+                  {aiFeatures.showNotes || "Professional show notes with chapters and links will appear here..."}
+                </div>
+                <button
+                  onClick={handleGenerateShowNotes}
+                  disabled={!podcastSession.currentEpisodeId || aiFeatures.isGeneratingShowNotes}
+                  className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-2 px-4 rounded transition-all duration-200 flex items-center justify-center disabled:opacity-50"
+                >
+                  {aiFeatures.isGeneratingShowNotes ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Brain className="w-4 h-4 mr-2" />
+                      Generate Show Notes
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Social Media Clips */}
+            <div className="bg-gray-900/50 rounded-lg border border-yellow-500/30 p-4">
+              <h3 className="text-yellow-400 font-bold mb-3 flex items-center">
+                <Scissors className="w-4 h-4 mr-2" />
+                Social Clips
+              </h3>
+              <div className="space-y-2">
+                <div className="bg-gray-800/50 rounded p-2 h-16 text-xs text-gray-300 overflow-y-auto">
+                  {aiFeatures.socialClips.length > 0 ? 
+                    `${aiFeatures.socialClips.length} clips ready for TikTok, Instagram, YouTube` : 
+                    "AI-optimized clips for social media platforms..."
+                  }
+                </div>
+                <button
+                  onClick={handleCreateSocialClips}
+                  disabled={!podcastSession.currentEpisodeId || aiFeatures.isGeneratingSocialClips}
+                  className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-bold py-2 px-4 rounded transition-all duration-200 flex items-center justify-center disabled:opacity-50"
+                >
+                  {aiFeatures.isGeneratingSocialClips ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Instagram className="w-4 h-4 mr-2" />
+                      Create Social Clips
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex h-[calc(100vh-160px)]">
         {/* LEFT PANEL - AUDIO CONTROLS */}
         <div className="w-80 bg-gray-900/50 border-r border-gray-700 p-4 overflow-y-auto">
           <h2 className="text-lg font-bold mb-4 text-red-400">AUDIO CONTROLS</h2>
