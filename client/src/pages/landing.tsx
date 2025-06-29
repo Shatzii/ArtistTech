@@ -328,6 +328,15 @@ export default function Landing() {
                 <div className="text-xs text-red-400">Replaces: OBS, Streamlabs</div>
               </div>
 
+              <div className="bg-gradient-to-br from-green-800/30 to-teal-800/30 border border-green-500/30 rounded-xl p-6 hover:border-green-400 transition-all transform hover:scale-105">
+                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mb-4">
+                  <Mic className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">Podcast Studio Pro</h3>
+                <p className="text-sm text-gray-300 mb-3">AI transcription, guest management, live streaming, show notes</p>
+                <div className="text-xs text-green-400">Replaces: Audacity, Hindenburg</div>
+              </div>
+
               <Link href="/social-media-deployment">
                 <div className="bg-gradient-to-br from-teal-800/30 to-cyan-800/30 border border-teal-500/30 rounded-xl p-6 hover:border-teal-400 transition-all transform hover:scale-105 cursor-pointer">
                   <div className="w-12 h-12 bg-teal-500 rounded-lg flex items-center justify-center mb-4">
