@@ -4,7 +4,9 @@ import StudioNavigation from '../components/studio-navigation';
 import { 
   TrendingUp, Users, Zap, DollarSign, Music, Video, 
   Instagram, Twitter, Youtube, Play, ArrowRight, Star,
-  Crown, Globe, Sparkles, Target, Award, Heart
+  Crown, Globe, Sparkles, Target, Award, Heart,
+  Disc, Mic, Waveform, Palette, Camera, Coins, BarChart3,
+  Brain, Gamepad2
 } from 'lucide-react';
 
 export default function Landing() {
@@ -185,6 +187,165 @@ export default function Landing() {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* COMPREHENSIVE STUDIOS SHOWCASE */}
+          <div className="mb-16">
+            <h2 className="text-4xl font-bold text-center text-white mb-4">
+              🎯 ALL 15 REVOLUTIONARY STUDIOS 🎯
+            </h2>
+            <p className="text-xl text-gray-300 text-center mb-12 max-w-3xl mx-auto">
+              Professional-grade tools that replace entire industry software suites - all in one platform
+            </p>
+            
+            <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {/* Music & Audio Studios */}
+              <div className="bg-gradient-to-br from-purple-800/30 to-blue-800/30 border border-purple-500/30 rounded-xl p-6 hover:border-purple-400 transition-all transform hover:scale-105">
+                <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mb-4">
+                  <Music className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">Music Studio Pro</h3>
+                <p className="text-sm text-gray-300 mb-3">Professional DAW with unlimited tracks, VST support, and AI composition</p>
+                <div className="text-xs text-purple-400">Replaces: Logic Pro, Pro Tools</div>
+              </div>
+
+              <div className="bg-gradient-to-br from-orange-800/30 to-red-800/30 border border-orange-500/30 rounded-xl p-6 hover:border-orange-400 transition-all transform hover:scale-105">
+                <div className="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center mb-4">
+                  <Disc className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">Ultimate DJ Studio</h3>
+                <p className="text-sm text-gray-300 mb-3">Real-time stem separation, harmonic mixing, crowd analytics</p>
+                <div className="text-xs text-orange-400">Replaces: Serato, Traktor Pro</div>
+              </div>
+
+              <div className="bg-gradient-to-br from-green-800/30 to-emerald-800/30 border border-green-500/30 rounded-xl p-6 hover:border-green-400 transition-all transform hover:scale-105">
+                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mb-4">
+                  <Mic className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">Podcast Studio Pro</h3>
+                <p className="text-sm text-gray-300 mb-3">Live streaming, AI transcription, multi-guest support, auto-editing</p>
+                <div className="text-xs text-green-400">Replaces: Riverside, Anchor</div>
+              </div>
+
+              <div className="bg-gradient-to-br from-cyan-800/30 to-blue-800/30 border border-cyan-500/30 rounded-xl p-6 hover:border-cyan-400 transition-all transform hover:scale-105">
+                <div className="w-12 h-12 bg-cyan-500 rounded-lg flex items-center justify-center mb-4">
+                  <Waveform className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">MPC Beats Studio</h3>
+                <p className="text-sm text-gray-300 mb-3">16-pad drum machine, step sequencer, professional mixer</p>
+                <div className="text-xs text-cyan-400">Replaces: Akai MPC, Maschine</div>
+              </div>
+
+              {/* Video & Visual Studios */}
+              <div className="bg-gradient-to-br from-pink-800/30 to-purple-800/30 border border-pink-500/30 rounded-xl p-6 hover:border-pink-400 transition-all transform hover:scale-105">
+                <div className="w-12 h-12 bg-pink-500 rounded-lg flex items-center justify-center mb-4">
+                  <Video className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">Cinema Studio Pro</h3>
+                <p className="text-sm text-gray-300 mb-3">8K editing, AI effects, motion capture, real-time rendering</p>
+                <div className="text-xs text-pink-400">Replaces: Premiere Pro, DaVinci</div>
+              </div>
+
+              <div className="bg-gradient-to-br from-indigo-800/30 to-purple-800/30 border border-indigo-500/30 rounded-xl p-6 hover:border-indigo-400 transition-all transform hover:scale-105">
+                <div className="w-12 h-12 bg-indigo-500 rounded-lg flex items-center justify-center mb-4">
+                  <Palette className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">Visual Arts Studio</h3>
+                <p className="text-sm text-gray-300 mb-3">AI background removal, 16K upscaling, neural style transfer</p>
+                <div className="text-xs text-indigo-400">Replaces: Photoshop, Canva</div>
+              </div>
+
+              <div className="bg-gradient-to-br from-yellow-800/30 to-orange-800/30 border border-yellow-500/30 rounded-xl p-6 hover:border-yellow-400 transition-all transform hover:scale-105">
+                <div className="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center mb-4">
+                  <Camera className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">360° Video Studio</h3>
+                <p className="text-sm text-gray-300 mb-3">VR/AR content creation, spatial audio, immersive experiences</p>
+                <div className="text-xs text-yellow-400">Replaces: After Effects VR</div>
+              </div>
+
+              <div className="bg-gradient-to-br from-red-800/30 to-pink-800/30 border border-red-500/30 rounded-xl p-6 hover:border-red-400 transition-all transform hover:scale-105">
+                <div className="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center mb-4">
+                  <Zap className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">Live Streaming Suite</h3>
+                <p className="text-sm text-gray-300 mb-3">Multi-platform streaming, real-time effects, audience interaction</p>
+                <div className="text-xs text-red-400">Replaces: OBS, Streamlabs</div>
+              </div>
+
+              {/* Business & Collaboration */}
+              <div className="bg-gradient-to-br from-emerald-800/30 to-green-800/30 border border-emerald-500/30 rounded-xl p-6 hover:border-emerald-400 transition-all transform hover:scale-105">
+                <div className="w-12 h-12 bg-emerald-500 rounded-lg flex items-center justify-center mb-4">
+                  <DollarSign className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">AI Career Manager</h3>
+                <p className="text-sm text-gray-300 mb-3">4 AI agents: marketing, revenue, bookings, legal automation</p>
+                <div className="text-xs text-emerald-400">Replaces: Multiple agencies</div>
+              </div>
+
+              <div className="bg-gradient-to-br from-blue-800/30 to-cyan-800/30 border border-blue-500/30 rounded-xl p-6 hover:border-blue-400 transition-all transform hover:scale-105">
+                <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mb-4">
+                  <Users className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">Collaborative Studio</h3>
+                <p className="text-sm text-gray-300 mb-3">Real-time multi-user editing, video chat, version control</p>
+                <div className="text-xs text-blue-400">Replaces: Figma, Frame.io</div>
+              </div>
+
+              <div className="bg-gradient-to-br from-purple-800/30 to-indigo-800/30 border border-purple-500/30 rounded-xl p-6 hover:border-purple-400 transition-all transform hover:scale-105">
+                <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mb-4">
+                  <Coins className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">NFT Marketplace</h3>
+                <p className="text-sm text-gray-300 mb-3">Create, mint, and trade music NFTs with royalty automation</p>
+                <div className="text-xs text-purple-400">Replaces: OpenSea, Foundation</div>
+              </div>
+
+              <div className="bg-gradient-to-br from-teal-800/30 to-cyan-800/30 border border-teal-500/30 rounded-xl p-6 hover:border-teal-400 transition-all transform hover:scale-105">
+                <div className="w-12 h-12 bg-teal-500 rounded-lg flex items-center justify-center mb-4">
+                  <BarChart3 className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">Analytics Dashboard</h3>
+                <p className="text-sm text-gray-300 mb-3">Real-time performance tracking across all platforms</p>
+                <div className="text-xs text-teal-400">Replaces: Spotify for Artists</div>
+              </div>
+
+              {/* AI & Advanced Features */}
+              <div className="bg-gradient-to-br from-violet-800/30 to-purple-800/30 border border-violet-500/30 rounded-xl p-6 hover:border-violet-400 transition-all transform hover:scale-105">
+                <div className="w-12 h-12 bg-violet-500 rounded-lg flex items-center justify-center mb-4">
+                  <Brain className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">AI Voice Synthesis</h3>
+                <p className="text-sm text-gray-300 mb-3">30-second voice cloning, multiple languages, realistic avatars</p>
+                <div className="text-xs text-violet-400">Replaces: ElevenLabs, Murf</div>
+              </div>
+
+              <div className="bg-gradient-to-br from-rose-800/30 to-red-800/30 border border-rose-500/30 rounded-xl p-6 hover:border-rose-400 transition-all transform hover:scale-105">
+                <div className="w-12 h-12 bg-rose-500 rounded-lg flex items-center justify-center mb-4">
+                  <Gamepad2 className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">VR Studio Engine</h3>
+                <p className="text-sm text-gray-300 mb-3">Immersive 3D workspaces, hand tracking, spatial collaboration</p>
+                <div className="text-xs text-rose-400">Replaces: Horizon Workrooms</div>
+              </div>
+
+              <div className="bg-gradient-to-br from-amber-800/30 to-yellow-800/30 border border-amber-500/30 rounded-xl p-6 hover:border-amber-400 transition-all transform hover:scale-105">
+                <div className="w-12 h-12 bg-amber-500 rounded-lg flex items-center justify-center mb-4">
+                  <Sparkles className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">Social Media AI Team</h3>
+                <p className="text-sm text-gray-300 mb-3">5 AI agents for content creation, trends, and viral optimization</p>
+                <div className="text-xs text-amber-400">Replaces: Hootsuite, Buffer</div>
+              </div>
+            </div>
+
+            <div className="text-center mt-12">
+              <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-xl p-6 inline-block">
+                <h3 className="text-2xl font-bold text-green-400 mb-2">💰 ALL THIS FOR JUST $29/MONTH 💰</h3>
+                <p className="text-gray-300">Compare: Adobe Creative Suite ($52.99/mo) + Logic Pro ($199) + Serato DJ ($9.99/mo) = $262+</p>
+                <p className="text-xl font-bold text-white mt-2">Save $233+ monthly with Artist-Tech!</p>
+              </div>
+            </div>
           </div>
 
           {/* REVENUE COMPARISON */}
