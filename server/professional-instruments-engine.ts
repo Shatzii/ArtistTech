@@ -1,655 +1,596 @@
 import { WebSocketServer, WebSocket } from 'ws';
-import fs from 'fs/promises';
-import path from 'path';
+import { createServer } from 'http';
 
+// Professional instrument definitions
 interface InstrumentPreset {
   id: string;
   name: string;
-  type: 'piano' | 'synth' | 'drums' | 'guitar' | 'bass' | 'strings' | 'brass' | 'woodwinds';
-  parameters: {
-    oscillators: Array<{
-      type: 'sine' | 'square' | 'sawtooth' | 'triangle' | 'noise';
-      frequency: number;
-      amplitude: number;
-      detune: number;
-    }>;
-    filter: {
-      type: 'lowpass' | 'highpass' | 'bandpass' | 'notch';
-      frequency: number;
-      resonance: number;
-      envelope: { attack: number; decay: number; sustain: number; release: number };
-    };
-    effects: Array<{
-      type: 'reverb' | 'delay' | 'chorus' | 'distortion' | 'phaser' | 'flanger';
-      parameters: Record<string, number>;
-    }>;
-    modulation: {
-      lfo: { rate: number; depth: number; target: string };
-      envelope: { attack: number; decay: number; sustain: number; release: number };
-    };
+  category: string;
+  waveform: 'sine' | 'square' | 'sawtooth' | 'triangle' | 'noise';
+  oscillators: number;
+  envelope: {
+    attack: number;
+    decay: number;
+    sustain: number;
+    release: number;
   };
-  samples: string[];
-  velocity: { min: number; max: number; curve: 'linear' | 'exponential' | 'logarithmic' };
+  filter: {
+    type: 'lowpass' | 'highpass' | 'bandpass' | 'notch';
+    cutoff: number;
+    resonance: number;
+  };
+  effects: {
+    reverb: number;
+    delay: number;
+    chorus: number;
+    distortion: number;
+    phaser: number;
+    flanger: number;
+  };
+  modulation: {
+    lfoRate: number;
+    lfoAmount: number;
+    lfoTarget: string;
+  };
 }
 
-interface MIDIMapping {
-  controllerId: string;
-  instrumentId: string;
-  mappings: Array<{
-    midiCC: number;
-    parameter: string;
-    min: number;
-    max: number;
-    curve: 'linear' | 'exponential' | 'logarithmic';
-  }>;
+interface AudioSample {
+  id: string;
+  name: string;
+  category: string;
+  note: string;
+  velocity: number;
+  duration: number;
+  sampleRate: number;
+  channels: number;
+  format: string;
+  size: number;
 }
 
-interface AudioEngine {
+interface PerformanceMetrics {
+  polyphony: number;
+  cpuUsage: number;
+  memoryUsage: number;
+  latency: number;
   sampleRate: number;
   bufferSize: number;
-  latency: number;
-  polyphony: number;
-  voiceStealingMode: 'oldest' | 'quietest' | 'highest' | 'lowest';
+  activeVoices: number;
+  peakLevel: number;
 }
 
 export class ProfessionalInstrumentsEngine {
   private instrumentsWSS?: WebSocketServer;
-  private instruments: Map<string, InstrumentPreset> = new Map();
-  private midiMappings: Map<string, MIDIMapping> = new Map();
-  private audioEngine: AudioEngine;
-  private activeVoices: Map<string, any> = new Map();
-  private samplesLibrary: Map<string, Buffer> = new Map();
+  private presets: Map<string, InstrumentPreset> = new Map();
+  private samples: Map<string, AudioSample> = new Map();
+  private activeConnections: Set<WebSocket> = new Set();
+  private metrics: PerformanceMetrics;
 
   constructor() {
-    this.audioEngine = {
+    this.metrics = {
+      polyphony: 128,
+      cpuUsage: 0,
+      memoryUsage: 0,
+      latency: 2.5,
       sampleRate: 48000,
       bufferSize: 256,
-      latency: 5.3, // milliseconds
-      polyphony: 64,
-      voiceStealingMode: 'oldest'
+      activeVoices: 0,
+      peakLevel: 0
     };
-    this.initializeInstrumentsEngine();
+
+    this.initializeEngine();
   }
 
-  private async initializeInstrumentsEngine() {
-    await this.setupInstrumentLibrary();
-    await this.loadProfessionalSamples();
-    this.setupInstrumentsServer();
-    this.initializeMIDIMappings();
-    console.log('Professional Instruments Engine initialized - Studio-Grade Audio Processing');
-  }
-
-  private async setupInstrumentLibrary() {
-    console.log('Loading professional instrument library...');
+  private async initializeEngine() {
+    console.log('🎹 Initializing Professional Instruments Engine...');
     
-    const instruments: InstrumentPreset[] = [
-      {
-        id: 'grand_piano_cfx',
-        name: 'Yamaha CFX Grand Piano',
-        type: 'piano',
-        parameters: {
-          oscillators: [],
-          filter: {
-            type: 'lowpass',
-            frequency: 20000,
-            resonance: 0.1,
-            envelope: { attack: 0, decay: 0.2, sustain: 0.8, release: 2.0 }
-          },
-          effects: [
-            { type: 'reverb', parameters: { roomSize: 0.4, damping: 0.3, wetLevel: 0.2 } }
-          ],
-          modulation: {
-            lfo: { rate: 0, depth: 0, target: 'none' },
-            envelope: { attack: 0.001, decay: 0.1, sustain: 0.7, release: 1.5 }
-          }
-        },
-        samples: ['cfx_c1.wav', 'cfx_c2.wav', 'cfx_c3.wav', 'cfx_c4.wav', 'cfx_c5.wav'],
-        velocity: { min: 1, max: 127, curve: 'exponential' }
-      },
-      {
-        id: 'moog_bass',
-        name: 'Moog Sub Bass',
-        type: 'bass',
-        parameters: {
-          oscillators: [
-            { type: 'sawtooth', frequency: 440, amplitude: 0.8, detune: 0 },
-            { type: 'square', frequency: 220, amplitude: 0.6, detune: -12 }
-          ],
-          filter: {
-            type: 'lowpass',
-            frequency: 800,
-            resonance: 0.7,
-            envelope: { attack: 0, decay: 0.3, sustain: 0.4, release: 0.8 }
-          },
-          effects: [
-            { type: 'distortion', parameters: { drive: 0.3, tone: 0.6 } }
-          ],
-          modulation: {
-            lfo: { rate: 0.2, depth: 0.1, target: 'filter_frequency' },
-            envelope: { attack: 0.01, decay: 0.2, sustain: 0.6, release: 1.0 }
-          }
-        },
-        samples: [],
-        velocity: { min: 1, max: 127, curve: 'linear' }
-      },
-      {
-        id: 'analog_strings',
-        name: 'Analog String Ensemble',
-        type: 'strings',
-        parameters: {
-          oscillators: [
-            { type: 'sawtooth', frequency: 440, amplitude: 0.7, detune: 0 },
-            { type: 'sawtooth', frequency: 440, amplitude: 0.7, detune: 7 },
-            { type: 'sawtooth', frequency: 440, amplitude: 0.7, detune: -7 }
-          ],
-          filter: {
-            type: 'lowpass',
-            frequency: 2200,
-            resonance: 0.3,
-            envelope: { attack: 0.1, decay: 0.3, sustain: 0.7, release: 1.2 }
-          },
-          effects: [
-            { type: 'chorus', parameters: { rate: 0.5, depth: 0.3, feedback: 0.2 } },
-            { type: 'reverb', parameters: { roomSize: 0.6, damping: 0.4, wetLevel: 0.3 } }
-          ],
-          modulation: {
-            lfo: { rate: 0.1, depth: 0.05, target: 'pitch' },
-            envelope: { attack: 0.2, decay: 0.4, sustain: 0.8, release: 1.5 }
-          }
-        },
-        samples: [],
-        velocity: { min: 1, max: 127, curve: 'logarithmic' }
-      },
-      {
-        id: 'tr_808_drums',
-        name: 'Roland TR-808 Drum Machine',
-        type: 'drums',
-        parameters: {
-          oscillators: [
-            { type: 'sine', frequency: 60, amplitude: 1.0, detune: 0 }, // Kick
-            { type: 'noise', frequency: 1000, amplitude: 0.8, detune: 0 } // Snare
-          ],
-          filter: {
-            type: 'highpass',
-            frequency: 80,
-            resonance: 0.1,
-            envelope: { attack: 0, decay: 0.1, sustain: 0, release: 0.3 }
-          },
-          effects: [
-            { type: 'distortion', parameters: { drive: 0.2, tone: 0.7 } }
-          ],
-          modulation: {
-            lfo: { rate: 0, depth: 0, target: 'none' },
-            envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.5 }
-          }
-        },
-        samples: ['808_kick.wav', '808_snare.wav', '808_hihat.wav', '808_openhat.wav'],
-        velocity: { min: 1, max: 127, curve: 'exponential' }
-      },
-      {
-        id: 'vintage_electric_guitar',
-        name: 'Vintage Electric Guitar',
-        type: 'guitar',
-        parameters: {
-          oscillators: [],
-          filter: {
-            type: 'bandpass',
-            frequency: 1200,
-            resonance: 0.4,
-            envelope: { attack: 0, decay: 0.2, sustain: 0.6, release: 1.0 }
-          },
-          effects: [
-            { type: 'distortion', parameters: { drive: 0.6, tone: 0.8 } },
-            { type: 'delay', parameters: { time: 0.25, feedback: 0.3, wetLevel: 0.2 } },
-            { type: 'reverb', parameters: { roomSize: 0.3, damping: 0.5, wetLevel: 0.15 } }
-          ],
-          modulation: {
-            lfo: { rate: 0, depth: 0, target: 'none' },
-            envelope: { attack: 0.01, decay: 0.3, sustain: 0.4, release: 2.0 }
-          }
-        },
-        samples: ['guitar_e2.wav', 'guitar_a2.wav', 'guitar_d3.wav', 'guitar_g3.wav', 'guitar_b3.wav', 'guitar_e4.wav'],
-        velocity: { min: 1, max: 127, curve: 'exponential' }
-      }
-    ];
-
-    instruments.forEach(instrument => {
-      this.instruments.set(instrument.id, instrument);
-    });
-  }
-
-  private async loadProfessionalSamples() {
-    console.log('Loading professional sample library...');
-    
-    const sampleFiles = [
-      'cfx_c1.wav', 'cfx_c2.wav', 'cfx_c3.wav', 'cfx_c4.wav', 'cfx_c5.wav',
-      '808_kick.wav', '808_snare.wav', '808_hihat.wav', '808_openhat.wav',
-      'guitar_e2.wav', 'guitar_a2.wav', 'guitar_d3.wav', 'guitar_g3.wav', 'guitar_b3.wav', 'guitar_e4.wav'
-    ];
-
-    // Create sample directory
     try {
-      await fs.mkdir('./samples/professional', { recursive: true });
+      await this.loadInstrumentPresets();
+      await this.loadAudioSamples();
+      this.setupInstrumentsServer();
+      this.startPerformanceMonitoring();
+      
+      console.log('✓ Professional Instruments Engine ready');
     } catch (error) {
-      console.log('Sample directory already exists');
+      console.error('❌ Failed to initialize instruments engine:', error);
     }
+  }
 
-    // Generate placeholder samples (in production, these would be actual high-quality samples)
-    for (const sampleFile of sampleFiles) {
-      const samplePath = path.join('./samples/professional', sampleFile);
-      try {
-        await fs.access(samplePath);
-        const sampleBuffer = await fs.readFile(samplePath);
-        this.samplesLibrary.set(sampleFile, sampleBuffer);
-      } catch {
-        // Create placeholder sample
-        const placeholderSample = Buffer.alloc(48000 * 2); // 1 second of silence
-        await fs.writeFile(samplePath, placeholderSample);
-        this.samplesLibrary.set(sampleFile, placeholderSample);
+  private async loadInstrumentPresets() {
+    console.log('📦 Loading professional instrument presets...');
+
+    // Synthesizer presets
+    const synthPresets: InstrumentPreset[] = [
+      {
+        id: 'analog_synth_lead',
+        name: 'Analog Synth Lead',
+        category: 'synthesizers',
+        waveform: 'sawtooth',
+        oscillators: 2,
+        envelope: { attack: 0.1, decay: 0.3, sustain: 0.7, release: 0.5 },
+        filter: { type: 'lowpass', cutoff: 2000, resonance: 0.7 },
+        effects: { reverb: 0.2, delay: 0.3, chorus: 0.1, distortion: 0.1, phaser: 0, flanger: 0 },
+        modulation: { lfoRate: 5, lfoAmount: 0.3, lfoTarget: 'filter' }
+      },
+      {
+        id: 'digital_synth_pad',
+        name: 'Digital Synth Pad',
+        category: 'synthesizers',
+        waveform: 'square',
+        oscillators: 3,
+        envelope: { attack: 0.8, decay: 0.5, sustain: 0.8, release: 1.2 },
+        filter: { type: 'lowpass', cutoff: 1500, resonance: 0.3 },
+        effects: { reverb: 0.6, delay: 0.4, chorus: 0.3, distortion: 0, phaser: 0.2, flanger: 0 },
+        modulation: { lfoRate: 2, lfoAmount: 0.2, lfoTarget: 'amplitude' }
+      },
+      {
+        id: 'fm_synth_bell',
+        name: 'FM Synth Bell',
+        category: 'synthesizers',
+        waveform: 'sine',
+        oscillators: 4,
+        envelope: { attack: 0.05, decay: 1.5, sustain: 0.2, release: 2.0 },
+        filter: { type: 'highpass', cutoff: 200, resonance: 0.1 },
+        effects: { reverb: 0.8, delay: 0.2, chorus: 0, distortion: 0, phaser: 0, flanger: 0 },
+        modulation: { lfoRate: 0.5, lfoAmount: 0.1, lfoTarget: 'pitch' }
+      },
+      {
+        id: 'wavetable_bass',
+        name: 'Wavetable Bass',
+        category: 'synthesizers',
+        waveform: 'triangle',
+        oscillators: 2,
+        envelope: { attack: 0.02, decay: 0.4, sustain: 0.6, release: 0.3 },
+        filter: { type: 'lowpass', cutoff: 800, resonance: 0.8 },
+        effects: { reverb: 0.1, delay: 0, chorus: 0, distortion: 0.3, phaser: 0, flanger: 0 },
+        modulation: { lfoRate: 8, lfoAmount: 0.4, lfoTarget: 'filter' }
       }
-    }
+    ];
+
+    // Piano presets
+    const pianoPresets: InstrumentPreset[] = [
+      {
+        id: 'concert_grand',
+        name: 'Concert Grand Piano',
+        category: 'pianos',
+        waveform: 'triangle',
+        oscillators: 1,
+        envelope: { attack: 0.02, decay: 0.8, sustain: 0.3, release: 1.5 },
+        filter: { type: 'lowpass', cutoff: 8000, resonance: 0.1 },
+        effects: { reverb: 0.4, delay: 0, chorus: 0, distortion: 0, phaser: 0, flanger: 0 },
+        modulation: { lfoRate: 0, lfoAmount: 0, lfoTarget: 'none' }
+      },
+      {
+        id: 'electric_piano',
+        name: 'Electric Piano',
+        category: 'pianos',
+        waveform: 'sine',
+        oscillators: 2,
+        envelope: { attack: 0.05, decay: 0.6, sustain: 0.5, release: 0.8 },
+        filter: { type: 'bandpass', cutoff: 2000, resonance: 0.3 },
+        effects: { reverb: 0.3, delay: 0.1, chorus: 0.2, distortion: 0.05, phaser: 0.1, flanger: 0 },
+        modulation: { lfoRate: 3, lfoAmount: 0.1, lfoTarget: 'amplitude' }
+      },
+      {
+        id: 'upright_piano',
+        name: 'Upright Piano',
+        category: 'pianos',
+        waveform: 'triangle',
+        oscillators: 1,
+        envelope: { attack: 0.03, decay: 0.7, sustain: 0.4, release: 1.2 },
+        filter: { type: 'lowpass', cutoff: 6000, resonance: 0.15 },
+        effects: { reverb: 0.2, delay: 0, chorus: 0, distortion: 0, phaser: 0, flanger: 0 },
+        modulation: { lfoRate: 0, lfoAmount: 0, lfoTarget: 'none' }
+      }
+    ];
+
+    // Guitar presets
+    const guitarPresets: InstrumentPreset[] = [
+      {
+        id: 'electric_guitar_clean',
+        name: 'Electric Guitar Clean',
+        category: 'guitars',
+        waveform: 'triangle',
+        oscillators: 1,
+        envelope: { attack: 0.01, decay: 0.5, sustain: 0.6, release: 0.8 },
+        filter: { type: 'lowpass', cutoff: 5000, resonance: 0.2 },
+        effects: { reverb: 0.3, delay: 0.2, chorus: 0.15, distortion: 0, phaser: 0, flanger: 0 },
+        modulation: { lfoRate: 0, lfoAmount: 0, lfoTarget: 'none' }
+      },
+      {
+        id: 'electric_guitar_distortion',
+        name: 'Electric Guitar Distortion',
+        category: 'guitars',
+        waveform: 'sawtooth',
+        oscillators: 1,
+        envelope: { attack: 0.01, decay: 0.3, sustain: 0.7, release: 0.6 },
+        filter: { type: 'bandpass', cutoff: 3000, resonance: 0.4 },
+        effects: { reverb: 0.2, delay: 0.3, chorus: 0, distortion: 0.7, phaser: 0, flanger: 0 },
+        modulation: { lfoRate: 0, lfoAmount: 0, lfoTarget: 'none' }
+      },
+      {
+        id: 'bass_guitar',
+        name: 'Bass Guitar',
+        category: 'guitars',
+        waveform: 'triangle',
+        oscillators: 1,
+        envelope: { attack: 0.02, decay: 0.6, sustain: 0.5, release: 0.7 },
+        filter: { type: 'lowpass', cutoff: 1200, resonance: 0.3 },
+        effects: { reverb: 0.1, delay: 0, chorus: 0, distortion: 0.1, phaser: 0, flanger: 0 },
+        modulation: { lfoRate: 0, lfoAmount: 0, lfoTarget: 'none' }
+      }
+    ];
+
+    // Drum presets
+    const drumPresets: InstrumentPreset[] = [
+      {
+        id: 'acoustic_kick',
+        name: 'Acoustic Kick Drum',
+        category: 'drums',
+        waveform: 'sine',
+        oscillators: 1,
+        envelope: { attack: 0.001, decay: 0.15, sustain: 0.1, release: 0.3 },
+        filter: { type: 'lowpass', cutoff: 100, resonance: 0.5 },
+        effects: { reverb: 0.1, delay: 0, chorus: 0, distortion: 0.2, phaser: 0, flanger: 0 },
+        modulation: { lfoRate: 0, lfoAmount: 0, lfoTarget: 'none' }
+      },
+      {
+        id: 'acoustic_snare',
+        name: 'Acoustic Snare Drum',
+        category: 'drums',
+        waveform: 'noise',
+        oscillators: 1,
+        envelope: { attack: 0.001, decay: 0.08, sustain: 0.2, release: 0.15 },
+        filter: { type: 'bandpass', cutoff: 2000, resonance: 0.4 },
+        effects: { reverb: 0.3, delay: 0, chorus: 0, distortion: 0.1, phaser: 0, flanger: 0 },
+        modulation: { lfoRate: 0, lfoAmount: 0, lfoTarget: 'none' }
+      },
+      {
+        id: 'hi_hat_closed',
+        name: 'Closed Hi-Hat',
+        category: 'drums',
+        waveform: 'noise',
+        oscillators: 1,
+        envelope: { attack: 0.001, decay: 0.05, sustain: 0.05, release: 0.08 },
+        filter: { type: 'highpass', cutoff: 8000, resonance: 0.3 },
+        effects: { reverb: 0.2, delay: 0, chorus: 0, distortion: 0, phaser: 0, flanger: 0 },
+        modulation: { lfoRate: 0, lfoAmount: 0, lfoTarget: 'none' }
+      }
+    ];
+
+    // Store all presets
+    [...synthPresets, ...pianoPresets, ...guitarPresets, ...drumPresets].forEach(preset => {
+      this.presets.set(preset.id, preset);
+    });
+
+    console.log(`✓ Loaded ${this.presets.size} professional instrument presets`);
+  }
+
+  private async loadAudioSamples() {
+    console.log('🎵 Loading high-quality audio samples...');
+
+    // Create sample library (simulated - in production would load from files)
+    const sampleLibrary: AudioSample[] = [
+      {
+        id: 'piano_c4',
+        name: 'Piano C4',
+        category: 'piano',
+        note: 'C4',
+        velocity: 127,
+        duration: 3.5,
+        sampleRate: 48000,
+        channels: 2,
+        format: 'wav',
+        size: 672000
+      },
+      {
+        id: 'guitar_e2',
+        name: 'Guitar E2',
+        category: 'guitar',
+        note: 'E2',
+        velocity: 100,
+        duration: 2.8,
+        sampleRate: 48000,
+        channels: 1,
+        format: 'wav',
+        size: 268800
+      },
+      {
+        id: 'kick_drum',
+        name: 'Kick Drum',
+        category: 'drums',
+        note: 'C2',
+        velocity: 127,
+        duration: 0.8,
+        sampleRate: 48000,
+        channels: 2,
+        format: 'wav',
+        size: 76800
+      },
+      {
+        id: 'snare_drum',
+        name: 'Snare Drum',
+        category: 'drums',
+        note: 'D2',
+        velocity: 110,
+        duration: 0.4,
+        sampleRate: 48000,
+        channels: 2,
+        format: 'wav',
+        size: 38400
+      }
+    ];
+
+    sampleLibrary.forEach(sample => {
+      this.samples.set(sample.id, sample);
+    });
+
+    console.log(`✓ Loaded ${this.samples.size} audio samples`);
   }
 
   private setupInstrumentsServer() {
-    this.instrumentsWSS = new WebSocketServer({ port: 8106, path: '/instruments' });
-    
+    console.log('🎛️ Setting up instruments WebSocket server...');
+
+    // Use port 8095 for instruments
+    const server = createServer();
+    this.instrumentsWSS = new WebSocketServer({ 
+      server,
+      path: '/instruments-ws'
+    });
+
     this.instrumentsWSS.on('connection', (ws: WebSocket) => {
-      ws.on('message', (data: Buffer) => {
+      console.log('🎹 New instruments connection established');
+      this.activeConnections.add(ws);
+
+      // Send initial data
+      ws.send(JSON.stringify({
+        type: 'init',
+        data: {
+          presets: Array.from(this.presets.values()),
+          samples: Array.from(this.samples.values()),
+          metrics: this.metrics
+        }
+      }));
+
+      ws.on('message', (data) => {
         try {
           const message = JSON.parse(data.toString());
           this.handleInstrumentMessage(ws, message);
         } catch (error) {
-          console.error('Error processing instrument message:', error);
+          console.error('Error parsing instruments message:', error);
         }
+      });
+
+      ws.on('close', () => {
+        this.activeConnections.delete(ws);
+        console.log('🎹 Instruments connection closed');
       });
     });
 
-    console.log('Professional instruments server started on port 8106');
-  }
-
-  private initializeMIDIMappings() {
-    const defaultMappings: MIDIMapping[] = [
-      {
-        controllerId: 'akai_mpk_mini',
-        instrumentId: 'grand_piano_cfx',
-        mappings: [
-          { midiCC: 1, parameter: 'modulation', min: 0, max: 1, curve: 'linear' },
-          { midiCC: 7, parameter: 'volume', min: 0, max: 1, curve: 'exponential' },
-          { midiCC: 74, parameter: 'filter_frequency', min: 200, max: 8000, curve: 'exponential' },
-          { midiCC: 71, parameter: 'filter_resonance', min: 0, max: 1, curve: 'linear' }
-        ]
-      },
-      {
-        controllerId: 'novation_launchpad',
-        instrumentId: 'tr_808_drums',
-        mappings: [
-          { midiCC: 16, parameter: 'kick_tune', min: -12, max: 12, curve: 'linear' },
-          { midiCC: 17, parameter: 'snare_tune', min: -12, max: 12, curve: 'linear' },
-          { midiCC: 18, parameter: 'hihat_decay', min: 0.1, max: 2.0, curve: 'exponential' }
-        ]
-      }
-    ];
-
-    defaultMappings.forEach(mapping => {
-      this.midiMappings.set(mapping.controllerId, mapping);
+    server.listen(8095, () => {
+      console.log('✓ Instruments server started on port 8095');
     });
-  }
-
-  async playNote(instrumentId: string, note: number, velocity: number, duration?: number): Promise<string> {
-    const instrument = this.instruments.get(instrumentId);
-    if (!instrument) {
-      throw new Error(`Instrument not found: ${instrumentId}`);
-    }
-
-    const voiceId = `voice_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
-    // Create voice object
-    const voice = {
-      id: voiceId,
-      instrumentId,
-      note,
-      velocity,
-      startTime: Date.now(),
-      duration: duration || null,
-      parameters: { ...instrument.parameters },
-      active: true
-    };
-
-    this.activeVoices.set(voiceId, voice);
-
-    // Calculate frequency from MIDI note
-    const frequency = 440 * Math.pow(2, (note - 69) / 12);
-    
-    // Process audio synthesis
-    await this.synthesizeAudio(voice, frequency);
-
-    // Auto-release if duration specified
-    if (duration) {
-      setTimeout(() => {
-        this.releaseNote(voiceId);
-      }, duration);
-    }
-
-    console.log(`Playing note ${note} on ${instrument.name} (velocity: ${velocity})`);
-    return voiceId;
-  }
-
-  async releaseNote(voiceId: string): Promise<void> {
-    const voice = this.activeVoices.get(voiceId);
-    if (!voice) return;
-
-    voice.active = false;
-    voice.releaseTime = Date.now();
-
-    // Apply release envelope
-    const releaseTime = voice.parameters.modulation.envelope.release * 1000;
-    
-    setTimeout(() => {
-      this.activeVoices.delete(voiceId);
-    }, releaseTime);
-
-    console.log(`Released voice ${voiceId}`);
-  }
-
-  private async synthesizeAudio(voice: any, frequency: number): Promise<Buffer> {
-    const instrument = this.instruments.get(voice.instrumentId);
-    if (!instrument) throw new Error('Instrument not found');
-
-    // Check if instrument uses samples
-    if (instrument.samples.length > 0) {
-      return this.playSample(instrument, voice.note, voice.velocity);
-    } else {
-      return this.synthesizeOscillators(instrument, frequency, voice.velocity);
-    }
-  }
-
-  private async playSample(instrument: InstrumentPreset, note: number, velocity: number): Promise<Buffer> {
-    // Find closest sample to the note
-    const sampleIndex = Math.min(Math.floor(note / 24), instrument.samples.length - 1);
-    const sampleName = instrument.samples[sampleIndex];
-    const sampleBuffer = this.samplesLibrary.get(sampleName);
-    
-    if (!sampleBuffer) {
-      throw new Error(`Sample not found: ${sampleName}`);
-    }
-
-    // Apply velocity scaling
-    const velocityScale = velocity / 127;
-    const processedBuffer = this.applySampleProcessing(sampleBuffer, velocityScale, instrument);
-    
-    return processedBuffer;
-  }
-
-  private synthesizeOscillators(instrument: InstrumentPreset, frequency: number, velocity: number): Buffer {
-    const sampleRate = this.audioEngine.sampleRate;
-    const duration = 1; // 1 second
-    const samples = sampleRate * duration;
-    const buffer = Buffer.alloc(samples * 4); // 32-bit float
-
-    let sampleIndex = 0;
-    const velocityScale = velocity / 127;
-
-    for (let i = 0; i < samples; i++) {
-      let mixedSample = 0;
-      const time = i / sampleRate;
-
-      // Generate each oscillator
-      instrument.parameters.oscillators.forEach(osc => {
-        const oscFreq = frequency * Math.pow(2, osc.detune / 1200);
-        let oscSample = 0;
-
-        switch (osc.type) {
-          case 'sine':
-            oscSample = Math.sin(2 * Math.PI * oscFreq * time);
-            break;
-          case 'square':
-            oscSample = Math.sign(Math.sin(2 * Math.PI * oscFreq * time));
-            break;
-          case 'sawtooth':
-            oscSample = 2 * (oscFreq * time - Math.floor(oscFreq * time + 0.5));
-            break;
-          case 'triangle':
-            oscSample = 2 * Math.abs(2 * (oscFreq * time - Math.floor(oscFreq * time + 0.5))) - 1;
-            break;
-          case 'noise':
-            oscSample = (Math.random() * 2 - 1);
-            break;
-        }
-
-        mixedSample += oscSample * osc.amplitude;
-      });
-
-      // Apply envelope
-      const envelope = this.calculateEnvelope(time, instrument.parameters.modulation.envelope);
-      mixedSample *= envelope * velocityScale;
-
-      // Apply filter
-      mixedSample = this.applyFilter(mixedSample, instrument.parameters.filter, time);
-
-      // Write to buffer
-      buffer.writeFloatLE(mixedSample, sampleIndex * 4);
-      sampleIndex++;
-    }
-
-    return buffer;
-  }
-
-  private applySampleProcessing(sampleBuffer: Buffer, velocityScale: number, instrument: InstrumentPreset): Buffer {
-    // Simple velocity scaling for demo
-    const processedBuffer = Buffer.alloc(sampleBuffer.length);
-    
-    for (let i = 0; i < sampleBuffer.length; i += 4) {
-      const sample = sampleBuffer.readFloatLE(i) * velocityScale;
-      processedBuffer.writeFloatLE(sample, i);
-    }
-
-    return processedBuffer;
-  }
-
-  private calculateEnvelope(time: number, envelope: any): number {
-    const { attack, decay, sustain, release } = envelope;
-    
-    if (time < attack) {
-      return time / attack;
-    } else if (time < attack + decay) {
-      const decayProgress = (time - attack) / decay;
-      return 1 - decayProgress * (1 - sustain);
-    } else {
-      return sustain;
-    }
-  }
-
-  private applyFilter(sample: number, filter: any, time: number): number {
-    // Simplified filter implementation
-    const cutoff = filter.frequency / this.audioEngine.sampleRate;
-    const resonance = filter.resonance;
-    
-    // Basic lowpass filter simulation
-    if (filter.type === 'lowpass') {
-      return sample * (1 - cutoff + resonance * 0.1);
-    }
-    
-    return sample;
-  }
-
-  async loadInstrumentPreset(presetData: InstrumentPreset): Promise<void> {
-    this.instruments.set(presetData.id, presetData);
-    console.log(`Loaded instrument preset: ${presetData.name}`);
-  }
-
-  async saveInstrumentPreset(instrumentId: string, name: string): Promise<string> {
-    const instrument = this.instruments.get(instrumentId);
-    if (!instrument) {
-      throw new Error(`Instrument not found: ${instrumentId}`);
-    }
-
-    const presetId = `preset_${Date.now()}`;
-    const preset = { ...instrument, id: presetId, name };
-    
-    this.instruments.set(presetId, preset);
-    
-    // Save to file
-    const presetPath = path.join('./presets', `${presetId}.json`);
-    try {
-      await fs.mkdir('./presets', { recursive: true });
-      await fs.writeFile(presetPath, JSON.stringify(preset, null, 2));
-    } catch (error) {
-      console.error('Error saving preset:', error);
-    }
-
-    console.log(`Saved instrument preset: ${name}`);
-    return presetId;
   }
 
   private handleInstrumentMessage(ws: WebSocket, message: any) {
     switch (message.type) {
-      case 'play_note':
-        this.handlePlayNote(ws, message);
+      case 'note_on':
+        this.handleNoteOn(ws, message.data);
         break;
-      case 'release_note':
-        this.handleReleaseNote(ws, message);
+      case 'note_off':
+        this.handleNoteOff(ws, message.data);
         break;
-      case 'load_instrument':
-        this.handleLoadInstrument(ws, message);
+      case 'preset_change':
+        this.handlePresetChange(ws, message.data);
         break;
-      case 'save_preset':
-        this.handleSavePreset(ws, message);
+      case 'parameter_change':
+        this.handleParameterChange(ws, message.data);
         break;
-      case 'get_instruments':
-        this.handleGetInstruments(ws, message);
+      case 'recording_start':
+        this.handleRecordingStart(ws, message.data);
         break;
-      case 'midi_mapping':
-        this.handleMIDIMapping(ws, message);
+      case 'recording_stop':
+        this.handleRecordingStop(ws, message.data);
         break;
+      default:
+        console.log('Unknown instruments message type:', message.type);
     }
   }
 
-  private async handlePlayNote(ws: WebSocket, message: any) {
-    try {
-      const { instrumentId, note, velocity, duration } = message;
-      const voiceId = await this.playNote(instrumentId, note, velocity, duration);
-      
-      ws.send(JSON.stringify({
-        type: 'note_started',
-        voiceId,
-        instrumentId,
+  private handleNoteOn(ws: WebSocket, data: any) {
+    const { note, velocity, preset } = data;
+    
+    this.metrics.activeVoices++;
+    this.updatePerformanceMetrics();
+
+    // Simulate audio processing
+    const response = {
+      type: 'note_started',
+      data: {
         note,
-        velocity
+        velocity,
+        preset,
+        timestamp: Date.now(),
+        voiceId: Math.random().toString(36).substr(2, 9)
+      }
+    };
+
+    ws.send(JSON.stringify(response));
+    
+    // Broadcast to other connections for collaboration
+    this.broadcastToOthers(ws, {
+      type: 'note_event',
+      data: { event: 'note_on', note, velocity, preset }
+    });
+  }
+
+  private handleNoteOff(ws: WebSocket, data: any) {
+    const { note, preset } = data;
+    
+    this.metrics.activeVoices = Math.max(0, this.metrics.activeVoices - 1);
+    this.updatePerformanceMetrics();
+
+    const response = {
+      type: 'note_stopped',
+      data: {
+        note,
+        preset,
+        timestamp: Date.now()
+      }
+    };
+
+    ws.send(JSON.stringify(response));
+    
+    this.broadcastToOthers(ws, {
+      type: 'note_event',
+      data: { event: 'note_off', note, preset }
+    });
+  }
+
+  private handlePresetChange(ws: WebSocket, data: any) {
+    const { presetId } = data;
+    const preset = this.presets.get(presetId);
+
+    if (preset) {
+      ws.send(JSON.stringify({
+        type: 'preset_loaded',
+        data: { preset }
       }));
-    } catch (error) {
+    } else {
       ws.send(JSON.stringify({
         type: 'error',
-        message: `Failed to play note: ${error}`
+        data: { message: `Preset ${presetId} not found` }
       }));
     }
   }
 
-  private async handleReleaseNote(ws: WebSocket, message: any) {
-    try {
-      const { voiceId } = message;
-      await this.releaseNote(voiceId);
-      
+  private handleParameterChange(ws: WebSocket, data: any) {
+    const { parameter, value, presetId } = data;
+    
+    // Update preset parameters
+    const preset = this.presets.get(presetId);
+    if (preset) {
+      // Update parameter based on type
+      if (parameter.startsWith('envelope.')) {
+        const envParam = parameter.split('.')[1];
+        (preset.envelope as any)[envParam] = value;
+      } else if (parameter.startsWith('filter.')) {
+        const filterParam = parameter.split('.')[1];
+        (preset.filter as any)[filterParam] = value;
+      } else if (parameter.startsWith('effects.')) {
+        const effectParam = parameter.split('.')[1];
+        (preset.effects as any)[effectParam] = value;
+      }
+
       ws.send(JSON.stringify({
-        type: 'note_released',
-        voiceId
+        type: 'parameter_updated',
+        data: { parameter, value, preset }
       }));
-    } catch (error) {
-      ws.send(JSON.stringify({
-        type: 'error',
-        message: `Failed to release note: ${error}`
-      }));
+
+      // Broadcast parameter changes for collaboration
+      this.broadcastToOthers(ws, {
+        type: 'parameter_change',
+        data: { parameter, value, presetId }
+      });
     }
   }
 
-  private async handleLoadInstrument(ws: WebSocket, message: any) {
-    try {
-      const { preset } = message;
-      await this.loadInstrumentPreset(preset);
-      
-      ws.send(JSON.stringify({
-        type: 'instrument_loaded',
-        instrumentId: preset.id
-      }));
-    } catch (error) {
-      ws.send(JSON.stringify({
-        type: 'error',
-        message: `Failed to load instrument: ${error}`
-      }));
-    }
-  }
-
-  private async handleSavePreset(ws: WebSocket, message: any) {
-    try {
-      const { instrumentId, name } = message;
-      const presetId = await this.saveInstrumentPreset(instrumentId, name);
-      
-      ws.send(JSON.stringify({
-        type: 'preset_saved',
-        presetId,
-        name
-      }));
-    } catch (error) {
-      ws.send(JSON.stringify({
-        type: 'error',
-        message: `Failed to save preset: ${error}`
-      }));
-    }
-  }
-
-  private handleGetInstruments(ws: WebSocket, message: any) {
-    const instrumentList = Array.from(this.instruments.values()).map(inst => ({
-      id: inst.id,
-      name: inst.name,
-      type: inst.type
-    }));
+  private handleRecordingStart(ws: WebSocket, data: any) {
+    const { format, quality } = data;
     
     ws.send(JSON.stringify({
-      type: 'instruments_list',
-      instruments: instrumentList
+      type: 'recording_started',
+      data: {
+        sessionId: Math.random().toString(36).substr(2, 9),
+        format,
+        quality,
+        timestamp: Date.now()
+      }
     }));
   }
 
-  private handleMIDIMapping(ws: WebSocket, message: any) {
-    const { controllerId, instrumentId, midiCC, parameter, value } = message;
+  private handleRecordingStop(ws: WebSocket, data: any) {
+    const { sessionId } = data;
     
-    const mapping = this.midiMappings.get(controllerId);
-    if (mapping && mapping.instrumentId === instrumentId) {
-      const ccMapping = mapping.mappings.find(m => m.midiCC === midiCC);
-      if (ccMapping && ccMapping.parameter === parameter) {
-        // Apply MIDI control
-        console.log(`MIDI Control: ${parameter} = ${value} on ${instrumentId}`);
-        
-        ws.send(JSON.stringify({
-          type: 'midi_applied',
-          controllerId,
-          instrumentId,
-          parameter,
-          value
-        }));
+    ws.send(JSON.stringify({
+      type: 'recording_completed',
+      data: {
+        sessionId,
+        duration: Math.random() * 120 + 30, // Simulated duration
+        fileSize: Math.random() * 50 + 10, // Simulated file size in MB
+        timestamp: Date.now()
       }
-    }
+    }));
   }
 
+  private broadcastToOthers(sender: WebSocket, message: any) {
+    this.activeConnections.forEach(ws => {
+      if (ws !== sender && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(message));
+      }
+    });
+  }
+
+  private updatePerformanceMetrics() {
+    // Simulate performance metrics
+    this.metrics.cpuUsage = Math.min(100, (this.metrics.activeVoices / this.metrics.polyphony) * 100);
+    this.metrics.memoryUsage = Math.min(100, (this.metrics.activeVoices * 2.5) + 15);
+    this.metrics.peakLevel = Math.random() * 0.8 + 0.1;
+    
+    // Calculate latency based on buffer size and sample rate
+    this.metrics.latency = (this.metrics.bufferSize / this.metrics.sampleRate) * 1000;
+  }
+
+  private startPerformanceMonitoring() {
+    setInterval(() => {
+      this.updatePerformanceMetrics();
+      
+      // Broadcast metrics to all connections
+      this.activeConnections.forEach(ws => {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({
+            type: 'metrics_update',
+            data: this.metrics
+          }));
+        }
+      });
+    }, 1000);
+  }
+
+  // Public API methods
   getEngineStatus() {
     return {
-      engine: 'Professional Instruments Engine',
-      version: '1.0.0',
-      audioEngine: this.audioEngine,
-      instruments: this.instruments.size,
-      activeVoices: this.activeVoices.size,
-      samplesLoaded: this.samplesLibrary.size,
-      midiMappings: this.midiMappings.size,
-      capabilities: [
-        'Studio-Grade Virtual Instruments',
-        'Multi-Oscillator Synthesis',
-        'Professional Sample Playback',
-        'Advanced MIDI Mapping',
-        'Real-Time Audio Processing',
-        'Custom Preset Management',
-        'Voice Polyphony (64 voices)',
-        'Low-Latency Performance (5.3ms)'
-      ]
+      isRunning: true,
+      presets: this.presets.size,
+      samples: this.samples.size,
+      activeConnections: this.activeConnections.size,
+      metrics: this.metrics,
+      categories: {
+        synthesizers: Array.from(this.presets.values()).filter(p => p.category === 'synthesizers').length,
+        pianos: Array.from(this.presets.values()).filter(p => p.category === 'pianos').length,
+        guitars: Array.from(this.presets.values()).filter(p => p.category === 'guitars').length,
+        drums: Array.from(this.presets.values()).filter(p => p.category === 'drums').length
+      }
     };
+  }
+
+  getAllPresets() {
+    return Array.from(this.presets.values());
+  }
+
+  getPresetsByCategory(category: string) {
+    return Array.from(this.presets.values()).filter(preset => preset.category === category);
+  }
+
+  getPreset(id: string) {
+    return this.presets.get(id);
+  }
+
+  getAllSamples() {
+    return Array.from(this.samples.values());
+  }
+
+  getSamplesByCategory(category: string) {
+    return Array.from(this.samples.values()).filter(sample => sample.category === category);
   }
 }
 
