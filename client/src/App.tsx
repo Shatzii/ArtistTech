@@ -27,6 +27,7 @@ import ProfessionalInstruments from "./pages/professional-instruments";
 import GenreRemixer from "./pages/genre-remixer";
 import ArtistCollaboration from "./pages/artist-collaboration";
 import AdvancedVideoEditor from "./pages/advanced-video-editor";
+import EnhancedLanding from "./pages/enhanced-landing";
 
 function AuthenticatedRouter() {
   return (
@@ -59,6 +60,7 @@ function AuthenticatedRouter() {
           <Route path="/ultimate-dj-studio" component={UltimateDJStudio} />
           <Route path="/enterprise-management" component={EnterpriseManagement} />
           <Route path="/voting" component={SimpleVotingDemo} />
+          <Route path="/enhanced" component={EnhancedLanding} />
           <Route component={NotFound} />
         </Switch>
       </main>
