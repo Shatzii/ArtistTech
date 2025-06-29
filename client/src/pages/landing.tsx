@@ -5,7 +5,7 @@ import {
   TrendingUp, Users, Zap, DollarSign, Music, Video, 
   Instagram, Twitter, Youtube, Play, ArrowRight, Star,
   Crown, Globe, Sparkles, Target, Award, Heart,
-  Disc, Mic, Waveform, Palette, Camera, Coins, BarChart3,
+  Disc, Mic, Volume2, Palette, Camera, Coins, BarChart3,
   Brain, Gamepad2
 } from 'lucide-react';
 
@@ -229,7 +229,7 @@ export default function Landing() {
 
               <div className="bg-gradient-to-br from-cyan-800/30 to-blue-800/30 border border-cyan-500/30 rounded-xl p-6 hover:border-cyan-400 transition-all transform hover:scale-105">
                 <div className="w-12 h-12 bg-cyan-500 rounded-lg flex items-center justify-center mb-4">
-                  <Waveform className="w-6 h-6 text-white" />
+                  <Volume2 className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">MPC Beats Studio</h3>
                 <p className="text-sm text-gray-300 mb-3">16-pad drum machine, step sequencer, professional mixer</p>
