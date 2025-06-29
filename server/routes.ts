@@ -2655,6 +2655,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Genre Remixer Engine API endpoints
+  app.get("/api/genre-remixer/profiles", async (req, res) => {
+    try {
+      const { genreRemixerEngine } = await import('./genre-remixer-engine');
+      const profiles = genreRemixerEngine.getAllGenreProfiles();
+      res.json(profiles);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/genre-remixer/analyze", async (req, res) => {
+    try {
+      const { audioUrl, genre } = req.body;
+      const { genreRemixerEngine } = await import('./genre-remixer-engine');
+      const analysis = await genreRemixerEngine.analyzeTrackForRemix(audioUrl, genre);
+      res.json(analysis);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/genre-remixer/suggestions/:sourceGenre/:targetGenre", async (req, res) => {
+    try {
+      const { sourceGenre, targetGenre } = req.params;
+      const { genreRemixerEngine } = await import('./genre-remixer-engine');
+      const suggestions = await genreRemixerEngine.getGenreTransitionSuggestions(sourceGenre, targetGenre);
+      res.json(suggestions);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/genre-remixer/project", async (req, res) => {
+    try {
+      const { userId, sourceTrack, targetGenres } = req.body;
+      const { genreRemixerEngine } = await import('./genre-remixer-engine');
+      const project = await genreRemixerEngine.createRemixProject({
+        userId,
+        sourceTrack,
+        targetGenres
+      });
+      res.json(project);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/genre-remixer/projects/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const { genreRemixerEngine } = await import('./genre-remixer-engine');
+      const projects = genreRemixerEngine.getActiveProjects(userId);
+      res.json(projects);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/genre-remixer/status", async (req, res) => {
+    try {
+      const { genreRemixerEngine } = await import('./genre-remixer-engine');
+      const status = genreRemixerEngine.getEngineStatus();
+      res.json(status);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   enterpriseAIManagement.setupManagementServer(httpServer);
 
   return httpServer;
