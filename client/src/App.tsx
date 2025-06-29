@@ -59,6 +59,7 @@ function AuthenticatedRouter() {
           <Route path="/artist-collaboration" component={ArtistCollaboration} />
           <Route path="/advanced-video-editor" component={AdvancedVideoEditor} />
           <Route path="/social-media-dashboard" component={SocialMediaDashboard} />
+          <Route path="/social-media-studio" component={SocialMediaStudio} />
           <Route path="/ultimate-music-studio" component={UltimateMusicStudio} />
           <Route path="/ultimate-dj-studio" component={UltimateDJStudio} />
           <Route path="/enterprise-management" component={EnterpriseManagement} />
