@@ -284,44 +284,13 @@ export function MobileOptimizedLayout({ children }: MobileOptimizedLayoutProps) 
       {/* Mobile Bottom Navigation */}
       {deviceInfo.type === 'mobile' && <MobileNavigation />}
       
-      {/* Performance optimization styles */}
-      <style jsx global>{`
-        /* Optimize for low-performance devices */
-        ${deviceInfo.performance === 'low' ? `
-          * {
-            animation-duration: 0s !important;
-            transition-duration: 0s !important;
-          }
-          .gradient-bg {
-            background: #000 !important;
-          }
-        ` : ''}
-        
-        /* Touch-friendly styles for mobile */
-        ${deviceInfo.hasTouch ? `
-          button, a, [role="button"] {
-            min-height: 44px;
-            min-width: 44px;
-          }
-        ` : ''}
-        
-        /* iOS-specific optimizations */
-        ${deviceInfo.os === 'ios' ? `
-          body {
-            -webkit-overflow-scrolling: touch;
-          }
-          input, textarea {
-            border-radius: 0;
-          }
-        ` : ''}
-        
-        /* Android-specific optimizations */
-        ${deviceInfo.os === 'android' ? `
-          .scroll-smooth {
-            scroll-behavior: smooth;
-          }
-        ` : ''}
-      `}</style>
+      {/* Dynamic CSS classes based on device */}
+      <div className={cn(
+        deviceInfo.performance === 'low' && "performance-low",
+        deviceInfo.hasTouch && "touch-device",
+        deviceInfo.os === 'ios' && "ios-device",
+        deviceInfo.os === 'android' && "android-device"
+      )} />
     </div>
   );
 }
