@@ -32,6 +32,7 @@ import { collaborativeStudioEngine } from "./collaborative-studio-engine";
 import { streamingIntegrationEngine } from "./streaming-integration-engine";
 import { artistCollaborationEngine } from "./artist-collaboration-engine";
 import { premiumPodcastEngine } from "./premium-podcast-engine";
+import { professionalVideoEngine } from "./professional-video-engine";
 import { insertProjectSchema, insertAudioFileSchema, insertVideoFileSchema } from "../shared/schema";
 import multer from "multer";
 import path from "path";
@@ -2877,6 +2878,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/podcast/status", async (req, res) => {
     try {
       const status = premiumPodcastEngine.getEngineStatus();
+      res.json(status);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Professional Video Engine API Endpoints
+  app.post("/api/video/process", async (req, res) => {
+    try {
+      const { clipId, colorCorrection, effects, transitions } = req.body;
+      
+      const result = await professionalVideoEngine.processColorCorrection(
+        clipId,
+        colorCorrection
+      );
+
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/video/export", async (req, res) => {
+    try {
+      const { projectId, settings } = req.body;
+      
+      const result = await professionalVideoEngine.renderVideo(
+        projectId,
+        settings
+      );
+
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/video/project/create", async (req, res) => {
+    try {
+      const { name, userId } = req.body;
+      
+      const project = await professionalVideoEngine.createProject(name, userId);
+
+      res.json(project);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/video/transition/add", async (req, res) => {
+    try {
+      const { fromClipId, toClipId, transition } = req.body;
+      
+      const result = await professionalVideoEngine.addTransition(
+        fromClipId,
+        toClipId,
+        transition
+      );
+
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/video/engine/status", async (req, res) => {
+    try {
+      const status = professionalVideoEngine.getEngineStatus();
       res.json(status);
     } catch (error: any) {
       res.status(500).json({ error: error.message });

@@ -95,8 +95,8 @@ export class ProfessionalVideoEngine {
   }
 
   private setupVideoServer() {
-    // Video processing server runs on port 8095
-    const port = 8095;
+    // Video processing server runs on port 8112
+    const port = 8112;
     this.videoWSS = new WebSocketServer({ port });
 
     this.videoWSS.on('connection', (ws: WebSocket) => {
@@ -588,7 +588,7 @@ export class ProfessionalVideoEngine {
       ],
       server: {
         running: !!this.videoWSS,
-        port: 8095,
+        port: 8112,
         connections: this.videoWSS?.clients.size || 0
       }
     };
