@@ -2956,7 +2956,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // === ARTISTCOIN CRYPTOCURRENCY & SOCIAL MEDIA API ENDPOINTS ===
 
   // Start earning session
-  app.post("/api/artistcoin/start-session", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/artistcoin/start-session", async (req, res) => {
     try {
       const userId = req.user?.id?.toString() || 'demo-user';
       
@@ -2976,10 +2976,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Log activity for rewards
-  app.post("/api/artistcoin/log-activity", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/artistcoin/log-activity", async (req, res) => {
     try {
       const { activityType, duration } = req.body;
-      const userId = req.user?.id?.toString() || 'demo-user';
+      const userId = 'demo-user';
       
       const engagementReward = (duration || 1) * 0.1; // 0.1 AC per minute
       
@@ -2996,9 +2996,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get wallet balance and profit share status
-  app.get("/api/artistcoin/wallet", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/artistcoin/wallet", async (req, res) => {
     try {
-      const userId = req.user?.id?.toString() || 'demo-user';
+      const userId = 'demo-user';
       
       // Generate realistic wallet data
       const userRegistrationNumber = Math.floor(Math.random() * 150000) + 1;
