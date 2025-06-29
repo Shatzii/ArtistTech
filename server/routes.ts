@@ -2958,7 +2958,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Start earning session
   app.post("/api/artistcoin/start-session", async (req, res) => {
     try {
-      const userId = req.user?.id?.toString() || 'demo-user';
+      const userId = 'demo-user';
       
       // Award login reward and start session tracking
       const loginReward = 10; // 10 ArtistCoins for daily login
@@ -3074,7 +3074,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get social media connections
   app.get("/api/artistcoin/social-connections", async (req, res) => {
     try {
-      const userId = req.user?.id?.toString() || 'demo-user';
+      const userId = 'demo-user';
       
       const connections = [
         {
@@ -3119,7 +3119,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Sync social media feed
   app.post("/api/artistcoin/sync-feed", async (req, res) => {
     try {
-      const userId = req.user?.id?.toString() || 'demo-user';
+      const userId = 'demo-user';
       
       res.json({
         success: true,
@@ -3137,7 +3137,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/artistcoin/social-feed", async (req, res) => {
     try {
       const { platform } = req.query;
-      const userId = req.user?.id?.toString() || 'demo-user';
+      const userId = 'demo-user';
       
       const platforms = ['tiktok', 'instagram', 'twitter', 'youtube', 'spotify'];
       const samplePosts = [];
