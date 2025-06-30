@@ -2,7 +2,7 @@ const CACHE_NAME = 'artist-tech-v1';
 const urlsToCache = [
   '/',
   '/manifest.json',
-  '/generated-icon.png',
+  '/artist-tech-logo-new.jpeg',
   // Add other essential static assets
 ];
 
