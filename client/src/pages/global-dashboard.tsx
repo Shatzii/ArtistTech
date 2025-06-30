@@ -128,7 +128,7 @@ export default function GlobalDashboard() {
     refetchInterval: 300000, // Refresh every 5 minutes
   });
 
-  const stats: GlobalStats = globalStats || {
+  const stats: GlobalStats = (globalStats as GlobalStats) || {
     totalUsers: 0,
     totalArtists: 0,
     totalFanCrews: 0,
@@ -228,7 +228,7 @@ export default function GlobalDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {trendingArtists?.slice(0, 5).map((artist: TrendingArtist, index: number) => (
+                    {(trendingArtists as TrendingArtist[] || []).slice(0, 5).map((artist: TrendingArtist, index: number) => (
                       <div key={artist.id} className="flex items-center gap-3">
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-mono text-muted-foreground">#{index + 1}</span>
@@ -269,7 +269,7 @@ export default function GlobalDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {activeFanCrews?.slice(0, 4).map((crew: FanCrew) => (
+                    {(activeFanCrews as FanCrew[] || []).slice(0, 4).map((crew: FanCrew) => (
                       <div key={crew.id} className="space-y-2">
                         <div className="flex justify-between items-start">
                           <div>
@@ -307,7 +307,7 @@ export default function GlobalDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {trendingArtists?.map((artist: TrendingArtist, index: number) => (
+                    {(trendingArtists as TrendingArtist[] || []).map((artist: TrendingArtist, index: number) => (
                       <div key={artist.id} className="flex items-center gap-4 p-4 border rounded-lg">
                         <div className="flex items-center gap-3">
                           <span className="text-lg font-bold text-primary">#{index + 1}</span>
@@ -359,7 +359,7 @@ export default function GlobalDashboard() {
           {/* Fan Crews Tab */}
           <TabsContent value="fan-crews" className="space-y-6">
             <div className="grid lg:grid-cols-2 gap-6">
-              {activeFanCrews?.map((crew: FanCrew) => (
+              {(activeFanCrews as FanCrew[] || []).map((crew: FanCrew) => (
                 <Card key={crew.id}>
                   <CardHeader>
                     <div className="flex justify-between items-start">
@@ -416,7 +416,7 @@ export default function GlobalDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {upcomingShows?.map((show: UpcomingShow) => (
+                  {(upcomingShows as UpcomingShow[] || []).map((show: UpcomingShow) => (
                     <div key={show.id} className="flex items-center gap-4 p-4 border rounded-lg">
                       <div className="flex-1">
                         <div className="font-semibold text-lg">{show.title}</div>
