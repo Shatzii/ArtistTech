@@ -462,7 +462,7 @@ export default function GlobalDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {openGigs?.map((gig: OpenGig) => (
+                  {(openGigs as OpenGig[] || []).map((gig: OpenGig) => (
                     <div key={gig.id} className="flex items-center gap-4 p-4 border rounded-lg">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
@@ -504,7 +504,7 @@ export default function GlobalDashboard() {
           {/* Venues Tab */}
           <TabsContent value="venues" className="space-y-6">
             <div className="grid lg:grid-cols-2 gap-6">
-              {artistHouses?.map((house: any) => (
+              {(artistHouses as any[] || []).map((house: any) => (
                 <Card key={house.id}>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
