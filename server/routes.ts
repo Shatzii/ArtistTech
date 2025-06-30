@@ -4992,6 +4992,378 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Artist-Fan Engagement API Endpoints
+  app.get('/api/fan/profile', async (req, res) => {
+    try {
+      const fanProfile = {
+        id: '1',
+        name: 'Alex Music Lover',
+        image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=fan1',
+        fanLevel: 'Gold',
+        totalSpent: 1250,
+        artistCoinsEarned: 12500,
+        favoriteArtists: ['Luna Eclipse', 'Electric Dreams', 'Urban Pulse'],
+        crewMemberships: ['Midnight Vibes Crew', 'Electric Dreams Elite'],
+        showsAttended: 8,
+        engagementScore: 2847
+      };
+      res.json(fanProfile);
+    } catch (error: any) {
+      console.error("Error fetching fan profile:", error);
+      res.status(500).json({ message: "Failed to fetch fan profile" });
+    }
+  });
+
+  app.get('/api/fan/recommended-artists', async (req, res) => {
+    try {
+      const artists = [
+        {
+          id: '1',
+          name: 'Luna Eclipse',
+          image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=luna',
+          genre: 'Synthwave',
+          followers: 125000,
+          monthlyListeners: 890000,
+          fanCrewCount: 4500,
+          upcomingShows: 3,
+          artistCoinsEarned: 45000,
+          engagementRate: 8.5,
+          topTracks: ['Midnight Drive', 'Neon Dreams', 'Digital Love']
+        },
+        {
+          id: '2',
+          name: 'Electric Dreams',
+          image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=electric',
+          genre: 'Electronic',
+          followers: 89000,
+          monthlyListeners: 560000,
+          fanCrewCount: 3200,
+          upcomingShows: 2,
+          artistCoinsEarned: 32000,
+          engagementRate: 7.8,
+          topTracks: ['Circuit Breaker', 'Voltage', 'Power Grid']
+        },
+        {
+          id: '3',
+          name: 'Urban Pulse',
+          image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=urban',
+          genre: 'Hip-Hop',
+          followers: 156000,
+          monthlyListeners: 1200000,
+          fanCrewCount: 6700,
+          upcomingShows: 5,
+          artistCoinsEarned: 67000,
+          engagementRate: 9.2,
+          topTracks: ['City Lights', 'Street Symphony', 'Underground Flow']
+        },
+        {
+          id: '4',
+          name: 'Cosmic Harmony',
+          image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=cosmic',
+          genre: 'Ambient',
+          followers: 78000,
+          monthlyListeners: 420000,
+          fanCrewCount: 2800,
+          upcomingShows: 1,
+          artistCoinsEarned: 28000,
+          engagementRate: 6.9,
+          topTracks: ['Stellar Journey', 'Nebula Dreams', 'Galaxy Whispers']
+        },
+        {
+          id: '5',
+          name: 'Rhythm Revolution',
+          image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=rhythm',
+          genre: 'Rock',
+          followers: 203000,
+          monthlyListeners: 1800000,
+          fanCrewCount: 8900,
+          upcomingShows: 7,
+          artistCoinsEarned: 89000,
+          engagementRate: 10.5,
+          topTracks: ['Electric Revolution', 'Rock the World', 'Rebel Anthem']
+        },
+        {
+          id: '6',
+          name: 'Melodic Sunrise',
+          image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=melodic',
+          genre: 'Indie Pop',
+          followers: 112000,
+          monthlyListeners: 750000,
+          fanCrewCount: 4100,
+          upcomingShows: 4,
+          artistCoinsEarned: 41000,
+          engagementRate: 8.1,
+          topTracks: ['Morning Light', 'Sunshine Dreams', 'Golden Hour']
+        }
+      ];
+      res.json(artists);
+    } catch (error: any) {
+      console.error("Error fetching recommended artists:", error);
+      res.status(500).json({ message: "Failed to fetch recommended artists" });
+    }
+  });
+
+  app.get('/api/fan/crew-memberships', async (req, res) => {
+    try {
+      const memberships = [
+        {
+          id: '1',
+          crewName: 'Midnight Vibes Crew',
+          artistName: 'Luna Eclipse',
+          role: 'VIP',
+          joinedDate: '2024-01-15',
+          contributions: 85,
+          perks: ['Early access', 'Exclusive content', 'Meet & greet priority', 'Limited merch'],
+          nextReward: 'Backstage pass at next show'
+        },
+        {
+          id: '2',
+          crewName: 'Electric Dreams Elite',
+          artistName: 'Electric Dreams',
+          role: 'Captain',
+          joinedDate: '2023-11-20',
+          contributions: 124,
+          perks: ['All VIP perks', 'Co-host livestreams', 'Input on setlists', 'Direct artist contact'],
+          nextReward: 'Producer credit on next track'
+        },
+        {
+          id: '3',
+          crewName: 'Urban Flow Squad',
+          artistName: 'Urban Pulse',
+          role: 'Moderator',
+          joinedDate: '2024-02-10',
+          contributions: 67,
+          perks: ['Community moderation', 'Preview unreleased tracks', 'Voting on covers'],
+          nextReward: 'Feature in music video'
+        },
+        {
+          id: '4',
+          crewName: 'Cosmic Collective',
+          artistName: 'Cosmic Harmony',
+          role: 'Member',
+          joinedDate: '2024-03-01',
+          contributions: 34,
+          perks: ['Weekly livestream access', 'Digital wallpapers'],
+          nextReward: 'Signed vinyl record'
+        }
+      ];
+      res.json(memberships);
+    } catch (error: any) {
+      console.error("Error fetching crew memberships:", error);
+      res.status(500).json({ message: "Failed to fetch crew memberships" });
+    }
+  });
+
+  app.get('/api/fan/recent-interactions', async (req, res) => {
+    try {
+      const interactions = [
+        {
+          id: '1',
+          type: 'like',
+          artistName: 'Luna Eclipse',
+          description: 'Liked "Midnight Drive" on Spotify',
+          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+          artistCoinsEarned: 5,
+          fanXpGained: 10
+        },
+        {
+          id: '2',
+          type: 'show_attend',
+          artistName: 'Urban Pulse',
+          description: 'Attended live show at Metro Arena',
+          timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+          artistCoinsEarned: 100,
+          fanXpGained: 250
+        },
+        {
+          id: '3',
+          type: 'comment',
+          artistName: 'Electric Dreams',
+          description: 'Commented on latest Instagram post',
+          timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+          artistCoinsEarned: 15,
+          fanXpGained: 25
+        },
+        {
+          id: '4',
+          type: 'share',
+          artistName: 'Melodic Sunrise',
+          description: 'Shared "Golden Hour" to TikTok',
+          timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+          artistCoinsEarned: 25,
+          fanXpGained: 40
+        },
+        {
+          id: '5',
+          type: 'playlist_add',
+          artistName: 'Rhythm Revolution',
+          description: 'Added "Electric Revolution" to "My Favorites" playlist',
+          timestamp: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString(),
+          artistCoinsEarned: 10,
+          fanXpGained: 15
+        },
+        {
+          id: '6',
+          type: 'tip',
+          artistName: 'Cosmic Harmony',
+          description: 'Tipped $5 during livestream',
+          timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+          artistCoinsEarned: 50,
+          fanXpGained: 100
+        }
+      ];
+      res.json(interactions);
+    } catch (error: any) {
+      console.error("Error fetching recent interactions:", error);
+      res.status(500).json({ message: "Failed to fetch recent interactions" });
+    }
+  });
+
+  app.get('/api/fan/show-booking-requests', async (req, res) => {
+    try {
+      const requests = [
+        {
+          id: '1',
+          artistName: 'Luna Eclipse',
+          requestedBy: 'Alex Music Lover',
+          venue: 'Downtown Music Hall',
+          proposedDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          budget: 15000,
+          status: 'pending',
+          fanSupport: 247,
+          expectedAttendance: 800
+        },
+        {
+          id: '2',
+          artistName: 'Electric Dreams',
+          requestedBy: 'Sarah Beats',
+          venue: 'Warehouse District',
+          proposedDate: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString(),
+          budget: 8000,
+          status: 'approved',
+          fanSupport: 156,
+          expectedAttendance: 500
+        },
+        {
+          id: '3',
+          artistName: 'Urban Pulse',
+          requestedBy: 'Mike Underground',
+          venue: 'City Center Arena',
+          proposedDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
+          budget: 25000,
+          status: 'negotiating',
+          fanSupport: 389,
+          expectedAttendance: 1200
+        },
+        {
+          id: '4',
+          artistName: 'Rhythm Revolution',
+          requestedBy: 'Emma Rockstar',
+          venue: 'Underground Club',
+          proposedDate: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000).toISOString(),
+          budget: 5000,
+          status: 'declined',
+          fanSupport: 78,
+          expectedAttendance: 300
+        }
+      ];
+      res.json(requests);
+    } catch (error: any) {
+      console.error("Error fetching show booking requests:", error);
+      res.status(500).json({ message: "Failed to fetch show booking requests" });
+    }
+  });
+
+  // Fan Actions
+  app.post('/api/fan/follow-artist', async (req, res) => {
+    try {
+      const { artistId } = req.body;
+      console.log(`Fan following artist: ${artistId}`);
+      
+      const reward = {
+        artistCoinsEarned: 25,
+        fanXpGained: 50,
+        message: `You're now following this artist! +25 ArtistCoins earned.`
+      };
+      
+      res.json(reward);
+    } catch (error: any) {
+      console.error("Error following artist:", error);
+      res.status(500).json({ message: "Failed to follow artist" });
+    }
+  });
+
+  app.post('/api/fan/join-crew', async (req, res) => {
+    try {
+      const { artistId, crewType } = req.body;
+      console.log(`Fan joining crew for artist: ${artistId}, type: ${crewType}`);
+      
+      const newMembership = {
+        id: Date.now().toString(),
+        crewName: `${crewType} Crew`,
+        artistName: 'Artist Name',
+        role: 'Member',
+        joinedDate: new Date().toISOString(),
+        contributions: 0,
+        perks: ['Weekly updates', 'Community access'],
+        nextReward: 'First milestone reward'
+      };
+      
+      res.json(newMembership);
+    } catch (error: any) {
+      console.error("Error joining fan crew:", error);
+      res.status(500).json({ message: "Failed to join fan crew" });
+    }
+  });
+
+  app.post('/api/fan/request-show', async (req, res) => {
+    try {
+      const showRequest = req.body;
+      console.log('New show request:', showRequest);
+      
+      const newRequest = {
+        id: Date.now().toString(),
+        artistName: 'Selected Artist',
+        requestedBy: 'Current Fan',
+        venue: showRequest.venue || 'TBD',
+        proposedDate: showRequest.date || new Date().toISOString(),
+        budget: showRequest.budget || 0,
+        status: 'pending',
+        fanSupport: 1,
+        expectedAttendance: showRequest.expectedAttendance || 0
+      };
+      
+      const reward = {
+        showRequest: newRequest,
+        artistCoinsEarned: 50,
+        message: 'Show request submitted! +50 ArtistCoins earned.'
+      };
+      
+      res.json(reward);
+    } catch (error: any) {
+      console.error("Error requesting show:", error);
+      res.status(500).json({ message: "Failed to request show" });
+    }
+  });
+
+  app.post('/api/fan/support-show/:showId', async (req, res) => {
+    try {
+      const { showId } = req.params;
+      console.log(`Fan supporting show: ${showId}`);
+      
+      const reward = {
+        artistCoinsEarned: 10,
+        fanXpGained: 20,
+        message: 'Thanks for supporting this show! +10 ArtistCoins earned.'
+      };
+      
+      res.json(reward);
+    } catch (error: any) {
+      console.error("Error supporting show:", error);
+      res.status(500).json({ message: "Failed to support show" });
+    }
+  });
+
   enterpriseAIManagement.setupManagementServer(httpServer);
 
   return httpServer;
