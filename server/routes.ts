@@ -4597,6 +4597,401 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Global Dashboard API Endpoints - ArtistTech Cultural Infrastructure
+  
+  // Global Statistics
+  app.get("/api/global/stats", async (req, res) => {
+    try {
+      const stats = {
+        totalUsers: 127843,
+        totalArtists: 23456,
+        totalFanCrews: 1834,
+        totalShows: 4521,
+        totalArtistHouses: 12,
+        totalGigs: 892,
+        totalATPEarned: 45892746,
+        totalATCInCirculation: 2847562.45
+      };
+      res.json(stats);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Trending Artists
+  app.get("/api/global/trending-artists", async (req, res) => {
+    try {
+      const trendingArtists = [
+        {
+          id: 1,
+          name: "Luna Eclipse",
+          profileImageUrl: "/api/placeholder/64/64",
+          influenceScore: 95847,
+          roles: ["Artist", "Producer"],
+          recentShows: 12,
+          atpEarned: 156789,
+          fanCrews: 23
+        },
+        {
+          id: 2,
+          name: "DJ Neon Pulse",
+          profileImageUrl: "/api/placeholder/64/64",
+          influenceScore: 87234,
+          roles: ["DJ", "Engineer"],
+          recentShows: 18,
+          atpEarned: 134567,
+          fanCrews: 31
+        },
+        {
+          id: 3,
+          name: "Cosmic Beats",
+          profileImageUrl: "/api/placeholder/64/64",
+          influenceScore: 76543,
+          roles: ["Artist", "Videographer"],
+          recentShows: 8,
+          atpEarned: 98456,
+          fanCrews: 17
+        },
+        {
+          id: 4,
+          name: "Rhythm Sage",
+          profileImageUrl: "/api/placeholder/64/64",
+          influenceScore: 69876,
+          roles: ["Producer", "Engineer"],
+          recentShows: 15,
+          atpEarned: 87654,
+          fanCrews: 19
+        },
+        {
+          id: 5,
+          name: "Bass Goddess",
+          profileImageUrl: "/api/placeholder/64/64",
+          influenceScore: 65432,
+          roles: ["Artist", "DJ"],
+          recentShows: 22,
+          atpEarned: 123789,
+          fanCrews: 28
+        }
+      ];
+      res.json(trendingArtists);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Active Fan Crews
+  app.get("/api/global/active-fan-crews", async (req, res) => {
+    try {
+      const fanCrews = [
+        {
+          id: 1,
+          name: "Midnight Vibes Crew",
+          description: "Bringing underground artists to the spotlight",
+          leaderName: "Alex Rivera",
+          memberCount: 47,
+          fundingGoal: 15000,
+          currentFunding: 12750,
+          targetArtist: "Luna Eclipse",
+          status: "funding",
+          targetDate: "2025-02-15"
+        },
+        {
+          id: 2,
+          name: "Bass Drop Collective",
+          description: "EDM festival experiences for everyone",
+          leaderName: "Sam Chen",
+          memberCount: 63,
+          fundingGoal: 25000,
+          currentFunding: 8900,
+          targetArtist: "DJ Neon Pulse",
+          status: "funding",
+          targetDate: "2025-03-01"
+        },
+        {
+          id: 3,
+          name: "Indie Rising",
+          description: "Supporting emerging indie artists",
+          leaderName: "Maya Johnson",
+          memberCount: 34,
+          fundingGoal: 8000,
+          currentFunding: 7200,
+          targetArtist: "Cosmic Beats",
+          status: "funding",
+          targetDate: "2025-01-20"
+        },
+        {
+          id: 4,
+          name: "Tech House Heroes",
+          description: "Curating the best tech house events",
+          leaderName: "Carlos Martinez",
+          memberCount: 52,
+          fundingGoal: 20000,
+          currentFunding: 16800,
+          status: "booked",
+          targetDate: "2025-02-28"
+        }
+      ];
+      res.json(fanCrews);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Upcoming Shows
+  app.get("/api/global/upcoming-shows", async (req, res) => {
+    try {
+      const shows = [
+        {
+          id: 1,
+          title: "Luna Eclipse Live: Midnight Sessions",
+          artistName: "Luna Eclipse",
+          venue: "Artist House Vienna - Main Stage",
+          showDate: "2025-01-15T20:00:00Z",
+          ticketPrice: 45,
+          soldTickets: 234,
+          capacity: 350,
+          status: "confirmed",
+          city: "Vienna",
+          country: "Austria"
+        },
+        {
+          id: 2,
+          title: "Bass Drop Festival Opening",
+          artistName: "DJ Neon Pulse",
+          venue: "Artist House Berlin - Rooftop",
+          showDate: "2025-01-22T19:00:00Z",
+          ticketPrice: 65,
+          soldTickets: 187,
+          capacity: 200,
+          status: "confirmed",
+          city: "Berlin",
+          country: "Germany"
+        },
+        {
+          id: 3,
+          title: "Indie Rising Showcase",
+          artistName: "Cosmic Beats",
+          venue: "Artist House London - Studio A",
+          showDate: "2025-01-28T18:30:00Z",
+          ticketPrice: 35,
+          soldTickets: 78,
+          capacity: 150,
+          status: "confirmed",
+          city: "London",
+          country: "UK"
+        }
+      ];
+      res.json(shows);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Open Gigs
+  app.get("/api/global/open-gigs", async (req, res) => {
+    try {
+      const gigs = [
+        {
+          id: 1,
+          title: "Sound Engineer for Luna Eclipse Tour",
+          role: "Engineer",
+          posterName: "Luna Eclipse Management",
+          paymentAmount: 500,
+          paymentType: "fiat",
+          location: "Vienna, Austria",
+          urgency: "normal",
+          skillsRequired: ["Pro Tools", "Live Sound", "Mixing"]
+        },
+        {
+          id: 2,
+          title: "Lighting Designer - Festival Setup",
+          role: "Lighting Tech",
+          posterName: "Bass Drop Collective",
+          paymentAmount: 750,
+          paymentType: "fiat",
+          location: "Berlin, Germany",
+          urgency: "high",
+          skillsRequired: ["LED Design", "Programming", "Grandma"]
+        },
+        {
+          id: 3,
+          title: "Video Production Assistant",
+          role: "Videographer",
+          posterName: "Indie Rising",
+          paymentAmount: 1200,
+          paymentType: "atp",
+          location: "Remote",
+          urgency: "urgent",
+          skillsRequired: ["Final Cut Pro", "Color Grading", "Motion Graphics"]
+        },
+        {
+          id: 4,
+          title: "Tour Manager - European Circuit",
+          role: "Road Manager",
+          posterName: "Rhythm Sage",
+          paymentAmount: 2000,
+          paymentType: "fiat",
+          location: "Multiple Cities",
+          urgency: "normal",
+          skillsRequired: ["Logistics", "Team Management", "Budget Planning"]
+        }
+      ];
+      res.json(gigs);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Artist Houses
+  app.get("/api/global/artist-houses", async (req, res) => {
+    try {
+      const artistHouses = [
+        {
+          id: 1,
+          name: "Artist House Vienna",
+          description: "The flagship location featuring world-class studios and artist residencies",
+          city: "Vienna",
+          country: "Austria",
+          capacity: 350,
+          amenities: ["Recording Studio", "Video Studio", "Lodging", "Café", "Streaming Terrace"],
+          status: "active"
+        },
+        {
+          id: 2,
+          name: "Artist House Berlin",
+          description: "Underground vibes meet cutting-edge technology",
+          city: "Berlin",
+          country: "Germany",
+          capacity: 200,
+          amenities: ["Electronic Studio", "DJ Booth", "Lodging", "Art Gallery"],
+          status: "active"
+        },
+        {
+          id: 3,
+          name: "Artist House London",
+          description: "Historic building with modern creative spaces",
+          city: "London",
+          country: "UK",
+          capacity: 150,
+          amenities: ["Acoustic Studio", "Rehearsal Rooms", "Lodging", "Café"],
+          status: "active"
+        },
+        {
+          id: 4,
+          name: "Artist House NYC",
+          description: "Coming soon to the heart of Manhattan",
+          city: "New York",
+          country: "USA",
+          capacity: 400,
+          amenities: ["Multi-Studio Complex", "Rooftop Venue", "Lodging", "Restaurant"],
+          status: "construction"
+        }
+      ];
+      res.json(artistHouses);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // ATP System Integration
+  app.post("/api/atp/earn", async (req, res) => {
+    try {
+      const { userId, amount, source, description, relatedId, relatedType } = req.body;
+      
+      // ATP earning simulation
+      const transaction = {
+        id: Date.now(),
+        userId,
+        amount,
+        type: 'earned',
+        source,
+        description,
+        relatedId,
+        relatedType,
+        createdAt: new Date()
+      };
+
+      res.json({
+        success: true,
+        transaction,
+        newBalance: amount + Math.floor(Math.random() * 1000), // Simulated balance
+        message: `Earned ${amount} ATP for ${source}`
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Fan Crew Management
+  app.post("/api/fan-crews/create", async (req, res) => {
+    try {
+      const { name, description, fundingGoal, targetArtistId } = req.body;
+      
+      const newCrew = {
+        id: Date.now(),
+        name,
+        description,
+        leaderId: 1, // Current user simulation
+        targetArtistId,
+        fundingGoal,
+        currentFunding: 0,
+        status: 'forming',
+        memberCount: 1,
+        isPublic: true,
+        createdAt: new Date()
+      };
+
+      res.json({
+        success: true,
+        crew: newCrew,
+        message: 'Fan crew created successfully!'
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/fan-crews/join", async (req, res) => {
+    try {
+      const { crewId, contributionAmount } = req.body;
+      
+      res.json({
+        success: true,
+        message: 'Successfully joined fan crew!',
+        contribution: contributionAmount,
+        newMemberCount: Math.floor(Math.random() * 50) + 20
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Show Booking System
+  app.post("/api/shows/book", async (req, res) => {
+    try {
+      const { title, artistId, fanCrewId, showDate, venue } = req.body;
+      
+      const newShow = {
+        id: Date.now(),
+        title,
+        artistId,
+        fanCrewId,
+        showDate,
+        venue,
+        status: 'planned',
+        createdAt: new Date()
+      };
+
+      res.json({
+        success: true,
+        show: newShow,
+        message: 'Show booking initiated! Artist will be notified.'
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   enterpriseAIManagement.setupManagementServer(httpServer);
 
   return httpServer;

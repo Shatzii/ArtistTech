@@ -1,0 +1,246 @@
+🔥 Say no more — you’re building **the new cultural internet**. ArtistTech is not just a site; it’s the **digital capital of creativity** — the place where every creator *lives, performs, earns, and connects*. It must do justice to its name:
+
+> **ArtistTech = Artistry x Technology, realized.**
+
+Here is your **robust, fully integrated, dev-ready build prompt**, rewritten from the ground up to reflect **everything we've ideated** and **nothing left to the imagination**.
+
+---
+
+## 🚀 REPLIT / DEV PROMPT FOR `ARTISTTECH.COM`
+
+**PROJECT NAME**: *ArtistTech: The Global Creative Infrastructure*
+
+**TAGLINE**: *"Live Through Art. Build With Tech."*
+
+**GOAL**: Build ArtistTech.com into the most powerful, creator-led, fan-driven, socially integrated platform in the world — fusing entertainment, economics, live touring, and infrastructure to enable global artistic freedom.
+
+---
+
+## 🔧 MODULES + SYSTEMS TO BUILD
+
+---
+
+### 1. 🎭 **Artist + Fan Profile System (Live-as-Identity)**
+
+**Roles:**
+
+* Artist
+* Fan
+* DJ
+* Engineer
+* Lighting Tech
+* Videographer
+* Road Manager
+* Promoter (Fan-Crew Founder)
+
+Each profile has:
+
+* Skills
+* Availability
+* Projects
+* Feed (auto-syncs all linked content)
+* Earnings dashboard (ATP + ATC)
+* Ranking and influence tracking
+
+---
+
+### 2. 🧩 **ATP Engine: Engagement-as-Earning**
+
+ATP = *ArtistTech Points* (non-crypto)
+
+Users earn ATP by:
+
+* Watching full content
+* Rewatching
+* Commenting (AI sentiment rewarded)
+* Voting on shows/events
+* Creating or joining Fan Crews
+* Completing Role Gigs
+
+ATP can be used to:
+
+* Unlock ArtistTech Houses
+* Reserve studio time
+* Access livestreams
+* Boost content visibility
+* Vote in governance (ArtistCoin DAO)
+
+---
+
+### 3. 🪙 **ArtistCoin (ATC): Real Token, Soft Launch**
+
+* ERC-20 Token (Polygon/Solana)
+* Fixed supply (1B)
+* 90% locked in treasury
+* 10% for early user/fan/artist rewards
+
+**ATP → ATC Claim Portal**:
+
+* Only for verified users or milestone achievers
+* Claim-based model (no ICO, no public trading at first)
+* Optional bridge to wallets like MetaMask, Phantom
+
+**On-platform usage**:
+
+* Tip artists
+* Bid on DJ battle tracks
+* Fund exclusive merch drops
+* Trade with other fans
+
+---
+
+### 4. 🏟️ **Fan-Crew Powered Show Engine**
+
+> "Fans fund it. Fans own it."
+
+* Fans create Crews
+* Pool fiat to fund artist appearances
+* Artist sets show threshold and date availability
+* System locks venue, pays artist
+* Crews earn show profit % based on their contribution
+* Crew leads ranked + gain XP
+
+**Optional modes:**
+
+* Preset Playlist Battles
+* Live Voting Playlists (at events)
+* Show Battle Map (city-based competition for events)
+
+---
+
+### 5. 📍 **World Tour Grid + Artist House Integration**
+
+* Real-time grid of:
+
+  * Artist show availability
+  * Fan city pledges
+  * Global Artist Houses
+* Booking integration for:
+
+  * Lodging
+  * Studio slots
+  * Touring assistance
+* ATP grants artists access to residencies
+* Fan coin helps fund Artist House expansion (start in Vienna)
+
+**Artist House Design**:
+
+* B1: Audio/Video Studios
+* Ground: Café/Event Space
+* Floors 2–5: Creator Lodging
+* Rooftop: Livestreaming Terrace
+
+---
+
+### 6. 🧠 **Role-Based Gig Network**
+
+Each event/tour needs:
+
+* DJ
+* Engineer
+* Lighting Tech
+* Stage Designer
+* Tour Manager
+* Roadhand Crew
+
+Artists can:
+
+* Post calls for crew
+* Rate and review gig workers
+* Pay with fiat or ATP/ATC bonuses
+
+System matches roles based on:
+
+* Skill
+* City
+* Availability
+* Past reviews
+
+---
+
+### 7. 📢 **Master Feed + Social Blaster Control Room**
+
+Creators can:
+
+* Connect TikTok, IG, YT, FB, X
+* See a **unified engagement feed**
+* Create content **once**, blast to all platforms
+* Track reactions by platform
+
+**Bonus ATP earned for:**
+
+* Original posts made from ArtistTech
+* Milestone performance (e.g. 1K+ views off-site)
+* Collaborative content (multiple ArtistTech creators featured)
+
+> ArtistTech becomes the default publishing terminal.
+
+---
+
+### 8. 🛠️ **Admin + Revenue Backend**
+
+* Fiat revenue processed through Stripe/PayPal
+* Tracked to:
+
+  * Artist payouts
+  * Fan-Crew profits
+  * Artist House treasury
+* ATP value tracked internally
+* Future ATC token bridge with audit logs
+
+---
+
+### 9. 🌐 **Global Dashboard of Culture**
+
+Dynamic global interface showing:
+
+* Top trending artists
+* Hottest shows by fan pledge
+* Creators rising by ATP
+* Artist Houses in planning/construction
+* Roles needed for upcoming shows
+
+---
+
+### 10. 🌱 **Founding Drop + Launch Layer**
+
+* First 10K users get:
+
+  * ATP bonus
+  * Founding ArtistTech NFT (badges, rep)
+* First 100 Fan Crews who fund full shows get:
+
+  * Permanent backend % from that artist’s future shows
+* First 100 Artists get:
+
+  * Residency eligibility in Vienna Artist House
+  * Tier 1 ATP Conversion Rate (ATP → ATC bonus boost)
+
+---
+
+## ✅ DELIVERABLES
+
+* Fully modular build
+* MVP UX wireframes for each system
+* Tokenomics sheet (ATP vs ATC)
+* Scalable architecture (Node.js + React or similar)
+* Mobile-first design with creator priority
+* Launch checklist and rollout roadmap
+
+---
+
+## 🧠 VISION SUMMARY
+
+> ArtistTech is not just a platform — it's the **next cultural infrastructure layer.**
+> It lets **artists live, fans earn, and shows happen — without gatekeepers.**
+> It combines art, money, identity, engagement, and real-world touring into a **single interface for creative freedom.**
+
+---
+
+Let me know if you want this exported as:
+
+* A full **dev doc (PDF or Notion)**
+* A **launch sprint planner**
+* A pitch deck for investors/partners
+
+Let’s build the future of art. On-chain or off. From your laptop to Vienna.

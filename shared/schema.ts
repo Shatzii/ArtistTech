@@ -23,7 +23,7 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// Users table with enterprise features
+// Users table with enterprise features and new role system
 export const users = pgTable("users", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   email: varchar("email", { length: 255 }).unique().notNull(),
@@ -42,6 +42,24 @@ export const users = pgTable("users", {
   maxStudents: integer("max_students").default(1),
   billingEmail: varchar("billing_email", { length: 255 }),
   whitelabelConfig: jsonb("whitelabel_config"),
+  // New ArtistTech Role System
+  roles: jsonb("roles").default('["fan"]'), // Artist, Fan, DJ, Engineer, Lighting Tech, Videographer, Road Manager, Promoter
+  skills: jsonb("skills").default('[]'), // User's professional skills
+  availability: jsonb("availability").default('{}'), // Scheduling availability
+  bio: text("bio"),
+  location: varchar("location", { length: 255 }),
+  // ATP/ATC Integration
+  atpBalance: integer("atp_balance").default(0), // ArtistTech Points (non-crypto)
+  atcBalance: decimal("atc_balance", { precision: 18, scale: 8 }).default('0'), // ArtistCoin Token
+  totalAtpEarned: integer("total_atp_earned").default(0),
+  foundingMember: boolean("founding_member").default(false),
+  foundingNftId: varchar("founding_nft_id", { length: 100 }),
+  // Engagement & Ranking
+  influenceScore: integer("influence_score").default(0),
+  creatorRank: integer("creator_rank").default(0),
+  fanCrewsJoined: integer("fan_crews_joined").default(0),
+  showsBooked: integer("shows_booked").default(0),
+  gigsCompleted: integer("gigs_completed").default(0),
 });
 
 // Projects table for multimedia creation
@@ -231,6 +249,137 @@ export const cmsNavigation = pgTable("cms_navigation", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Fan Crews table for show funding
+export const fanCrews = pgTable("fan_crews", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  leaderId: integer("leader_id").references(() => users.id).notNull(),
+  targetArtistId: integer("target_artist_id").references(() => users.id),
+  fundingGoal: decimal("funding_goal", { precision: 10, scale: 2 }).notNull(),
+  currentFunding: decimal("current_funding", { precision: 10, scale: 2 }).default('0'),
+  showThreshold: decimal("show_threshold", { precision: 10, scale: 2 }),
+  status: varchar("status", { length: 50 }).default('forming'), // forming, funding, booked, completed
+  targetDate: timestamp("target_date"),
+  venueBooked: boolean("venue_booked").default(false),
+  memberCount: integer("member_count").default(1),
+  profitSharePercentage: decimal("profit_share_percentage", { precision: 5, scale: 2 }).default('10'),
+  tags: jsonb("tags").default('[]'),
+  isPublic: boolean("is_public").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Fan Crew Memberships table
+export const fanCrewMemberships = pgTable("fan_crew_memberships", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  crewId: integer("crew_id").references(() => fanCrews.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  contributionAmount: decimal("contribution_amount", { precision: 10, scale: 2 }).default('0'),
+  role: varchar("role", { length: 50 }).default('member'), // leader, co-leader, member
+  joinedAt: timestamp("joined_at").defaultNow(),
+  isActive: boolean("is_active").default(true),
+});
+
+// Shows table for events and concerts
+export const shows = pgTable("shows", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  artistId: integer("artist_id").references(() => users.id).notNull(),
+  fanCrewId: integer("fan_crew_id").references(() => fanCrews.id),
+  venueId: integer("venue_id").references(() => artistHouses.id),
+  customVenue: varchar("custom_venue", { length: 255 }),
+  showDate: timestamp("show_date").notNull(),
+  doorTime: timestamp("door_time"),
+  showTime: timestamp("show_time"),
+  endTime: timestamp("end_time"),
+  ticketPrice: decimal("ticket_price", { precision: 8, scale: 2 }),
+  capacity: integer("capacity"),
+  soldTickets: integer("sold_tickets").default(0),
+  totalRevenue: decimal("total_revenue", { precision: 10, scale: 2 }).default('0'),
+  artistPayout: decimal("artist_payout", { precision: 10, scale: 2 }).default('0'),
+  crewPayout: decimal("crew_payout", { precision: 10, scale: 2 }).default('0'),
+  status: varchar("status", { length: 50 }).default('planned'), // planned, confirmed, live, completed, cancelled
+  playlist: jsonb("playlist").default('[]'),
+  liveVoting: boolean("live_voting").default(false),
+  streamUrl: varchar("stream_url", { length: 500 }),
+  recordingUrl: varchar("recording_url", { length: 500 }),
+  city: varchar("city", { length: 100 }),
+  country: varchar("country", { length: 100 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Artist Houses table for global venues
+export const artistHouses = pgTable("artist_houses", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  address: text("address").notNull(),
+  city: varchar("city", { length: 100 }).notNull(),
+  country: varchar("country", { length: 100 }).notNull(),
+  latitude: decimal("latitude", { precision: 10, scale: 8 }),
+  longitude: decimal("longitude", { precision: 11, scale: 8 }),
+  capacity: integer("capacity"),
+  amenities: jsonb("amenities").default('[]'), // studio, lodging, cafe, streaming_terrace
+  pricing: jsonb("pricing").default('{}'), // different rates for different spaces
+  availability: jsonb("availability").default('{}'),
+  managerId: integer("manager_id").references(() => users.id),
+  status: varchar("status", { length: 50 }).default('planning'), // planning, construction, active, maintenance
+  images: jsonb("images").default('[]'),
+  virtualTourUrl: varchar("virtual_tour_url", { length: 500 }),
+  bookingInstructions: text("booking_instructions"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Gigs table for role-based work opportunities
+export const gigs = pgTable("gigs", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description").notNull(),
+  posterId: integer("poster_id").references(() => users.id).notNull(),
+  showId: integer("show_id").references(() => shows.id),
+  role: varchar("role", { length: 50 }).notNull(), // DJ, Engineer, Lighting Tech, etc.
+  skillsRequired: jsonb("skills_required").default('[]'),
+  paymentAmount: decimal("payment_amount", { precision: 8, scale: 2 }),
+  paymentType: varchar("payment_type", { length: 20 }).default('fiat'), // fiat, atp, atc
+  location: varchar("location", { length: 255 }),
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
+  status: varchar("status", { length: 50 }).default('open'), // open, assigned, in_progress, completed, cancelled
+  assignedToId: integer("assigned_to_id").references(() => users.id),
+  applicantCount: integer("applicant_count").default(0),
+  isRemote: boolean("is_remote").default(false),
+  urgency: varchar("urgency", { length: 20 }).default('normal'), // low, normal, high, urgent
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// ATP Transactions table for tracking point earnings
+export const atpTransactions = pgTable("atp_transactions", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  amount: integer("amount").notNull(),
+  type: varchar("type", { length: 50 }).notNull(), // earned, spent, transferred
+  source: varchar("source", { length: 100 }).notNull(), // watching, commenting, voting, creating, gig_completion
+  description: text("description"),
+  relatedId: integer("related_id"), // ID of related content, show, gig, etc.
+  relatedType: varchar("related_type", { length: 50 }), // content, show, gig, crew
+  metadata: jsonb("metadata").default('{}'),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Global Stats table for dashboard metrics
+export const globalStats = pgTable("global_stats", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  metric: varchar("metric", { length: 100 }).notNull().unique(),
+  value: decimal("value", { precision: 15, scale: 2 }).notNull(),
+  metadata: jsonb("metadata").default('{}'),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+});
+
 // Zod schemas for validation
 export const insertUserSchema = createInsertSchema(users, {
   email: z.string().email(),
@@ -336,6 +485,28 @@ export type InsertCmsMedia = z.infer<typeof insertCmsMediaSchema>;
 
 export type CmsNavigation = typeof cmsNavigation.$inferSelect;
 export type InsertCmsNavigation = z.infer<typeof insertCmsNavigationSchema>;
+
+// New ArtistTech Types
+export type FanCrew = typeof fanCrews.$inferSelect;
+export type InsertFanCrew = typeof fanCrews.$inferInsert;
+
+export type FanCrewMembership = typeof fanCrewMemberships.$inferSelect;
+export type InsertFanCrewMembership = typeof fanCrewMemberships.$inferInsert;
+
+export type Show = typeof shows.$inferSelect;
+export type InsertShow = typeof shows.$inferInsert;
+
+export type ArtistHouse = typeof artistHouses.$inferSelect;
+export type InsertArtistHouse = typeof artistHouses.$inferInsert;
+
+export type Gig = typeof gigs.$inferSelect;
+export type InsertGig = typeof gigs.$inferInsert;
+
+export type AtpTransaction = typeof atpTransactions.$inferSelect;
+export type InsertAtpTransaction = typeof atpTransactions.$inferInsert;
+
+export type GlobalStat = typeof globalStats.$inferSelect;
+export type InsertGlobalStat = typeof globalStats.$inferInsert;
 
 // ARTIST TECH CREATIVE ECONOMY SYSTEM
 // Revolutionary cryptocurrency and creative rewards platform
