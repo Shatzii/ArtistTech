@@ -132,9 +132,16 @@ export function MobileOptimizedLayout({ children }: MobileOptimizedLayoutProps) 
     <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-50 bg-black/95 backdrop-blur-md border-r border-gray-800">
       <div className="flex flex-col flex-1 min-h-0">
         <div className="flex items-center h-16 px-4 border-b border-gray-800">
-          <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            Artist Tech
-          </h1>
+          <div className="flex items-center space-x-3">
+            <img 
+              src="/artist-tech-logo-new.jpeg" 
+              alt="Artist Tech" 
+              className="w-10 h-10 rounded-lg object-contain"
+            />
+            <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+              Artist Tech
+            </h1>
+          </div>
         </div>
         
         <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
@@ -177,9 +184,16 @@ export function MobileOptimizedLayout({ children }: MobileOptimizedLayoutProps) 
   const MobileHeader = () => (
     <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-md border-b border-gray-800">
       <div className="flex items-center justify-between h-14 px-4">
-        <h1 className="text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-          Artist Tech
-        </h1>
+        <div className="flex items-center space-x-2">
+          <img 
+            src="/artist-tech-logo-new.jpeg" 
+            alt="Artist Tech" 
+            className="w-8 h-8 rounded-lg object-contain"
+          />
+          <h1 className="text-lg font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+            Artist Tech
+          </h1>
+        </div>
         
         <div className="flex items-center gap-2">
           {/* Device-specific indicators */}
