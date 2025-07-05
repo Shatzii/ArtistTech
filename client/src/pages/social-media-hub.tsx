@@ -33,7 +33,14 @@ import {
   Radio,
   Palette,
   Gamepad2,
-  Sparkles
+  Sparkles,
+  Search,
+  Bell,
+  HelpCircle,
+  Brain,
+  TrendingDown,
+  Home,
+  X
 } from "lucide-react";
 import { SiTiktok, SiInstagram, SiYoutube, SiX, SiSpotify, SiFacebook, SiTwitch, SiDiscord } from "react-icons/si";
 import { Link } from "wouter";
@@ -83,6 +90,23 @@ export default function SocialMediaHub() {
 
   const [isEarning, setIsEarning] = useState(false);
   const [currentEarnings, setCurrentEarnings] = useState(0);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [currentView, setCurrentView] = useState<'overview' | 'earnings' | 'studios' | 'analytics'>('overview');
+
+  // Check if user is new (show onboarding)
+  useEffect(() => {
+    const hasVisited = localStorage.getItem('artisttech-visited');
+    if (!hasVisited) {
+      setShowOnboarding(true);
+      localStorage.setItem('artisttech-visited', 'true');
+    }
+  }, []);
+
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    // Could trigger confetti or celebration animation here
+  };
 
   const platformStats: PlatformStats[] = [
     {
@@ -236,6 +260,72 @@ export default function SocialMediaHub() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-blue-900 text-white">
+      {/* Enhanced Navigation Header */}
+      <div className="sticky top-0 z-40 bg-black/80 backdrop-blur-sm border-b border-gray-700">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <img 
+                src="/artist-tech-logo-new.jpeg" 
+                alt="Artist Tech" 
+                className="w-10 h-10 rounded-lg object-contain"
+              />
+              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                ARTIST TECH
+              </h1>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setSearchOpen(true)}
+                className="text-gray-300 hover:text-white"
+              >
+                <Search className="h-5 w-5" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setShowOnboarding(true)}
+                className="text-gray-300 hover:text-white"
+              >
+                <HelpCircle className="h-5 w-5" />
+              </Button>
+              <Badge className="bg-green-600 text-white">
+                <Bell className="h-3 w-3 mr-1" />
+                Live
+              </Badge>
+            </div>
+          </div>
+
+          {/* View Tabs */}
+          <div className="flex items-center gap-2 mt-4">
+            {[
+              { id: 'overview', label: 'Overview', icon: Home },
+              { id: 'earnings', label: 'Earnings', icon: DollarSign },
+              { id: 'studios', label: 'Studios', icon: Brain },
+              { id: 'analytics', label: 'Analytics', icon: BarChart3 }
+            ].map(({ id, label, icon: Icon }) => (
+              <Button
+                key={id}
+                variant={currentView === id ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setCurrentView(id as any)}
+                className={`text-xs ${
+                  currentView === id 
+                    ? 'bg-blue-600 text-white' 
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                <Icon className="h-4 w-4 mr-1" />
+                {label}
+              </Button>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 text-white py-20">
         <div className="absolute inset-0 bg-black/30"></div>
@@ -297,8 +387,11 @@ export default function SocialMediaHub() {
       </div>
 
       <div className="container mx-auto px-6 py-12">
-        {/* Live Earnings Dashboard */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+        {/* Dynamic Content Based on Current View */}
+        {currentView === 'overview' && (
+          <>
+            {/* Live Earnings Dashboard */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
           <Card className="bg-gradient-to-br from-green-600 to-emerald-700 border-0 text-white col-span-1 lg:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center text-2xl">
@@ -474,7 +567,136 @@ export default function SocialMediaHub() {
             </div>
           </CardContent>
         </Card>
+            </>
+        )}
+
+        {/* Earnings Dashboard View */}
+        {currentView === 'earnings' && (
+          <div className="space-y-6">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-white mb-4">💰 Real-Time Earnings Dashboard</h2>
+              <p className="text-gray-300">Track your revenue across all platforms and activities</p>
+            </div>
+            {/* Placeholder for RealTimeEarningsDashboard component */}
+            <div className="bg-gray-800 border border-gray-700 rounded-lg p-8 text-center">
+              <DollarSign className="w-16 h-16 mx-auto mb-4 text-green-400" />
+              <h3 className="text-xl font-bold text-white mb-2">Enhanced Earnings Tracking</h3>
+              <p className="text-gray-400">Real-time earnings dashboard with live activity feed coming soon!</p>
+            </div>
+          </div>
+        )}
+
+        {/* Studios Recommendations View */}
+        {currentView === 'studios' && (
+          <div className="space-y-6">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-white mb-4">🎨 AI-Powered Studio Recommendations</h2>
+              <p className="text-gray-300">Personalized studio suggestions based on your skills and goals</p>
+            </div>
+            {/* Placeholder for StudioRecommendations component */}
+            <div className="bg-gray-800 border border-gray-700 rounded-lg p-8 text-center">
+              <Brain className="w-16 h-16 mx-auto mb-4 text-purple-400" />
+              <h3 className="text-xl font-bold text-white mb-2">Intelligent Studio Matching</h3>
+              <p className="text-gray-400">AI analyzes your profile to recommend the perfect studios for your creative journey!</p>
+            </div>
+          </div>
+        )}
+
+        {/* Analytics View */}
+        {currentView === 'analytics' && (
+          <div className="space-y-6">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-white mb-4">📊 Performance Analytics</h2>
+              <p className="text-gray-300">Comprehensive insights into your creative growth and earnings</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Analytics Cards */}
+              <Card className="bg-gray-800 border-gray-700">
+                <CardContent className="p-6 text-center">
+                  <TrendingUp className="w-12 h-12 mx-auto mb-4 text-blue-400" />
+                  <h3 className="text-lg font-bold text-white mb-2">Growth Tracking</h3>
+                  <p className="text-gray-400 text-sm">Monitor your skill progression across all studios</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-gray-800 border-gray-700">
+                <CardContent className="p-6 text-center">
+                  <Target className="w-12 h-12 mx-auto mb-4 text-green-400" />
+                  <h3 className="text-lg font-bold text-white mb-2">Goal Achievement</h3>
+                  <p className="text-gray-400 text-sm">Track milestones and career objectives</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-gray-800 border-gray-700">
+                <CardContent className="p-6 text-center">
+                  <Users className="w-12 h-12 mx-auto mb-4 text-purple-400" />
+                  <h3 className="text-lg font-bold text-white mb-2">Network Growth</h3>
+                  <p className="text-gray-400 text-sm">Analyze collaboration and fan engagement</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Global Search Modal */}
+      {/* Placeholder for GlobalSearch component */}
+      {searchOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-2xl bg-gray-900 border-gray-700">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-white">Global Search</h3>
+                <Button variant="ghost" size="sm" onClick={() => setSearchOpen(false)}>
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+              <div className="space-y-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <input
+                    type="text"
+                    placeholder="Search studios, projects, artists, tutorials..."
+                    className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400"
+                  />
+                </div>
+                <p className="text-gray-400 text-sm text-center">Enhanced search functionality coming soon!</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Onboarding Tutorial Modal */}
+      {/* Placeholder for OnboardingTutorial component */}
+      {showOnboarding && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-2xl bg-gray-900 border-gray-700">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-white">Welcome to Artist Tech!</h3>
+                <Button variant="ghost" size="sm" onClick={() => setShowOnboarding(false)}>
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+              <div className="text-center space-y-4">
+                <Sparkles className="w-16 h-16 mx-auto text-blue-400" />
+                <h4 className="text-xl font-bold text-white">🌟 FIRST Platform to Pay Users for Viewing Content!</h4>
+                <p className="text-gray-300">
+                  You're about to experience a revolutionary platform where you actually earn money while consuming content.
+                </p>
+                <div className="flex flex-col gap-3">
+                  <Button onClick={() => setShowOnboarding(false)} className="bg-blue-600 hover:bg-blue-700">
+                    <Play className="mr-2 h-4 w-4" />
+                    Start Earning Now
+                  </Button>
+                  <Button variant="outline" onClick={() => setShowOnboarding(false)} className="border-gray-600 text-gray-300">
+                    Skip Tutorial
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,10 +1,10 @@
 import { ReactNode, useEffect, useState } from 'react';
-import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Home, Music, Video, Users, Coins, Settings, X } from 'lucide-react';
+import { Menu, Home, Music, Video, Users, Coins, Settings, X, Search, Bell, Zap, HelpCircle } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { cn } from '@/lib/utils';
+import GlobalSearch from './GlobalSearch';
+import OnboardingTutorial from './OnboardingTutorial';
 
 interface MobileOptimizedLayoutProps {
   children: ReactNode;
@@ -15,6 +15,9 @@ export function MobileOptimizedLayout({ children }: MobileOptimizedLayoutProps) 
   const [location] = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   // PWA Installation prompt
   useEffect(() => {
