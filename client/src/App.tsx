@@ -1,6 +1,7 @@
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Landing from "./pages/landing";
 import DJStudio from "./pages/dj-studio";
 import SimpleVotingDemo from "./pages/simple-voting-demo";
@@ -36,44 +37,69 @@ import GlobalDashboard from "./pages/global-dashboard";
 import ArtistFanEngagement from "./pages/artist-fan-engagement";
 
 function AuthenticatedRouter() {
+  const { isAuthenticated, isLoading, user } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-blue-900 flex items-center justify-center">
+        <div className="text-white text-xl">Loading Artist Tech Platform...</div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <main>
         <Switch>
-          <Route path="/" component={SocialMediaHub} />
+          {/* Public Routes */}
           <Route path="/landing" component={Landing} />
           <Route path="/login" component={UserLogin} />
           <Route path="/admin-login" component={AdminLogin} />
-          <Route path="/admin" component={AdminDashboard} />
-          <Route path="/cms-admin" component={CMSAdmin} />
-          <Route path="/dj" component={UltimateDJStudio} />
-          <Route path="/dj-studio" component={UltimateDJStudio} />
-          <Route path="/music-studio" component={UltimateMusicStudio} />
-          <Route path="/video-studio" component={VideoStudio} />
-          <Route path="/visual-studio" component={VisualStudio} />
-          <Route path="/collaborative-studio" component={CollaborativeStudio} />
-          <Route path="/nft-marketplace" component={NFTMarketplace} />
-          <Route path="/podcast-studio" component={PodcastStudio} />
-          <Route path="/ai-career-manager" component={AICareerManager} />
-          <Route path="/ai-career-dashboard" component={AICareerDashboard} />
-          <Route path="/producer-revenue" component={ProducerRevenueDashboard} />
-          <Route path="/social-media-deployment" component={SocialMediaDeployment} />
-          <Route path="/midi-controller" component={MIDIController} />
-          <Route path="/professional-instruments" component={ProfessionalInstruments} />
-          <Route path="/genre-remixer" component={GenreRemixer} />
-          <Route path="/artist-collaboration" component={ArtistCollaboration} />
-          <Route path="/advanced-video-editor" component={AdvancedVideoEditor} />
-          <Route path="/social-media-dashboard" component={SocialMediaDashboard} />
-          <Route path="/social-media-studio" component={SocialMediaStudio} />
-          <Route path="/social-media-hub" component={SocialMediaHub} />
-          <Route path="/artistcoin-viral" component={ArtistCoinViralDashboard} />
-          <Route path="/global-dashboard" component={GlobalDashboard} />
-          <Route path="/artist-fan-engagement" component={ArtistFanEngagement} />
-          <Route path="/ultimate-music-studio" component={UltimateMusicStudio} />
-          <Route path="/ultimate-dj-studio" component={UltimateDJStudio} />
-          <Route path="/enterprise-management" component={EnterpriseManagement} />
-          <Route path="/voting" component={SimpleVotingDemo} />
           <Route path="/enhanced" component={EnhancedLanding} />
+          
+          {/* Protected Routes - Main Hub */}
+          <Route path="/" component={isAuthenticated ? SocialMediaHub : UserLogin} />
+          <Route path="/social-media-hub" component={isAuthenticated ? SocialMediaHub : UserLogin} />
+          
+          {/* Studio Routes - All require authentication */}
+          <Route path="/dj" component={isAuthenticated ? UltimateDJStudio : UserLogin} />
+          <Route path="/dj-studio" component={isAuthenticated ? UltimateDJStudio : UserLogin} />
+          <Route path="/music-studio" component={isAuthenticated ? UltimateMusicStudio : UserLogin} />
+          <Route path="/ultimate-music-studio" component={isAuthenticated ? UltimateMusicStudio : UserLogin} />
+          <Route path="/ultimate-dj-studio" component={isAuthenticated ? UltimateDJStudio : UserLogin} />
+          <Route path="/video-studio" component={isAuthenticated ? VideoStudio : UserLogin} />
+          <Route path="/visual-studio" component={isAuthenticated ? VisualStudio : UserLogin} />
+          <Route path="/collaborative-studio" component={isAuthenticated ? CollaborativeStudio : UserLogin} />
+          <Route path="/podcast-studio" component={isAuthenticated ? PodcastStudio : UserLogin} />
+          <Route path="/advanced-video-editor" component={isAuthenticated ? AdvancedVideoEditor : UserLogin} />
+          
+          {/* AI & Professional Tools */}
+          <Route path="/ai-career-manager" component={isAuthenticated ? AICareerManager : UserLogin} />
+          <Route path="/ai-career-dashboard" component={isAuthenticated ? AICareerDashboard : UserLogin} />
+          <Route path="/producer-revenue" component={isAuthenticated ? ProducerRevenueDashboard : UserLogin} />
+          <Route path="/midi-controller" component={isAuthenticated ? MIDIController : UserLogin} />
+          <Route path="/professional-instruments" component={isAuthenticated ? ProfessionalInstruments : UserLogin} />
+          <Route path="/genre-remixer" component={isAuthenticated ? GenreRemixer : UserLogin} />
+          <Route path="/artist-collaboration" component={isAuthenticated ? ArtistCollaboration : UserLogin} />
+          
+          {/* Social Media & Engagement */}
+          <Route path="/social-media-deployment" component={isAuthenticated ? SocialMediaDeployment : UserLogin} />
+          <Route path="/social-media-dashboard" component={isAuthenticated ? SocialMediaDashboard : UserLogin} />
+          <Route path="/social-media-studio" component={isAuthenticated ? SocialMediaStudio : UserLogin} />
+          <Route path="/artistcoin-viral" component={isAuthenticated ? ArtistCoinViralDashboard : UserLogin} />
+          <Route path="/artist-fan-engagement" component={isAuthenticated ? ArtistFanEngagement : UserLogin} />
+          
+          {/* Marketplace & Business */}
+          <Route path="/nft-marketplace" component={isAuthenticated ? NFTMarketplace : UserLogin} />
+          <Route path="/global-dashboard" component={isAuthenticated ? GlobalDashboard : UserLogin} />
+          <Route path="/voting" component={isAuthenticated ? SimpleVotingDemo : UserLogin} />
+          
+          {/* Admin Routes - Require admin role */}
+          <Route path="/admin" component={isAuthenticated && user?.role === 'admin' ? AdminDashboard : UserLogin} />
+          <Route path="/cms-admin" component={isAuthenticated && user?.role === 'admin' ? CMSAdmin : UserLogin} />
+          <Route path="/enterprise-management" component={isAuthenticated && user?.role === 'admin' ? EnterpriseManagement : UserLogin} />
+          
+          {/* 404 */}
           <Route component={NotFound} />
         </Switch>
       </main>
@@ -84,7 +110,9 @@ function AuthenticatedRouter() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthenticatedRouter />
+      <AuthProvider>
+        <AuthenticatedRouter />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

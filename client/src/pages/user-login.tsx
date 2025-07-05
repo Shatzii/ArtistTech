@@ -1,25 +1,36 @@
 import { useState } from 'react';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { User, Lock, Mail, Eye, EyeOff, Music, Video, Palette, Headphones } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function UserLogin() {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('user@artisttech.com');
+  const [password, setPassword] = useState('demo123');
   const [name, setName] = useState('');
   const [loginError, setLoginError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
+  const [, setLocation] = useLocation();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
+    setIsLoading(true);
     
-    // User authentication check
-    if (email === 'user@artisttech.com' && password === 'demo123') {
-      // Successful user login - redirect to DJ studio
-      window.location.href = '/dj';
-    } else {
-      setLoginError('Invalid credentials. Use: user@artisttech.com / demo123');
+    try {
+      const success = await login(email, password);
+      if (success) {
+        // Redirect to main hub after successful login
+        setLocation('/');
+      } else {
+        setLoginError('Invalid credentials. Try: user@artisttech.com / demo123 or admin@artisttech.com / admin2024!');
+      }
+    } catch (error) {
+      setLoginError('Login failed. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -38,13 +49,13 @@ export default function UserLogin() {
           <div className="max-w-md">
             <div className="flex items-center space-x-3 mb-8">
               <img 
-                src="/assets/artist-tech-logo.jpeg" 
+                src="/artist-tech-logo-new.jpeg" 
                 alt="Artist Tech" 
                 className="w-12 h-12 rounded-lg object-cover"
               />
               <div>
                 <h1 className="text-2xl font-bold">Artist Tech</h1>
-                <p className="text-white/60">Creative Studio Platform</p>
+                <p className="text-white/60">Connect, Create, Collab, Cash Out</p>
               </div>
             </div>
 
@@ -178,9 +189,10 @@ export default function UserLogin() {
 
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 px-4 rounded-lg font-medium hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105"
+                  disabled={isLoading}
+                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 px-4 rounded-lg font-medium hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
-                  {isLogin ? 'Sign In' : 'Create Account'}
+                  {isLoading ? 'Signing In...' : (isLogin ? 'Sign In' : 'Create Account')}
                 </button>
 
                 <div className="relative">

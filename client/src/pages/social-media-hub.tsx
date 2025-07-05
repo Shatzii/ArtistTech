@@ -40,10 +40,13 @@ import {
   Brain,
   TrendingDown,
   Home,
-  X
+  X,
+  LogOut,
+  User
 } from "lucide-react";
 import { SiTiktok, SiInstagram, SiYoutube, SiX, SiSpotify, SiFacebook, SiTwitch, SiDiscord } from "react-icons/si";
 import { Link } from "wouter";
+import { useAuth } from "../contexts/AuthContext";
 
 // Revolutionary Social Media Hub - The First Platform That Pays to View Content
 
@@ -78,6 +81,7 @@ interface StudioFeature {
 }
 
 export default function SocialMediaHub() {
+  const { user, logout } = useAuth();
   const [rewardMetrics, setRewardMetrics] = useState<RewardMetrics>({
     totalEarned: 2847.32,
     viewingRewards: 1523.45,
@@ -296,6 +300,28 @@ export default function SocialMediaHub() {
                 <Bell className="h-3 w-3 mr-1" />
                 Live
               </Badge>
+
+              {/* User Menu */}
+              <div className="flex items-center gap-2 ml-2 pl-2 border-l border-gray-600">
+                <div className="flex items-center gap-2">
+                  <User className="h-5 w-5 text-blue-400" />
+                  <span className="text-sm text-gray-300 hidden sm:inline">
+                    {user?.email || 'User'}
+                  </span>
+                  {user?.role === 'admin' && (
+                    <Badge className="bg-purple-600 text-xs">ADMIN</Badge>
+                  )}
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={logout}
+                  className="text-gray-300 hover:text-red-400"
+                  title="Logout"
+                >
+                  <LogOut className="h-5 w-5" />
+                </Button>
+              </div>
             </div>
           </div>
 
