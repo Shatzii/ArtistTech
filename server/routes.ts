@@ -35,6 +35,10 @@ import { artistCollaborationEngine } from "./artist-collaboration-engine";
 import { premiumPodcastEngine } from "./premium-podcast-engine";
 import { professionalVideoEngine } from "./professional-video-engine";
 import { artistCoinEngine } from "./artistcoin-engine";
+import aiCareerRoutes from "./routes/ai-career";
+import artistcoinRoutes from "./routes/artistcoin";
+import genreRemixerRoutes from "./routes/genre-remixer";
+import collaborationRoutes from "./routes/collaboration";
 import { insertProjectSchema, insertAudioFileSchema, insertVideoFileSchema } from "../shared/schema";
 import multer from "multer";
 import path from "path";
@@ -7228,6 +7232,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'Profile fetch failed', message: error.message });
     }
   });
+
+  // Register new API routes
+  app.use('/api/ai-career', aiCareerRoutes);
+  app.use('/api/artistcoin', artistcoinRoutes);
+  app.use('/api/genre-remixer', genreRemixerRoutes);
+  app.use('/api/collaboration', collaborationRoutes);
 
   return httpServer;
 }

@@ -15,7 +15,7 @@ import CollaborativeStudio from "./pages/collaborative-studio";
 import CollaborativeDemo from "./pages/collaborative-demo";
 import NFTMarketplace from "./pages/nft-marketplace";
 import PodcastStudio from "./pages/podcast-studio";
-import AICareerManager from "./pages/ai-career-manager";
+// AI Career Manager uses ai-career-dashboard component
 import AICareerDashboard from "./pages/ai-career-dashboard";
 import ProducerRevenueDashboard from "./pages/producer-revenue-dashboard";
 import SocialMediaDeployment from "./pages/social-media-deployment";
@@ -34,6 +34,7 @@ import SocialMediaDashboard from "./pages/social-media-dashboard";
 import SocialMediaStudio from "./pages/social-media-studio";
 import SocialMediaHub from "./pages/social-media-hub";
 import ArtistCoinViralDashboard from "./pages/artistcoin-viral-dashboard";
+import ArtistCoinHub from "./pages/artistcoin-hub";
 import GlobalDashboard from "./pages/global-dashboard";
 import ArtistFanEngagement from "./pages/artist-fan-engagement";
 
@@ -76,7 +77,7 @@ function AuthenticatedRouter() {
           <Route path="/advanced-video-editor" component={isAuthenticated ? AdvancedVideoEditor : UserLogin} />
           
           {/* AI & Professional Tools */}
-          <Route path="/ai-career-manager" component={isAuthenticated ? AICareerManager : UserLogin} />
+          <Route path="/ai-career-manager" component={isAuthenticated ? AICareerDashboard : UserLogin} />
           <Route path="/ai-career-dashboard" component={isAuthenticated ? AICareerDashboard : UserLogin} />
           <Route path="/producer-revenue" component={isAuthenticated ? ProducerRevenueDashboard : UserLogin} />
           <Route path="/midi-controller" component={isAuthenticated ? MIDIController : UserLogin} />
@@ -89,6 +90,7 @@ function AuthenticatedRouter() {
           <Route path="/social-media-dashboard" component={isAuthenticated ? SocialMediaDashboard : UserLogin} />
           <Route path="/social-media-studio" component={isAuthenticated ? SocialMediaStudio : UserLogin} />
           <Route path="/artistcoin-viral" component={isAuthenticated ? ArtistCoinViralDashboard : UserLogin} />
+          <Route path="/artistcoin-hub" component={isAuthenticated ? ArtistCoinHub : UserLogin} />
           <Route path="/artist-fan-engagement" component={isAuthenticated ? ArtistFanEngagement : UserLogin} />
           
           {/* Marketplace & Business */}
