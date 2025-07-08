@@ -4,23 +4,23 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Landing from "./pages/landing";
 import DJStudio from "./pages/dj-studio";
-import SimpleVotingDemo from "./pages/simple-voting-demo";
+
 import AdminDashboard from "./pages/admin-dashboard";
 import AdminLogin from "./pages/admin-login";
 import UserLogin from "./pages/user-login";
-import VideoStudio from "./pages/video-studio";
-import VisualStudio from "./pages/visual-studio";
+
+
 import MusicStudio from "./pages/music-studio";
-import CollaborativeStudio from "./pages/collaborative-studio";
+
 import CollaborativeDemo from "./pages/collaborative-demo";
 import NFTMarketplace from "./pages/nft-marketplace";
 import PodcastStudio from "./pages/podcast-studio";
 // AI Career Manager uses ai-career-dashboard component
 import AICareerDashboard from "./pages/ai-career-dashboard";
-import ProducerRevenueDashboard from "./pages/producer-revenue-dashboard";
-import SocialMediaDeployment from "./pages/social-media-deployment";
+
+
 import NotFound from "./pages/not-found";
-import UltimateMusicStudio from "./pages/ultimate-music-studio";
+
 import UltimateDJStudio from "./pages/ultimate-dj-studio";
 import UltimateDJSuite from "./pages/ultimate-dj-suite";
 import CareerManagement from "./pages/career-management";
@@ -28,22 +28,17 @@ import SocialMediaManagement from "./pages/social-media-management";
 import EducationManagement from "./pages/education-management";
 import AdminControlCenter from "./pages/admin-control-center";
 import AuthenticationSuite from "./pages/authentication-suite";
-import MIDIController from "./pages/midi-controller";
-import ProfessionalInstruments from "./pages/professional-instruments";
+
 import GenreRemixer from "./pages/genre-remixer";
 import ArtistCollaboration from "./pages/artist-collaboration";
-import AdvancedVideoEditor from "./pages/advanced-video-editor";
+
 import EnhancedLanding from "./pages/enhanced-landing";
-import SocialMediaDashboard from "./pages/social-media-dashboard";
-import SocialMediaStudio from "./pages/social-media-studio";
 import SocialMediaHub from "./pages/social-media-hub";
-import ArtistCoinViralDashboard from "./pages/artistcoin-viral-dashboard";
-import ArtistCoinHub from "./pages/artistcoin-hub";
-import GlobalDashboard from "./pages/global-dashboard";
-import ArtistFanEngagement from "./pages/artist-fan-engagement";
 import UltimateSocialSuite from "./pages/ultimate-social-suite";
 import CreativeStudiosHub from "./pages/creative-studios-hub";
 import MonetizationHub from "./pages/monetization-hub";
+import ProfessionalToolsSuite from "./pages/professional-tools-suite";
+import AnalyticsBusinessSuite from "./pages/analytics-business-suite";
 
 function AuthenticatedRouter() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -83,22 +78,21 @@ function AuthenticatedRouter() {
           <Route path="/dj" component={isUserAuthenticated ? UltimateDJSuite : AuthenticationSuite} />
           <Route path="/dj-studio" component={isUserAuthenticated ? UltimateDJSuite : AuthenticationSuite} />
           <Route path="/ultimate-dj-studio" component={isUserAuthenticated ? UltimateDJSuite : AuthenticationSuite} />
-          <Route path="/music-studio" component={isUserAuthenticated ? UltimateMusicStudio : AuthenticationSuite} />
-          <Route path="/ultimate-music-studio" component={isUserAuthenticated ? UltimateMusicStudio : AuthenticationSuite} />
-          <Route path="/video-studio" component={isUserAuthenticated ? VideoStudio : AuthenticationSuite} />
-          <Route path="/visual-studio" component={isUserAuthenticated ? VisualStudio : AuthenticationSuite} />
-          <Route path="/collaborative-studio" component={isUserAuthenticated ? CollaborativeStudio : AuthenticationSuite} />
+          <Route path="/music-studio" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
+          <Route path="/ultimate-music-studio" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
+          <Route path="/video-studio" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
+          <Route path="/visual-studio" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
+          <Route path="/collaborative-studio" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
           <Route path="/collaborative-demo" component={CollaborativeDemo} />
           <Route path="/podcast-studio" component={isUserAuthenticated ? PodcastStudio : AuthenticationSuite} />
-          <Route path="/advanced-video-editor" component={isUserAuthenticated ? AdvancedVideoEditor : AuthenticationSuite} />
+          <Route path="/advanced-video-editor" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
           
           {/* AI & Professional Tools - Unified */}
           <Route path="/ai-career-manager" component={isUserAuthenticated ? CareerManagement : AuthenticationSuite} />
           <Route path="/ai-career-dashboard" component={isUserAuthenticated ? CareerManagement : AuthenticationSuite} />
           <Route path="/career-management" component={isUserAuthenticated ? CareerManagement : AuthenticationSuite} />
-          <Route path="/producer-revenue" component={isUserAuthenticated ? ProducerRevenueDashboard : AuthenticationSuite} />
-          <Route path="/midi-controller" component={isUserAuthenticated ? MIDIController : AuthenticationSuite} />
-          <Route path="/professional-instruments" component={isUserAuthenticated ? ProfessionalInstruments : AuthenticationSuite} />
+          <Route path="/producer-revenue" component={isUserAuthenticated ? MonetizationHub : AuthenticationSuite} />
+
           <Route path="/genre-remixer" component={isUserAuthenticated ? GenreRemixer : AuthenticationSuite} />
           <Route path="/artist-collaboration" component={isUserAuthenticated ? ArtistCollaboration : AuthenticationSuite} />
           
@@ -107,14 +101,25 @@ function AuthenticatedRouter() {
           <Route path="/social-media-deployment" component={isUserAuthenticated ? SocialMediaManagement : AuthenticationSuite} />
           <Route path="/social-media-dashboard" component={isUserAuthenticated ? SocialMediaManagement : AuthenticationSuite} />
           <Route path="/social-media-studio" component={isUserAuthenticated ? SocialMediaManagement : AuthenticationSuite} />
-          <Route path="/artistcoin-viral" component={isUserAuthenticated ? ArtistCoinViralDashboard : AuthenticationSuite} />
-          <Route path="/artistcoin-hub" component={isUserAuthenticated ? ArtistCoinHub : AuthenticationSuite} />
-          <Route path="/artist-fan-engagement" component={isUserAuthenticated ? ArtistFanEngagement : AuthenticationSuite} />
+          <Route path="/artistcoin-viral" component={isUserAuthenticated ? MonetizationHub : AuthenticationSuite} />
           
           {/* Phase 3 Unified Suites */}
           <Route path="/ultimate-social-suite" component={isUserAuthenticated ? UltimateSocialSuite : AuthenticationSuite} />
           <Route path="/creative-studios-hub" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
           <Route path="/monetization-hub" component={isUserAuthenticated ? MonetizationHub : AuthenticationSuite} />
+          <Route path="/professional-tools-suite" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
+          <Route path="/analytics-business-suite" component={isUserAuthenticated ? AnalyticsBusinessSuite : AuthenticationSuite} />
+          
+          {/* Consolidated Routes - Phase 3 */}
+          <Route path="/social-media-hub" component={isUserAuthenticated ? UltimateSocialSuite : AuthenticationSuite} />
+          <Route path="/ultimate-music-studio" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
+          <Route path="/artistcoin-hub" component={isUserAuthenticated ? MonetizationHub : AuthenticationSuite} />
+          <Route path="/midi-controller" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
+          <Route path="/professional-instruments" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
+          <Route path="/advanced-video-editor" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
+          <Route path="/global-dashboard" component={isUserAuthenticated ? AnalyticsBusinessSuite : AuthenticationSuite} />
+          <Route path="/artist-fan-engagement" component={isUserAuthenticated ? AnalyticsBusinessSuite : AuthenticationSuite} />
+          <Route path="/voting" component={isUserAuthenticated ? AnalyticsBusinessSuite : AuthenticationSuite} />
           
           {/* Education & Learning - Unified */}
           <Route path="/education" component={isUserAuthenticated ? EducationManagement : AuthenticationSuite} />
@@ -126,8 +131,8 @@ function AuthenticatedRouter() {
           
           {/* Marketplace & Business */}
           <Route path="/nft-marketplace" component={isUserAuthenticated ? NFTMarketplace : AuthenticationSuite} />
-          <Route path="/global-dashboard" component={isUserAuthenticated ? GlobalDashboard : AuthenticationSuite} />
-          <Route path="/voting" component={isUserAuthenticated ? SimpleVotingDemo : AuthenticationSuite} />
+          <Route path="/global-dashboard" component={isUserAuthenticated ? AnalyticsBusinessSuite : AuthenticationSuite} />
+          <Route path="/voting" component={isUserAuthenticated ? AnalyticsBusinessSuite : AuthenticationSuite} />
           
           {/* Admin Routes - Require admin role - Unified */}
           <Route path="/admin" component={isUserAuthenticated ? AdminControlCenter : AuthenticationSuite} />

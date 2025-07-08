@@ -232,33 +232,78 @@ export default function CreativeStudiosHub() {
 
               <Card className="bg-white/10 border-green-400/30">
                 <CardHeader>
-                  <CardTitle className="text-white">Track Mixer</CardTitle>
+                  <CardTitle className="text-white">Professional Tools Suite</CardTitle>
+                  <CardDescription className="text-gray-300">
+                    Hardware integration and professional instruments
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {audioTracks.map((track) => (
-                      <div key={track.id} className="flex items-center gap-3 p-2 bg-white/5 rounded">
-                        <div className="flex-1 text-sm">
-                          <div className="text-white">{track.name}</div>
-                          <div className="text-gray-400 text-xs">{track.length}</div>
+                  <div className="space-y-4">
+                    {/* MIDI Controllers */}
+                    <div className="space-y-2">
+                      <div className="text-sm text-white font-medium">MIDI Controllers</div>
+                      <div className="grid grid-cols-1 gap-2">
+                        <div className="p-2 bg-white/5 rounded">
+                          <div className="flex justify-between items-center">
+                            <div className="text-white text-sm">Traktor Kontrol S4</div>
+                            <Badge className="bg-green-600 text-xs">Connected</Badge>
+                          </div>
+                          <div className="text-xs text-gray-400">4 channels • Battery: 87%</div>
+                          <Progress value={87} className="h-1 mt-1" />
                         </div>
-                        <Button 
-                          size="sm" 
-                          variant={track.muted ? "default" : "outline"}
-                          className="w-8 h-8 p-0"
-                        >
-                          M
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant={track.solo ? "default" : "outline"}
-                          className="w-8 h-8 p-0"
-                        >
-                          S
-                        </Button>
-                        <div className="w-16 text-xs text-gray-300 text-center">{track.volume}</div>
+                        <div className="p-2 bg-white/5 rounded">
+                          <div className="flex justify-between items-center">
+                            <div className="text-white text-sm">Pioneer DDJ-SB3</div>
+                            <Badge className="bg-green-600 text-xs">Connected</Badge>
+                          </div>
+                          <div className="text-xs text-gray-400">2 channels • Battery: 92%</div>
+                          <Progress value={92} className="h-1 mt-1" />
+                        </div>
+                        <div className="p-2 bg-white/5 rounded">
+                          <div className="flex justify-between items-center">
+                            <div className="text-white text-sm">Akai MPC One</div>
+                            <Badge className="bg-gray-600 text-xs">Available</Badge>
+                          </div>
+                          <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-xs mt-1 w-full">
+                            Connect
+                          </Button>
+                        </div>
                       </div>
-                    ))}
+                    </div>
+                    
+                    {/* Professional Instruments */}
+                    <div className="space-y-2">
+                      <div className="text-sm text-white font-medium">Virtual Instruments</div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-xs">
+                          Serum Synth
+                        </Button>
+                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-xs">
+                          Massive X
+                        </Button>
+                        <Button size="sm" className="bg-green-600 hover:bg-green-700 text-xs">
+                          Pro-Q 3 EQ
+                        </Button>
+                        <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-xs">
+                          Kontakt 7
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {/* Track Mixer */}
+                    <div className="space-y-2">
+                      <div className="text-sm text-white font-medium">Track Mixer</div>
+                      <div className="space-y-1">
+                        {audioTracks.map((track) => (
+                          <div key={track.id} className="flex items-center gap-2 p-1 bg-white/5 rounded text-xs">
+                            <div className="flex-1 text-white">{track.name}</div>
+                            <Button size="sm" variant={track.muted ? "default" : "outline"} className="w-6 h-6 p-0 text-xs">M</Button>
+                            <Button size="sm" variant={track.solo ? "default" : "outline"} className="w-6 h-6 p-0 text-xs">S</Button>
+                            <div className="w-12 text-xs text-gray-300 text-center">{track.volume}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
