@@ -169,14 +169,14 @@ export default function Landing() {
               </div>
             </Link>
 
-            <Link href="/ai-career-dashboard" className="group">
+            <Link href="/ai-career-manager" className="group">
               <div className="bg-gradient-to-br from-purple-800/50 to-pink-800/50 border border-purple-500/30 rounded-xl p-6 hover:border-purple-400 transition-all transform hover:scale-105 cursor-pointer">
                 <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-400 transition-colors">
                   <BarChart3 className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">AI Career Manager</h3>
-                <p className="text-sm text-gray-300 mb-3">Analytics, marketing automation, revenue optimization</p>
-                <div className="text-xs text-purple-400 font-semibold">→ BOOST CAREER</div>
+                <p className="text-sm text-gray-300 mb-3">4 AI Agents • Marketing automation • Revenue optimization • Real-time analytics</p>
+                <div className="text-xs text-purple-400 font-semibold">→ COMPLETE AI CAREER SUITE</div>
               </div>
             </Link>
 

@@ -6636,6 +6636,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Career Hub Route
+  app.get("/career-hub", (req, res) => {
+    res.send("Career Management Hub");
+  });
+
   // AI Career Manager APIs - Full Functionality (No Auth Required for Demo)
   app.get("/api/career/profile", async (req, res) => {
     try {

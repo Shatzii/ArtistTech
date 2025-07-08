@@ -218,10 +218,10 @@ export default function SocialMediaHub() {
     {
       id: "ai-career",
       name: "AI Career Manager",
-      description: "Analytics automation, marketing AI, revenue optimization",
+      description: "4 AI Agents • Complete career automation • Real-time analytics",
       icon: BarChart3,
       color: "from-indigo-600 to-purple-600",
-      route: "/ai-career-dashboard",
+      route: "/ai-career-manager",
       badge: "AI"
     },
     {
