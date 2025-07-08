@@ -17,6 +17,9 @@ import { ultraImageCreatorEngine } from "./ultra-image-creator-engine";
 import { socialMediaSamplingEngine } from "./social-media-sampling-engine";
 import { interactiveDJVotingEngine } from "./interactive-dj-voting-engine";
 import { professionalVideoEngine } from "./professional-video-engine";
+import './artistcoin-viral-engine';
+import './social-media-sampling-engine';
+import './viral-sharing-engine';
 import "./database-migration-fix";
 
 const app = express();
@@ -26,7 +29,7 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  
+
   if (req.method === 'OPTIONS') {
     res.sendStatus(200);
   } else {

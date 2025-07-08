@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { 
@@ -18,7 +18,7 @@ import {
   Globe,
   MessageCircle,
   Heart,
-  Share,
+  Share as Share2,
   BarChart3,
   Clock,
   Gift,
@@ -238,7 +238,7 @@ export default function SocialMediaHub() {
   // Live earning simulation
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    
+
     if (isEarning) {
       interval = setInterval(() => {
         setCurrentEarnings(prev => prev + Math.random() * 0.05);
@@ -366,15 +366,15 @@ export default function SocialMediaHub() {
               ARTIST TECH
             </h1>
           </div>
-          
+
           <h2 className="text-2xl md:text-4xl font-bold mb-4">
             🌟 FIRST PLATFORM TO PAY USERS FOR VIEWING CONTENT 🌟
           </h2>
-          
+
           <p className="text-lg md:text-xl mb-8 max-w-4xl mx-auto text-cyan-100">
             Revolutionary "pay-to-view" model disrupts traditional social media. Earn ArtistCoins every minute you spend consuming content!
           </p>
-          
+
           <div className="flex items-center justify-center space-x-8 mb-8">
             <Badge className="bg-green-600 text-white px-6 py-3 text-lg">
               <DollarSign className="mr-2" />
@@ -385,7 +385,7 @@ export default function SocialMediaHub() {
               🔥 {rewardMetrics.dailyStreak} Day Streak
             </Badge>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
             <Button 
               onClick={toggleEarning}
@@ -402,7 +402,7 @@ export default function SocialMediaHub() {
                 </>
               )}
             </Button>
-            
+
             <Link href="/artistcoin-viral">
               <Button size="lg" className="px-8 py-4 text-lg font-bold bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600">
                 <Coins className="mr-2 animate-spin" /> ArtistCoin Hub
@@ -507,7 +507,7 @@ export default function SocialMediaHub() {
               Professional-grade tools that replace entire industry software suites - all in one platform
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {studioFeatures.map((studio) => (
               <Link key={studio.id} href={studio.route}>
