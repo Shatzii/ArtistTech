@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   Play, Pause, Square, Volume2, Music, Mic, 
   Upload, Save, Share2, Plus, Trash2, Settings,
-  Layers, Sliders, Filter, Zap, Download
+  Layers, Sliders, Filter, Zap, Download, Users
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -11,6 +11,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import Waveform from './Waveform';
 import { useAudioEngine } from '@/hooks/useAudioEngine';
+import { useCollaborativeSession } from '@/hooks/useCollaborativeSession';
+import CollaborativePanel from './CollaborativePanel';
+import CollaborativeCursor from './CollaborativeCursor';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 
@@ -57,9 +60,22 @@ export default function MusicStudioInterface() {
   const [isRecording, setIsRecording] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState<string>('1');
   const [showUpload, setShowUpload] = useState(false);
+  const [showCollaboration, setShowCollaboration] = useState(true);
 
   const audioEngine = useAudioEngine();
   const queryClient = useQueryClient();
+
+  // Collaborative session
+  const projectId = "demo-project-1"; // In real app, this would come from props or URL
+  const containerRef = useRef<HTMLDivElement>(null);
+  const {
+    session,
+    isConnected,
+    connectionError,
+    sendEdit,
+    updateCursor,
+    selectTrack: selectCollaborativeTrack
+  } = useCollaborativeSession(projectId);
 
   // Fetch user's audio tracks
   const { data: userTracks = [] } = useQuery({
@@ -85,6 +101,22 @@ export default function MusicStudioInterface() {
         track.id === trackId ? { ...track, ...updates } : track
       )
     }));
+
+    // Send collaborative edit
+    if (updates.volume !== undefined) {
+      sendEdit({
+        type: 'volume_change',
+        trackId: parseInt(trackId),
+        data: { volume: updates.volume }
+      });
+    }
+    if (updates.effects) {
+      sendEdit({
+        type: 'effect_change',
+        trackId: parseInt(trackId),
+        data: { effects: updates.effects }
+      });
+    }
   };
 
   const addTrack = () => {
@@ -145,6 +177,23 @@ export default function MusicStudioInterface() {
 
   const handleSaveProject = () => {
     saveProjectMutation.mutate(project);
+  };
+
+  // Mouse tracking for collaborative cursors
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      if (containerRef.current) {
+        updateCursor(event.clientX, event.clientY);
+      }
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    return () => document.removeEventListener('mousemove', handleMouseMove);
+  }, [updateCursor]);
+
+  const handleTrackSelect = (trackId: string) => {
+    setSelectedTrack(trackId);
+    selectCollaborativeTrack(parseInt(trackId));
   };
 
   const TrackComponent = ({ track }: { track: Track }) => (
@@ -284,7 +333,7 @@ export default function MusicStudioInterface() {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" ref={containerRef}>
       {/* Header Controls */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -308,6 +357,14 @@ export default function MusicStudioInterface() {
         </div>
         
         <div className="flex items-center gap-2">
+          <Button 
+            onClick={() => setShowCollaboration(!showCollaboration)} 
+            variant={showCollaboration ? "default" : "outline"}
+            className={showCollaboration ? "bg-cyan-600 hover:bg-cyan-700" : "border-cyan-500 text-cyan-400 hover:bg-cyan-500/20"}
+          >
+            <Users className="h-4 w-4 mr-2" />
+            Collaboration {isConnected ? `(${session?.users.length || 0})` : '(Offline)'}
+          </Button>
           <Button
             variant={isRecording ? "destructive" : "default"}
             onClick={() => setIsRecording(!isRecording)}
@@ -413,10 +470,32 @@ export default function MusicStudioInterface() {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {project.tracks.map(track => (
-            <TrackComponent key={track.id} track={track} />
-          ))}
+        <div className={`grid ${showCollaboration ? 'lg:grid-cols-4' : 'grid-cols-1'} gap-6`}>
+          {/* Tracks */}
+          <div className={`${showCollaboration ? 'lg:col-span-3' : ''} grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4`}>
+            {project.tracks.map(track => (
+              <div key={track.id} onClick={() => handleTrackSelect(track.id)}>
+                <TrackComponent track={track} />
+              </div>
+            ))}
+          </div>
+
+          {/* Collaborative Panel */}
+          {showCollaboration && (
+            <div className="lg:col-span-1">
+              <CollaborativePanel
+                session={session}
+                isConnected={isConnected}
+                connectionError={connectionError}
+                onInviteUsers={() => {
+                  console.log('Invite users - TODO: Implement invite modal');
+                }}
+                onSessionSettings={() => {
+                  console.log('Session settings - TODO: Implement settings modal');
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
 
@@ -448,6 +527,15 @@ export default function MusicStudioInterface() {
           </Card>
         </div>
       )}
+
+      {/* Collaborative Cursors Overlay */}
+      {session?.users.map((user) => (
+        <CollaborativeCursor
+          key={user.id}
+          user={user}
+          containerRef={containerRef}
+        />
+      ))}
     </div>
   );
 }
