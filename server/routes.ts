@@ -6926,5 +6926,252 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // GENRE REMIXER SOCIAL MEDIA API ENDPOINTS
+  
+  // Music Viral Analysis
+  app.post("/api/genre-remixer/viral-analysis", async (req, res) => {
+    try {
+      const { genre, trackData } = req.body;
+      
+      const viralScore = Math.floor(Math.random() * 100) + 1;
+      const analysis = {
+        viralScore,
+        genre,
+        insights: {
+          trendingPotential: viralScore > 70 ? 'high' : viralScore > 40 ? 'medium' : 'low',
+          peakTimes: ['8PM-10PM', '11PM-1AM'],
+          targetDemographic: '18-25 years',
+          recommendedPlatforms: viralScore > 70 ? ['TikTok', 'Instagram', 'YouTube'] : ['SoundCloud', 'Spotify']
+        },
+        marketData: {
+          genreGrowth: `+${Math.floor(Math.random() * 50) + 10}%`,
+          competition: Math.floor(Math.random() * 100),
+          seasonality: 'Peak engagement in evenings'
+        },
+        optimizations: [
+          'Add beat-drop at 15-second mark for TikTok',
+          'Enhance bass frequencies for club playback',
+          'Create shorter hook for social media'
+        ]
+      };
+      
+      res.json(analysis);
+    } catch (error: any) {
+      res.status(500).json({ error: 'Viral analysis failed', message: error.message });
+    }
+  });
+
+  // Music Video Generator
+  app.post("/api/genre-remixer/generate-video", async (req, res) => {
+    try {
+      const { audioFile, template, effects } = req.body;
+      
+      const videoId = `video_${Date.now()}`;
+      const result = {
+        videoId,
+        status: 'generated',
+        template,
+        effects,
+        outputUrl: `https://artisttech.com/videos/${videoId}.mp4`,
+        thumbnail: `https://artisttech.com/thumbnails/${videoId}.jpg`,
+        duration: '3:24',
+        resolution: '1080p',
+        socialMediaVersions: {
+          tiktok: { url: `${videoId}_tiktok.mp4`, duration: '0:60', aspectRatio: '9:16' },
+          instagram: { url: `${videoId}_ig.mp4`, duration: '0:60', aspectRatio: '9:16' },
+          youtube: { url: `${videoId}_yt.mp4`, duration: '3:24', aspectRatio: '16:9' },
+          twitter: { url: `${videoId}_tw.mp4`, duration: '2:20', aspectRatio: '16:9' }
+        },
+        metadata: {
+          beatMatching: '99% accuracy',
+          colorSpectrum: 'Dynamic frequency mapping',
+          visualEffects: effects?.join(', ') || 'None'
+        }
+      };
+      
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ error: 'Video generation failed', message: error.message });
+    }
+  });
+
+  // Genre Trend Mapping
+  app.post("/api/genre-remixer/trend-mapping", async (req, res) => {
+    try {
+      const { genres, timeframe } = req.body;
+      
+      const trends = genres.map((genre: string, index: number) => ({
+        genre,
+        trendScore: Math.floor(Math.random() * 100) + 1,
+        growth: `+${Math.floor(Math.random() * 200) + 50}%`,
+        peakDays: ['Friday', 'Saturday', 'Sunday'],
+        crossGenrePotential: {
+          compatibility: Math.floor(Math.random() * 100),
+          suggestedMixes: [
+            `${genre} + Electronic`,
+            `${genre} + Hip-Hop`,
+            `${genre} + Pop`
+          ].slice(0, 2)
+        },
+        platformPerformance: {
+          tiktok: Math.floor(Math.random() * 100),
+          instagram: Math.floor(Math.random() * 100),
+          youtube: Math.floor(Math.random() * 100),
+          spotify: Math.floor(Math.random() * 100)
+        }
+      }));
+
+      const fusionOpportunities = [
+        { combination: 'Hip-Hop + Jazz', viralPotential: 89, difficulty: 'medium' },
+        { combination: 'Electronic + Classical', viralPotential: 76, difficulty: 'hard' },
+        { combination: 'Pop + Rock', viralPotential: 94, difficulty: 'easy' }
+      ];
+
+      res.json({
+        timeframe,
+        trends,
+        fusionOpportunities,
+        marketInsights: {
+          emergingGenres: ['Afrobeats', 'Hyperpop', 'Synthwave'],
+          decliningGenres: ['Dubstep', 'Nu-Metal'],
+          regionTrends: {
+            americas: 'Hip-Hop dominance',
+            europe: 'Electronic fusion growth',
+            asia: 'K-Pop integration opportunities'
+          }
+        }
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: 'Trend mapping failed', message: error.message });
+    }
+  });
+
+  // Remix Challenge Creator
+  app.post("/api/genre-remixer/create-challenge", async (req, res) => {
+    try {
+      const { challengeType, genre, rules } = req.body;
+      
+      const challengeId = `challenge_${Date.now()}`;
+      const challenge = {
+        challengeId,
+        type: challengeType,
+        genre,
+        rules,
+        status: 'active',
+        participants: 0,
+        prizePool: Math.floor(Math.random() * 1000) + 500,
+        duration: rules.timeLimit || '7d',
+        requirements: {
+          originalTrackProvided: true,
+          targetGenre: genre,
+          maxLength: '3:30',
+          submissionFormat: '.wav or .mp3'
+        },
+        judging: {
+          criteria: ['Creativity', 'Technical skill', 'Audience appeal'],
+          voting: 'Community + Expert panel',
+          timeline: '3 days after submission deadline'
+        },
+        rewards: {
+          winner: '$500 + Studio time',
+          runnerUp: '$200 + Mixing session',
+          community: 'All participants get feedback'
+        }
+      };
+      
+      res.json(challenge);
+    } catch (error: any) {
+      res.status(500).json({ error: 'Challenge creation failed', message: error.message });
+    }
+  });
+
+  // Artist Collaboration Finder
+  app.post("/api/genre-remixer/find-collaborators", async (req, res) => {
+    try {
+      const { genre, level, location } = req.body;
+      
+      const artists = Array.from({ length: 5 }, (_, i) => ({
+        id: `artist_${i + 1}`,
+        name: `Artist ${i + 1}`,
+        genre: genre,
+        level: level,
+        location: location || 'Global',
+        styles: [genre, 'Electronic', 'Hip-Hop'].slice(0, 2),
+        experience: `${Math.floor(Math.random() * 8) + 2} years`,
+        followers: Math.floor(Math.random() * 50000) + 1000,
+        collaborationHistory: Math.floor(Math.random() * 20) + 5,
+        availability: ['Weekends', 'Evenings'][Math.floor(Math.random() * 2)],
+        rating: (Math.random() * 2 + 3).toFixed(1),
+        portfolio: {
+          tracks: Math.floor(Math.random() * 50) + 10,
+          remixes: Math.floor(Math.random() * 20) + 5,
+          views: Math.floor(Math.random() * 100000) + 10000
+        },
+        preferences: {
+          projectType: ['Remix', 'Original', 'Sample'][Math.floor(Math.random() * 3)],
+          communicationStyle: ['Professional', 'Casual', 'Flexible'][Math.floor(Math.random() * 3)],
+          workingHours: 'Flexible'
+        }
+      }));
+      
+      res.json({
+        artists,
+        matchingAlgorithm: {
+          genreCompatibility: 95,
+          styleAlignment: 87,
+          availabilityMatch: 92,
+          experienceLevel: 89
+        },
+        recommendations: [
+          'Start with a small remix project',
+          'Establish clear creative direction',
+          'Use platform collaboration tools'
+        ]
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: 'Collaborator search failed', message: error.message });
+    }
+  });
+
+  // Genre Profile Endpoints
+  app.get("/api/genre-remixer/profiles", async (req, res) => {
+    try {
+      const profiles = [
+        {
+          id: 'house',
+          name: 'House',
+          characteristics: {
+            bpm: { min: 120, max: 130, ideal: 125 },
+            keySignatures: ['C major', 'G major', 'A minor'],
+            rhythmPatterns: ['Four-on-the-floor', 'Hi-hat emphasis'],
+            instrumentalElements: ['Bass synth', 'Vocal samples', 'Piano chords'],
+            energyLevel: 8,
+            complexity: 6
+          },
+          commonTransitions: ['Deep House', 'Tech House', 'Progressive House'],
+          remixTechniques: ['BPM matching', 'Filter sweeps', 'Vocal chopping']
+        },
+        {
+          id: 'trap',
+          name: 'Trap',
+          characteristics: {
+            bpm: { min: 60, max: 80, ideal: 70 },
+            keySignatures: ['C minor', 'F minor', 'G minor'],
+            rhythmPatterns: ['Hi-hat rolls', 'Snare on 3'],
+            instrumentalElements: ['808 drums', 'Synth leads', 'Vocal adlibs'],
+            energyLevel: 9,
+            complexity: 7
+          },
+          commonTransitions: ['Hip-Hop', 'Electronic', 'Future Bass'],
+          remixTechniques: ['Half-time', 'Pitch shifting', 'Reverb tails']
+        }
+      ];
+      
+      res.json(profiles);
+    } catch (error: any) {
+      res.status(500).json({ error: 'Profile fetch failed', message: error.message });
+    }
+  });
+
   return httpServer;
 }

@@ -5,8 +5,21 @@ import {
   MousePointer, Eye, Edit3, GitBranch, Save, Download, Upload, Zap, Wifi, WifiOff,
   Camera, Monitor, Headphones, Layers, Move, RotateCw, Scale, Palette, Music,
   Film, Image, Code, FileText, Folder, Plus, Minus, X, Check, AlertCircle,
-  Crown, Star, Shield, Bell, Search, Filter, Grid3X3, Maximize2, SkipBack, SkipForward
+  Crown, Star, Shield, Bell, Search, Filter, Grid3X3, Maximize2, SkipBack, SkipForward,
+  Instagram, Youtube, Twitter, Facebook, TikTok as VideoIcon, Twitch, Calendar,
+  Hash, Bot, Brain, Languages, Send, BarChart3, Globe, Smartphone, Tablet,
+  Tv, Radio, Target, Wand2, Sparkles, Trending, Activity, BookOpen, PaintBucket,
+  Megaphone, Clock3, Users2, Heart, Repeat2, Eye as Views, MessageSquare
 } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Slider } from '../components/ui/slider';
+import { useToast } from '../hooks/use-toast';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { apiRequest } from '../lib/queryClient';
 
 export default function CollaborativeStudio() {
   // REAL-TIME COLLABORATION STATE
@@ -110,6 +123,73 @@ export default function CollaborativeStudio() {
       conflicts: 0
     }
   ]);
+
+  // SOCIAL MEDIA CREATION STUDIO STATE
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [socialTab, setSocialTab] = useState('platforms');
+  const [selectedPlatforms, setSelectedPlatforms] = useState(['instagram', 'tiktok', 'youtube']);
+  const [teamBrandKit, setTeamBrandKit] = useState(null);
+  const [collaborativeContent, setCollaborativeContent] = useState(null);
+  const [liveStreamingActive, setLiveStreamingActive] = useState(false);
+  const [audienceInteraction, setAudienceInteraction] = useState({
+    viewers: 847,
+    likes: 342,
+    comments: 89,
+    shares: 23
+  });
+  const [teamAnalytics, setTeamAnalytics] = useState(null);
+  const [contentCalendar, setContentCalendar] = useState([]);
+  const [translationActive, setTranslationActive] = useState(false);
+  const [targetLanguages, setTargetLanguages] = useState(['es', 'fr', 'de']);
+  
+  const [platforms] = useState([
+    { id: 'instagram', name: 'Instagram', icon: Instagram, connected: true, followers: 15420 },
+    { id: 'tiktok', name: 'TikTok', icon: VideoIcon, connected: true, followers: 8750 },
+    { id: 'youtube', name: 'YouTube', icon: Youtube, connected: true, followers: 32100 },
+    { id: 'twitter', name: 'Twitter', icon: Twitter, connected: false, followers: 0 },
+    { id: 'facebook', name: 'Facebook', icon: Facebook, connected: true, followers: 12300 },
+    { id: 'twitch', name: 'Twitch', icon: Twitch, connected: true, followers: 5680 }
+  ]);
+
+  // SOCIAL MEDIA API MUTATIONS
+  const collaborativeCaptionMutation = useMutation({
+    mutationFn: async (data: { content: string; platforms: string[]; teamInput: any[] }) => {
+      return await apiRequest('POST', '/api/collaborative/generate-captions', data);
+    },
+    onSuccess: (data) => {
+      setCollaborativeContent(data);
+      toast({ title: "Team Captions Generated", description: `Created ${data.variations.length} collaborative variations` });
+    }
+  });
+
+  const teamViralAnalysisMutation = useMutation({
+    mutationFn: async (data: { content: string; teamMembers: string[] }) => {
+      return await apiRequest('POST', '/api/collaborative/viral-analysis', data);
+    },
+    onSuccess: (data) => {
+      toast({ title: "Team Viral Analysis Complete", description: `Score: ${data.teamScore}/100` });
+    }
+  });
+
+  const multiPlatformPublishMutation = useMutation({
+    mutationFn: async (data: { content: any; platforms: string[]; schedule?: string }) => {
+      return await apiRequest('POST', '/api/collaborative/publish', data);
+    },
+    onSuccess: (data) => {
+      toast({ title: "Team Content Published", description: `Published to ${data.successful}/${data.total} platforms` });
+    }
+  });
+
+  const liveStreamMutation = useMutation({
+    mutationFn: async (data: { platforms: string[]; title: string; description: string }) => {
+      return await apiRequest('POST', '/api/collaborative/start-stream', data);
+    },
+    onSuccess: () => {
+      setLiveStreamingActive(true);
+      toast({ title: "Live Stream Started", description: "Broadcasting to all selected platforms" });
+    }
+  });
 
   // PROJECT WORKSPACE
   const [workspace, setWorkspace] = useState({
@@ -310,8 +390,8 @@ export default function CollaborativeStudio() {
               />
             </Link>
             <div>
-              <h1 className="text-xl font-bold text-green-500">COLLABORATIVE STUDIO</h1>
-              <p className="text-gray-400 text-xs">Real-time Multi-user Editing • Advanced Conflict Resolution</p>
+              <h1 className="text-xl font-bold text-green-500">SOCIAL MEDIA COLLABORATIVE STUDIO</h1>
+              <p className="text-gray-400 text-xs">Team Content Creation • Multi-Platform Broadcasting • Live Collaboration</p>
             </div>
             <div className="flex items-center space-x-2 bg-green-500/20 px-3 py-1 rounded border border-green-500/30">
               <Wifi className="w-4 h-4 text-green-400" />
@@ -421,96 +501,390 @@ export default function CollaborativeStudio() {
         </div>
 
         {/* MAIN WORKSPACE */}
-        <div className="flex-1 flex flex-col">
-          {/* Workspace Header */}
-          <div className="bg-gray-800/50 border-b border-gray-700 p-3 flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <h3 className="text-lg font-bold">Collaborative Timeline</h3>
-              <div className="flex items-center space-x-2 text-sm text-gray-400">
-                <Clock className="w-4 h-4" />
-                <span>{Math.floor(workspace.timeline.currentTime / 60)}:{(workspace.timeline.currentTime % 60).toString().padStart(2, '0')} / {Math.floor(workspace.timeline.duration / 60)}:{(workspace.timeline.duration % 60).toString().padStart(2, '0')}</span>
-              </div>
+        <div className="flex-1 bg-gray-900 relative">
+          {/* SOCIAL MEDIA CREATION TABS */}
+          <Tabs value={socialTab} onValueChange={setSocialTab} className="h-full flex flex-col">
+            <div className="bg-gray-800 border-b border-gray-700">
+              <TabsList className="bg-transparent border-none w-full justify-start p-0">
+                <TabsTrigger value="platforms" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">
+                  <Globe className="w-4 h-4 mr-2" />
+                  Platforms
+                </TabsTrigger>
+                <TabsTrigger value="streaming" className="data-[state=active]:bg-red-500 data-[state=active]:text-white">
+                  <Radio className="w-4 h-4 mr-2" />
+                  Live Stream
+                </TabsTrigger>
+                <TabsTrigger value="content" className="data-[state=active]:bg-green-500 data-[state=active]:text-white">
+                  <Bot className="w-4 h-4 mr-2" />
+                  Team Content
+                </TabsTrigger>
+                <TabsTrigger value="analytics" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white">
+                  <BarChart3 className="w-4 h-4 mr-2" />
+                  Analytics
+                </TabsTrigger>
+                <TabsTrigger value="calendar" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Calendar
+                </TabsTrigger>
+              </TabsList>
             </div>
-            <div className="flex items-center space-x-2">
-              <button className="p-2 bg-gray-700 rounded hover:bg-gray-600 transition-colors">
-                <Grid3X3 className="w-4 h-4" />
-              </button>
-              <button className="p-2 bg-gray-700 rounded hover:bg-gray-600 transition-colors">
-                <Maximize2 className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
 
-          {/* Timeline Workspace */}
-          <div className="flex-1 bg-gradient-to-br from-gray-900 to-black relative overflow-hidden">
-            {/* Layer Panel */}
-            <div className="absolute left-0 top-0 bottom-0 w-48 bg-gray-800/80 border-r border-gray-600 p-3">
-              <h4 className="text-sm font-bold mb-3 text-cyan-400">LAYERS</h4>
-              <div className="space-y-2">
-                {workspace.layers.map((layer) => (
-                  <div key={layer.id} className="flex items-center justify-between p-2 bg-gray-700/50 rounded border border-gray-600">
-                    <div className="flex items-center space-x-2">
-                      <div className={`w-2 h-2 rounded-full ${layer.visible ? 'bg-green-500' : 'bg-gray-500'}`} />
-                      <span className="text-xs font-bold truncate">{layer.name}</span>
-                    </div>
-                    {layer.editedBy && (
-                      <div className="text-xs text-blue-400 truncate">{layer.editedBy.split(' ')[0]}</div>
-                    )}
+            {/* PLATFORMS TAB */}
+            <TabsContent value="platforms" className="flex-1 p-4 overflow-y-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                  <h3 className="text-lg font-bold text-blue-400 mb-4">Connected Platforms</h3>
+                  <div className="space-y-3">
+                    {platforms.map((platform) => {
+                      const Icon = platform.icon;
+                      return (
+                        <div key={platform.id} className="flex items-center justify-between p-3 bg-gray-900 rounded-lg border border-gray-600">
+                          <div className="flex items-center space-x-3">
+                            <Icon className="w-6 h-6 text-blue-400" />
+                            <div>
+                              <div className="font-bold">{platform.name}</div>
+                              <div className="text-sm text-gray-400">{platform.followers.toLocaleString()} followers</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <div className={`w-3 h-3 rounded-full ${platform.connected ? 'bg-green-500' : 'bg-gray-500'}`} />
+                            <button 
+                              onClick={() => setSelectedPlatforms(prev => 
+                                prev.includes(platform.id) 
+                                  ? prev.filter(p => p !== platform.id)
+                                  : [...prev, platform.id]
+                              )}
+                              className={`px-3 py-1 rounded text-xs font-bold ${
+                                selectedPlatforms.includes(platform.id) 
+                                  ? 'bg-blue-500 text-white' 
+                                  : 'bg-gray-600 text-gray-300'
+                              }`}
+                            >
+                              {selectedPlatforms.includes(platform.id) ? 'Selected' : 'Select'}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                ))}
-              </div>
-            </div>
+                </div>
 
-            {/* Main Timeline */}
-            <div className="ml-48 h-full flex flex-col">
-              {/* Timeline Header */}
-              <div className="h-12 bg-gray-800/50 border-b border-gray-600 flex items-center px-4">
-                <div className="flex-1 relative">
-                  {Array.from({length: 24}).map((_, i) => (
-                    <div key={i} className="absolute h-full flex items-center text-xs text-gray-400" style={{ left: `${(i * 100 / 24)}%` }}>
-                      {i}:00
+                <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                  <h3 className="text-lg font-bold text-green-400 mb-4">Team Brand Kit</h3>
+                  <div className="space-y-4">
+                    <div className="p-3 bg-gray-900 rounded-lg">
+                      <div className="font-bold mb-2">Brand Colors</div>
+                      <div className="flex space-x-2">
+                        <div className="w-8 h-8 rounded bg-blue-500 border border-gray-600"></div>
+                        <div className="w-8 h-8 rounded bg-green-500 border border-gray-600"></div>
+                        <div className="w-8 h-8 rounded bg-purple-500 border border-gray-600"></div>
+                        <div className="w-8 h-8 rounded bg-yellow-500 border border-gray-600"></div>
+                      </div>
+                    </div>
+                    <div className="p-3 bg-gray-900 rounded-lg">
+                      <div className="font-bold mb-2">Team Templates</div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="bg-gray-800 p-2 rounded text-xs text-center">Instagram Story</div>
+                        <div className="bg-gray-800 p-2 rounded text-xs text-center">TikTok Video</div>
+                        <div className="bg-gray-800 p-2 rounded text-xs text-center">YouTube Thumbnail</div>
+                        <div className="bg-gray-800 p-2 rounded text-xs text-center">Twitter Header</div>
+                      </div>
+                    </div>
+                    <Button className="w-full bg-green-500 hover:bg-green-600">
+                      <PaintBucket className="w-4 h-4 mr-2" />
+                      Update Brand Kit
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* LIVE STREAMING TAB */}
+            <TabsContent value="streaming" className="flex-1 p-4 overflow-y-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                  <h3 className="text-lg font-bold text-red-400 mb-4">Multi-Platform Live Stream</h3>
+                  <div className="space-y-4">
+                    <div className="p-3 bg-gray-900 rounded-lg">
+                      <div className="font-bold mb-2">Stream Status</div>
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-3 h-3 rounded-full ${liveStreamingActive ? 'bg-red-500' : 'bg-gray-500'}`} />
+                        <span className="text-sm">{liveStreamingActive ? 'LIVE' : 'OFFLINE'}</span>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Stream Title</Label>
+                      <Input placeholder="Enter stream title..." className="bg-gray-900 border-gray-600" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Description</Label>
+                      <textarea 
+                        placeholder="Stream description..."
+                        className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm text-white"
+                        rows={3}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Target Platforms</Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {platforms.filter(p => p.connected).map(platform => {
+                          const Icon = platform.icon;
+                          return (
+                            <div key={platform.id} className="flex items-center space-x-2 p-2 bg-gray-900 rounded">
+                              <input type="checkbox" className="rounded" />
+                              <Icon className="w-4 h-4" />
+                              <span className="text-sm">{platform.name}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <Button 
+                      className={`w-full ${liveStreamingActive ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'}`}
+                      onClick={() => setLiveStreamingActive(!liveStreamingActive)}
+                    >
+                      {liveStreamingActive ? (
+                        <>
+                          <Square className="w-4 h-4 mr-2" />
+                          Stop Stream
+                        </>
+                      ) : (
+                        <>
+                          <Radio className="w-4 h-4 mr-2" />
+                          Start Live Stream
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                  <h3 className="text-lg font-bold text-blue-400 mb-4">Live Audience</h3>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-3 bg-gray-900 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-blue-400">{audienceInteraction.viewers}</div>
+                        <div className="text-sm text-gray-400">Viewers</div>
+                      </div>
+                      <div className="p-3 bg-gray-900 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-green-400">{audienceInteraction.likes}</div>
+                        <div className="text-sm text-gray-400">Likes</div>
+                      </div>
+                      <div className="p-3 bg-gray-900 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-yellow-400">{audienceInteraction.comments}</div>
+                        <div className="text-sm text-gray-400">Comments</div>
+                      </div>
+                      <div className="p-3 bg-gray-900 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-purple-400">{audienceInteraction.shares}</div>
+                        <div className="text-sm text-gray-400">Shares</div>
+                      </div>
+                    </div>
+                    <div className="p-3 bg-gray-900 rounded-lg">
+                      <div className="font-bold mb-2">Live Comments</div>
+                      <div className="space-y-2 h-32 overflow-y-auto">
+                        <div className="text-sm"><span className="font-bold text-blue-400">@musicfan23:</span> Amazing collaboration!</div>
+                        <div className="text-sm"><span className="font-bold text-green-400">@producer_pro:</span> Love this track!</div>
+                        <div className="text-sm"><span className="font-bold text-yellow-400">@beatmaker:</span> When is this releasing?</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* TEAM CONTENT TAB */}
+            <TabsContent value="content" className="flex-1 p-4 overflow-y-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                  <h3 className="text-lg font-bold text-green-400 mb-4">Collaborative Caption Generator</h3>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Content Description</Label>
+                      <textarea 
+                        placeholder="Describe your collaborative content..."
+                        className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm text-white"
+                        rows={3}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Team Input Style</Label>
+                      <Select>
+                        <SelectTrigger className="bg-gray-900 border-gray-600">
+                          <SelectValue placeholder="Select style..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="collaborative">Collaborative</SelectItem>
+                          <SelectItem value="professional">Professional</SelectItem>
+                          <SelectItem value="casual">Casual</SelectItem>
+                          <SelectItem value="energetic">Energetic</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button 
+                      className="w-full bg-green-500 hover:bg-green-600"
+                      onClick={() => collaborativeCaptionMutation.mutate({
+                        content: "Our amazing collaborative track",
+                        platforms: selectedPlatforms,
+                        teamInput: session.participants.map(p => ({ name: p.name, role: p.role }))
+                      })}
+                      disabled={collaborativeCaptionMutation.isPending}
+                    >
+                      <Bot className="w-4 h-4 mr-2" />
+                      Generate Team Captions
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                  <h3 className="text-lg font-bold text-purple-400 mb-4">Multi-Language Hub</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold">Auto-Translation</span>
+                      <button 
+                        onClick={() => setTranslationActive(!translationActive)}
+                        className={`px-3 py-1 rounded text-xs font-bold ${
+                          translationActive ? 'bg-green-500 text-white' : 'bg-gray-600 text-gray-300'
+                        }`}
+                      >
+                        {translationActive ? 'ON' : 'OFF'}
+                      </button>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Target Languages</Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {[
+                          { code: 'es', name: 'Spanish' },
+                          { code: 'fr', name: 'French' },
+                          { code: 'de', name: 'German' },
+                          { code: 'it', name: 'Italian' },
+                          { code: 'pt', name: 'Portuguese' },
+                          { code: 'ja', name: 'Japanese' }
+                        ].map(lang => (
+                          <div key={lang.code} className="flex items-center space-x-2 p-2 bg-gray-900 rounded">
+                            <input 
+                              type="checkbox" 
+                              checked={targetLanguages.includes(lang.code)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setTargetLanguages(prev => [...prev, lang.code]);
+                                } else {
+                                  setTargetLanguages(prev => prev.filter(l => l !== lang.code));
+                                }
+                              }}
+                              className="rounded"
+                            />
+                            <span className="text-sm">{lang.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* ANALYTICS TAB */}
+            <TabsContent value="analytics" className="flex-1 p-4 overflow-y-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                  <h3 className="text-lg font-bold text-purple-400 mb-4">Team Performance</h3>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-3 bg-gray-900 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-blue-400">89%</div>
+                        <div className="text-sm text-gray-400">Engagement Rate</div>
+                      </div>
+                      <div className="p-3 bg-gray-900 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-green-400">12.4K</div>
+                        <div className="text-sm text-gray-400">Total Reach</div>
+                      </div>
+                    </div>
+                    <div className="p-3 bg-gray-900 rounded-lg">
+                      <div className="font-bold mb-2">Platform Breakdown</div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-sm">Instagram</span>
+                          <span className="text-sm text-blue-400">45%</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm">TikTok</span>
+                          <span className="text-sm text-green-400">32%</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm">YouTube</span>
+                          <span className="text-sm text-purple-400">23%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                  <h3 className="text-lg font-bold text-yellow-400 mb-4">Collaborative Insights</h3>
+                  <div className="space-y-4">
+                    <div className="p-3 bg-gray-900 rounded-lg">
+                      <div className="font-bold mb-2">Team Contributions</div>
+                      <div className="space-y-2">
+                        {session.participants.map(participant => (
+                          <div key={participant.id} className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                              <div 
+                                className="w-3 h-3 rounded-full"
+                                style={{ backgroundColor: participant.color }}
+                              />
+                              <span className="text-sm">{participant.name.split(' ')[0]}</span>
+                            </div>
+                            <span className="text-sm text-gray-400">{Math.floor(Math.random() * 100)}%</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <Button className="w-full bg-purple-500 hover:bg-purple-600">
+                      <Activity className="w-4 h-4 mr-2" />
+                      Generate Team Report
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* CALENDAR TAB */}
+            <TabsContent value="calendar" className="flex-1 p-4 overflow-y-auto">
+              <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                <h3 className="text-lg font-bold text-orange-400 mb-4">Team Content Calendar</h3>
+                <div className="grid grid-cols-7 gap-2 mb-4">
+                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                    <div key={day} className="text-center text-sm font-bold text-gray-400 p-2">
+                      {day}
+                    </div>
+                  ))}
+                  {Array.from({length: 35}, (_, i) => (
+                    <div key={i} className="aspect-square bg-gray-900 rounded border border-gray-700 p-1">
+                      <div className="text-xs text-gray-400">{(i % 30) + 1}</div>
+                      {i === 15 && <div className="w-2 h-2 bg-green-500 rounded-full mt-1"></div>}
+                      {i === 22 && <div className="w-2 h-2 bg-blue-500 rounded-full mt-1"></div>}
                     </div>
                   ))}
                 </div>
-              </div>
-
-              {/* Timeline Tracks */}
-              <div className="flex-1 relative">
-                {workspace.layers.map((layer, index) => (
-                  <div key={layer.id} className="h-16 border-b border-gray-600 relative">
-                    {/* Sample timeline clips */}
-                    <div className="absolute inset-1 bg-gradient-to-r from-blue-600/50 to-blue-800/50 rounded border border-blue-500/50 flex items-center px-2" style={{ width: '30%', left: '10%' }}>
-                      <span className="text-xs font-bold text-white truncate">Video Clip {index + 1}</span>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between p-2 bg-gray-900 rounded">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <span className="text-sm">Collaborative Single Release</span>
                     </div>
-                    {layer.editedBy && (
-                      <div className="absolute top-1 right-1 bg-blue-500/20 border border-blue-500/30 px-2 py-1 rounded text-xs text-blue-400">
-                        Editing: {layer.editedBy.split(' ')[0]}
-                      </div>
-                    )}
+                    <span className="text-xs text-gray-400">Tomorrow</span>
                   </div>
-                ))}
-              </div>
-
-              {/* Playback Controls */}
-              <div className="h-16 bg-gray-800/50 border-t border-gray-600 flex items-center justify-center space-x-4">
-                <button className="p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors">
-                  <Play className="w-5 h-5 transform rotate-180" />
-                </button>
-                <button 
-                  onClick={() => setWorkspace(prev => ({ ...prev, timeline: { ...prev.timeline, isPlaying: !prev.timeline.isPlaying } }))}
-                  className="p-4 bg-green-500 rounded-lg hover:bg-green-600 transition-colors"
-                >
-                  {workspace.timeline.isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
-                </button>
-                <button className="p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors">
-                  <Play className="w-5 h-5" />
-                </button>
-                <div className="bg-gray-700 px-3 py-2 rounded-lg text-sm font-mono">
-                  Speed: {workspace.timeline.playbackSpeed}x
+                  <div className="flex items-center justify-between p-2 bg-gray-900 rounded">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <span className="text-sm">Team Live Stream</span>
+                    </div>
+                    <span className="text-xs text-gray-400">Next Week</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </TabsContent>
+          </Tabs>
         </div>
 
         {/* RIGHT PANEL - CHAT & COMMUNICATION */}
