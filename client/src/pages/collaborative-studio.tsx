@@ -6,11 +6,12 @@ import {
   Camera, Monitor, Headphones, Layers, Move, RotateCw, Scale, Palette, Music,
   Film, Image, Code, FileText, Folder, Plus, Minus, X, Check, AlertCircle,
   Crown, Star, Shield, Bell, Search, Filter, Grid3X3, Maximize2, SkipBack, SkipForward,
-  Instagram, Youtube, Twitter, Facebook, TikTok as VideoIcon, Twitch, Calendar,
+  Video as VideoIcon, Twitch, Calendar,
   Hash, Bot, Brain, Languages, Send, BarChart3, Globe, Smartphone, Tablet,
   Tv, Radio, Target, Wand2, Sparkles, Trending, Activity, BookOpen, PaintBucket,
   Megaphone, Clock3, Users2, Heart, Repeat2, Eye as Views, MessageSquare
 } from 'lucide-react';
+import { SiInstagram, SiYoutube, SiTwitter, SiFacebook, SiTiktok } from 'react-icons/si';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
@@ -144,11 +145,11 @@ export default function CollaborativeStudio() {
   const [targetLanguages, setTargetLanguages] = useState(['es', 'fr', 'de']);
   
   const [platforms] = useState([
-    { id: 'instagram', name: 'Instagram', icon: Instagram, connected: true, followers: 15420 },
-    { id: 'tiktok', name: 'TikTok', icon: VideoIcon, connected: true, followers: 8750 },
-    { id: 'youtube', name: 'YouTube', icon: Youtube, connected: true, followers: 32100 },
-    { id: 'twitter', name: 'Twitter', icon: Twitter, connected: false, followers: 0 },
-    { id: 'facebook', name: 'Facebook', icon: Facebook, connected: true, followers: 12300 },
+    { id: 'instagram', name: 'Instagram', icon: SiInstagram, connected: true, followers: 15420 },
+    { id: 'tiktok', name: 'TikTok', icon: SiTiktok, connected: true, followers: 8750 },
+    { id: 'youtube', name: 'YouTube', icon: SiYoutube, connected: true, followers: 32100 },
+    { id: 'twitter', name: 'Twitter', icon: SiTwitter, connected: false, followers: 0 },
+    { id: 'facebook', name: 'Facebook', icon: SiFacebook, connected: true, followers: 12300 },
     { id: 'twitch', name: 'Twitch', icon: Twitch, connected: true, followers: 5680 }
   ]);
 
