@@ -180,7 +180,7 @@ export class AIAutoMixingEngine {
   }
 
   private setupMixingServer() {
-    this.mixingWSS = new WebSocketServer({ port: 8097, path: '/mixing' });
+    this.mixingWSS = new WebSocketServer({ port: 8200, path: '/mixing' });
     
     this.mixingWSS.on('connection', (ws: WebSocket) => {
       ws.on('message', (data: Buffer) => {

@@ -141,7 +141,7 @@ export class SocialMediaDeploymentEngine {
   }
 
   private setupDeploymentServer() {
-    this.deploymentWSS = new WebSocketServer({ port: 8098, path: '/deployment' });
+    this.deploymentWSS = new WebSocketServer({ port: 8204, path: '/deployment' });
     
     this.deploymentWSS.on('connection', (ws: WebSocket) => {
       console.log('🚀 Social media deployment client connected');

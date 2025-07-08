@@ -178,7 +178,7 @@ export class CrossPlatformExportEngine extends EventEmitter {
   }
 
   private setupExportServer() {
-    this.exportWSS = new WebSocketServer({ port: 8099 });
+    this.exportWSS = new WebSocketServer({ port: 8210 });
     
     this.exportWSS.on('connection', (ws, req) => {
       const clientId = `export_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;

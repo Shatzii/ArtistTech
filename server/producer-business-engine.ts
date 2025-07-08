@@ -238,7 +238,7 @@ export class ProducerBusinessEngine {
   }
 
   private setupProducerServer() {
-    this.producerWSS = new WebSocketServer({ port: 8097 });
+    this.producerWSS = new WebSocketServer({ port: 8202 });
     
     this.producerWSS.on('connection', (ws: WebSocket) => {
       ws.on('message', (data: Buffer) => {

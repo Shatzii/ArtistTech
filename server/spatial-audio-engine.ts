@@ -140,7 +140,7 @@ export class SpatialAudioEngine {
   }
 
   private setupSpatialServer() {
-    this.spatialWSS = new WebSocketServer({ port: 8098, path: '/spatial' });
+    this.spatialWSS = new WebSocketServer({ port: 8205, path: '/spatial' });
     
     this.spatialWSS.on('connection', (ws: WebSocket) => {
       ws.on('message', (data: Buffer) => {

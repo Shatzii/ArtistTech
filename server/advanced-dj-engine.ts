@@ -72,7 +72,7 @@ export class AdvancedDJEngine extends EventEmitter {
   }
 
   private setupDJServer() {
-    this.djWSS = new WebSocketServer({ port: 8095 });
+    this.djWSS = new WebSocketServer({ port: 8206 });
     
     this.djWSS.on('connection', (ws, req) => {
       const clientId = `dj_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;

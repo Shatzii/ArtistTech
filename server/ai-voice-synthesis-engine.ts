@@ -151,7 +151,7 @@ export class AIVoiceSynthesisEngine {
   }
 
   private setupVoiceServer() {
-    this.voiceWSS = new WebSocketServer({ port: 8099, path: '/voice' });
+    this.voiceWSS = new WebSocketServer({ port: 8209, path: '/voice' });
     
     this.voiceWSS.on('connection', (ws: WebSocket) => {
       ws.on('message', (data: Buffer) => {

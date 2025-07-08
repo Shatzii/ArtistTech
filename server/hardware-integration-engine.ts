@@ -67,7 +67,7 @@ export class HardwareIntegrationEngine extends EventEmitter {
   }
 
   private setupHardwareServer() {
-    this.hardwareWSS = new WebSocketServer({ port: 8097 });
+    this.hardwareWSS = new WebSocketServer({ port: 8201 });
     
     this.hardwareWSS.on('connection', (ws, req) => {
       const clientId = `hardware_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;

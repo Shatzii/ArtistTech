@@ -300,7 +300,7 @@ export class AICollaborativeEngine extends EventEmitter {
   }
 
   private setupCollaborativeServer() {
-    this.collaborativeWSS = new WebSocketServer({ port: 8098 });
+    this.collaborativeWSS = new WebSocketServer({ port: 8203 });
     
     this.collaborativeWSS.on('connection', (ws, req) => {
       const clientId = `collab_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;

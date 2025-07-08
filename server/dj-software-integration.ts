@@ -192,7 +192,7 @@ export class DJSoftwareIntegration extends EventEmitter {
 
   async initialize() {
     // Initialize WebSocket server for software communication
-    this.wsServer = new WebSocketServer({ port: 8095 })
+    this.wsServer = new WebSocketServer({ port: 8208 })
     
     this.wsServer.on('connection', (ws, req) => {
       const softwareId = req.url?.split('/')?.[1] || 'unknown'

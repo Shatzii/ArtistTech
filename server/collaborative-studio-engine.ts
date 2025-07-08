@@ -132,7 +132,7 @@ export class CollaborativeStudioEngine {
 
   private setupCollaborativeServer() {
     this.wss = new WebSocketServer({ 
-      port: 8095,
+      port: 8207,
       path: '/collaborate'
     });
 
