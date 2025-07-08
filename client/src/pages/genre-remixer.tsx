@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { apiRequest } from '../lib/queryClient';
+import { SiInstagram, SiYoutube, SiTwitter, SiFacebook, SiTiktok, SiSpotify, SiSoundcloud, SiApple } from 'react-icons/si';
 import { 
   Play, 
   Pause, 
@@ -30,14 +31,7 @@ import {
   Star,
   Brain,
   Headphones,
-  Instagram,
-  Youtube,
-  Twitter,
-  Facebook,
-  TikTok as VideoIcon,
-  Spotify,
-  SoundCloud,
-  Apple,
+  Video as VideoIcon,
   Film,
   Camera,
   Wand2,
@@ -139,11 +133,11 @@ export default function GenreRemixer() {
   // SOCIAL MEDIA CREATION STATE
   const [socialTab, setSocialTab] = useState('platforms');
   const [musicPlatforms] = useState([
-    { id: 'spotify', name: 'Spotify', icon: Spotify, connected: true, streams: 245000 },
-    { id: 'soundcloud', name: 'SoundCloud', icon: SoundCloud, connected: true, streams: 89000 },
-    { id: 'apple', name: 'Apple Music', icon: Apple, connected: true, streams: 156000 },
-    { id: 'youtube', name: 'YouTube Music', icon: Youtube, connected: true, streams: 432000 },
-    { id: 'instagram', name: 'Instagram Reels', icon: Instagram, connected: true, streams: 523000 },
+    { id: 'spotify', name: 'Spotify', icon: SiSpotify, connected: true, streams: 245000 },
+    { id: 'soundcloud', name: 'SoundCloud', icon: SiSoundcloud, connected: true, streams: 89000 },
+    { id: 'apple', name: 'Apple Music', icon: SiApple, connected: true, streams: 156000 },
+    { id: 'youtube', name: 'YouTube Music', icon: SiYoutube, connected: true, streams: 432000 },
+    { id: 'instagram', name: 'Instagram Reels', icon: SiInstagram, connected: true, streams: 523000 },
     { id: 'tiktok', name: 'TikTok Music', icon: VideoIcon, connected: true, streams: 1200000 }
   ]);
   
@@ -360,7 +354,7 @@ export default function GenreRemixer() {
               <Card className="bg-black/40 border-purple-500/30">
                 <CardHeader>
                   <CardTitle className="flex items-center text-purple-400">
-                    <Spotify className="w-5 h-5 mr-2" />
+                    <SiSpotify className="w-5 h-5 mr-2" />
                     Connected Music Platforms
                   </CardTitle>
                 </CardHeader>
