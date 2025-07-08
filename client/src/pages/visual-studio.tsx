@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'wouter';
 import { 
   Image, Layers, Palette, Brush, Wand2, Eye, Zap, Download, Upload, Settings,
@@ -9,6 +9,10 @@ import {
 } from 'lucide-react';
 
 export default function VisualStudio() {
+  // Canvas and drawing references
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const contextRef = useRef<CanvasRenderingContext2D | null>(null);
+  
   // PROFESSIONAL PHOTO EDITING STATE
   const [canvas, setCanvas] = useState({
     width: 3840,
@@ -156,6 +160,48 @@ export default function VisualStudio() {
       default: return 'text-gray-400';
     }
   };
+
+  // Enhanced drawing and editing functions
+  const initializeCanvas = useCallback(() => {
+    if (canvasRef.current) {
+      const ctx = canvasRef.current.getContext('2d');
+      if (ctx) {
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        contextRef.current = ctx;
+      }
+    }
+  }, []);
+
+  const handleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (rect && contextRef.current) {
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      contextRef.current.beginPath();
+      contextRef.current.moveTo(x, y);
+    }
+  }, []);
+
+  const handleCanvasMouseMove = useCallback((e: React.MouseEvent) => {
+    if (e.buttons === 1 && contextRef.current) {
+      const rect = canvasRef.current?.getBoundingClientRect();
+      if (rect) {
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        contextRef.current.lineTo(x, y);
+        contextRef.current.stroke();
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    initializeCanvas();
+  }, [initializeCanvas]);
 
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">
@@ -322,21 +368,40 @@ export default function VisualStudio() {
             {/* Main Editing Area */}
             <div className="absolute inset-8 bg-white rounded-lg shadow-2xl border-2 border-purple-500/30 overflow-hidden">
               <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-300 flex items-center justify-center relative">
-                {/* Sample Image Placeholder */}
-                <div className="text-center">
-                  <Image className="w-16 h-16 mx-auto mb-4 text-gray-600" />
-                  <h3 className="text-xl font-bold text-gray-700 mb-2">Professional Canvas</h3>
-                  <p className="text-gray-600">Drag & Drop images or use AI generation tools</p>
-                  <div className="mt-4 flex justify-center space-x-2">
-                    <div className="bg-purple-500/20 px-3 py-1 rounded text-purple-700 text-sm">4K Ready</div>
-                    <div className="bg-green-500/20 px-3 py-1 rounded text-green-700 text-sm">AI Enhanced</div>
-                    <div className="bg-blue-500/20 px-3 py-1 rounded text-blue-700 text-sm">Professional</div>
-                  </div>
-                </div>
+                {/* Interactive Drawing Canvas */}
+                <canvas 
+                  ref={canvasRef}
+                  width={800}
+                  height={600}
+                  className="border-2 border-purple-500/50 cursor-crosshair bg-white rounded-lg shadow-lg"
+                  onMouseDown={handleCanvasMouseDown}
+                  onMouseMove={handleCanvasMouseMove}
+                  onMouseUp={() => {}}
+                />
 
                 {/* Tool Cursor Indicator */}
                 <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-lg rounded-lg px-3 py-2 text-white text-sm">
-                  Active Tool: {editingTools.find(t => t.selected)?.name || 'None'}
+                  Active Tool: {editingTools.find(t => t.selected)?.name || 'Brush'}
+                </div>
+
+                {/* Canvas Controls */}
+                <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-lg rounded-lg px-3 py-2 text-white text-sm flex items-center gap-2">
+                  <button 
+                    onClick={() => {
+                      if (canvasRef.current) {
+                        const ctx = canvasRef.current.getContext('2d');
+                        if (ctx) {
+                          ctx.clearRect(0, 0, 800, 600);
+                        }
+                      }
+                    }}
+                    className="bg-red-500 hover:bg-red-600 px-2 py-1 rounded text-xs"
+                  >
+                    Clear
+                  </button>
+                  <div className="text-xs">
+                    {canvas.width}x{canvas.height} | {canvas.resolution}
+                  </div>
                 </div>
               </div>
             </div>

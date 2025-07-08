@@ -1,4 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useAudioEngine } from '../hooks/useAudioEngine';
+import Waveform from '../components/Waveform';
 import { Link } from 'wouter';
 import { 
   Play, Pause, SkipBack, SkipForward, Volume2, Camera, Film, Scissors, Palette, Upload, Download, Settings,
@@ -9,6 +11,9 @@ import {
 } from 'lucide-react';
 
 export default function VideoStudio() {
+  // Enhanced Audio Engine Integration
+  const audioEngine = useAudioEngine();
+  
   // HOLLYWOOD-GRADE VIDEO STUDIO STATE
   const [timeline, setTimeline] = useState({
     currentTime: 0,
@@ -263,6 +268,21 @@ export default function VideoStudio() {
       default: return 'from-gray-500 to-gray-600';
     }
   };
+
+  // Enhanced playback controls
+  const handlePlay = useCallback(() => {
+    if (timeline.isPlaying) {
+      audioEngine.pause();
+    } else {
+      audioEngine.play();
+    }
+    setTimeline(prev => ({ ...prev, isPlaying: !prev.isPlaying }));
+  }, [timeline.isPlaying, audioEngine]);
+
+  const handleTimelineSeek = useCallback((time: number) => {
+    audioEngine.seek(time);
+    setTimeline(prev => ({ ...prev, currentTime: time }));
+  }, [audioEngine]);
 
   // Real-time updates for rendering progress
   useEffect(() => {
@@ -675,8 +695,78 @@ export default function VideoStudio() {
               Export to All Platforms
             </button>
           </div>
+
+          {/* Enhanced Audio Waveform Display */}
+          <div className="bg-gradient-to-r from-green-800/30 to-blue-800/30 rounded-lg p-4 border border-green-500/30">
+            <h4 className="text-green-300 font-bold mb-2 flex items-center gap-2">
+              <Volume2 className="w-4 h-4" />
+              AUDIO WAVEFORM
+            </h4>
+            <div className="h-16 bg-black rounded overflow-hidden">
+              <Waveform
+                audioBuffer={audioEngine.audioBuffer}
+                currentTime={audioEngine.currentTime}
+                onSeek={handleTimelineSeek}
+                color="#10b981"
+                height={64}
+              />
+            </div>
+            <div className="flex items-center justify-between mt-2">
+              <button 
+                onClick={handlePlay}
+                className="bg-green-500 hover:bg-green-600 px-3 py-1 rounded text-sm flex items-center gap-1"
+              >
+                {timeline.isPlaying ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+                {timeline.isPlaying ? 'Pause' : 'Play'}
+              </button>
+              <div className="text-xs text-green-400">
+                {Math.floor(audioEngine.currentTime / 60)}:{(audioEngine.currentTime % 60).toFixed(0).padStart(2, '0')} / {Math.floor(audioEngine.duration / 60)}:{(audioEngine.duration % 60).toFixed(0).padStart(2, '0')}
+              </div>
+            </div>
+          </div>
+
+          {/* Professional Timeline Controls */}
+          <div className="bg-gradient-to-r from-purple-800/30 to-pink-800/30 rounded-lg p-4 border border-purple-500/30">
+            <h4 className="text-purple-300 font-bold mb-2 flex items-center gap-2">
+              <Film className="w-4 h-4" />
+              TIMELINE CONTROLS
+            </h4>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => handleTimelineSeek(0)}
+                  className="bg-purple-500 hover:bg-purple-600 px-2 py-1 rounded text-xs"
+                >
+                  <SkipBack className="w-3 h-3" />
+                </button>
+                <div className="flex-1 bg-black rounded-full h-2 overflow-hidden">
+                  <div 
+                    className="h-full bg-purple-500 transition-all duration-100"
+                    style={{ width: `${(audioEngine.currentTime / audioEngine.duration) * 100}%` }}
+                  />
+                </div>
+                <button 
+                  onClick={() => handleTimelineSeek(audioEngine.duration)}
+                  className="bg-purple-500 hover:bg-purple-600 px-2 py-1 rounded text-xs"
+                >
+                  <SkipForward className="w-3 h-3" />
+                </button>
+              </div>
+              <div className="flex items-center justify-between text-xs text-purple-400">
+                <span>Frame: {Math.floor(audioEngine.currentTime * 30)}</span>
+                <span>30 FPS</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
+}
+
+// Time formatting utility
+function formatTime(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
 }

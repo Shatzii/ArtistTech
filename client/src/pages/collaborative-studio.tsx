@@ -1,4 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useAudioEngine } from '../hooks/useAudioEngine';
+import Waveform from '../components/Waveform';
 import { Link } from 'wouter';
 import { 
   Users, Video, Mic, Share2, MessageCircle, Clock, Play, Pause, Volume2, Settings,
@@ -25,6 +27,9 @@ import CollaborativeEditor from '../components/CollaborativeEditor';
 import CollaborativeTimeline from '../components/CollaborativeTimeline';
 
 export default function CollaborativeStudio() {
+  // Enhanced Audio Engine Integration
+  const audioEngine = useAudioEngine();
+  
   // REAL-TIME COLLABORATION STATE
   const [session, setSession] = useState({
     id: 'collab_session_001',
@@ -290,7 +295,28 @@ export default function CollaborativeStudio() {
     return () => clearInterval(interval);
   }, []);
 
-  const sendMessage = () => {
+  // Enhanced collaboration functions
+  const handlePlay = useCallback(() => {
+    if (workspace.timeline.isPlaying) {
+      audioEngine.pause();
+    } else {
+      audioEngine.play();
+    }
+    setWorkspace(prev => ({
+      ...prev,
+      timeline: { ...prev.timeline, isPlaying: !prev.timeline.isPlaying }
+    }));
+  }, [workspace.timeline.isPlaying, audioEngine]);
+
+  const handleTimelineSeek = useCallback((time: number) => {
+    audioEngine.seek(time);
+    setWorkspace(prev => ({
+      ...prev,
+      timeline: { ...prev.timeline, currentTime: time }
+    }));
+  }, [audioEngine]);
+
+  const sendMessage = useCallback(() => {
     if (chatState.newMessage.trim()) {
       const newMsg = {
         id: Date.now().toString(),
@@ -307,7 +333,7 @@ export default function CollaborativeStudio() {
         newMessage: ''
       }));
     }
-  };
+  }, [chatState.newMessage]);
 
   const getCategoryColor = (category: string) => {
     switch (category) {
@@ -964,6 +990,67 @@ export default function CollaborativeStudio() {
                   Send
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Enhanced Collaborative Audio Waveform */}
+        <div className="bg-gradient-to-r from-green-800/30 to-blue-800/30 rounded-lg p-4 border border-green-500/30 mb-4">
+          <h4 className="text-green-300 font-bold mb-2 flex items-center gap-2">
+            <Volume2 className="w-4 h-4" />
+            COLLABORATIVE AUDIO TIMELINE
+          </h4>
+          <div className="h-16 bg-black rounded overflow-hidden">
+            <Waveform
+              audioBuffer={audioEngine.audioBuffer}
+              currentTime={audioEngine.currentTime}
+              onSeek={handleTimelineSeek}
+              color="#10b981"
+              height={64}
+            />
+          </div>
+          <div className="flex items-center justify-between mt-2">
+            <button 
+              onClick={handlePlay}
+              className="bg-green-500 hover:bg-green-600 px-3 py-1 rounded text-sm flex items-center gap-1"
+            >
+              {workspace.timeline.isPlaying ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+              {workspace.timeline.isPlaying ? 'Pause' : 'Play'}
+            </button>
+            <div className="text-xs text-green-400">
+              {Math.floor(audioEngine.currentTime / 60)}:{(audioEngine.currentTime % 60).toFixed(0).padStart(2, '0')} / {Math.floor(audioEngine.duration / 60)}:{(audioEngine.duration % 60).toFixed(0).padStart(2, '0')}
+            </div>
+          </div>
+        </div>
+
+        {/* Real-time Collaboration Status */}
+        <div className="bg-gradient-to-r from-blue-800/30 to-cyan-800/30 rounded-lg p-4 border border-blue-500/30">
+          <h4 className="text-blue-300 font-bold mb-2 flex items-center gap-2">
+            <Users className="w-4 h-4" />
+            LIVE COLLABORATION STATUS
+          </h4>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => setSession(prev => ({ ...prev, isLive: !prev.isLive }))}
+                className={`px-3 py-1 rounded text-sm font-bold ${
+                  session.isLive 
+                    ? 'bg-red-500 hover:bg-red-600 text-white' 
+                    : 'bg-green-500 hover:bg-green-600 text-white'
+                }`}
+              >
+                {session.isLive ? 'End Session' : 'Start Live Session'}
+              </button>
+              <div className="flex-1 bg-black rounded-full h-2 overflow-hidden">
+                <div 
+                  className="h-full bg-blue-500 transition-all duration-100"
+                  style={{ width: `${(workspace.timeline.currentTime / workspace.timeline.duration) * 100}%` }}
+                />
+              </div>
+            </div>
+            <div className="flex items-center justify-between text-xs text-blue-400">
+              <span>Status: {session.isLive ? 'Live' : 'Offline'}</span>
+              <span>Collaborators: {session.participants.length}</span>
             </div>
           </div>
         </div>
