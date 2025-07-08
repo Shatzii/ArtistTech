@@ -8,7 +8,9 @@ import {
   Scissors, Copy, Layers, Palette, Sparkles, Zap, Clock, Volume2,
   ChevronLeft, ChevronRight, SkipBack, SkipForward, Maximize,
   Sun, Moon, Contrast, Sliders, Filter, Blend, Grid, Move,
-  RotateCw, FlipHorizontal, FlipVertical, Crop, Wand2
+  RotateCw, FlipHorizontal, FlipVertical, Crop, Wand2, Target,
+  Droplets, Sunset, Sunrise, CloudRain, Snowflake, Lightbulb,
+  Eye, Monitor, Brain, Shuffle, RefreshCw, Film, Camera, Image
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Slider } from '../components/ui/slider';
@@ -77,7 +79,7 @@ export default function AdvancedVideoEditor() {
   const [selectedClip, setSelectedClip] = useState<string | null>(null);
   const [clips, setClips] = useState<VideoClip[]>([]);
   
-  // Color correction state
+  // Enhanced color correction state
   const [colorCorrection, setColorCorrection] = useState<ColorCorrection>({
     brightness: 0,
     contrast: 0,
@@ -92,26 +94,127 @@ export default function AdvancedVideoEditor() {
     blacks: 0,
     vibrance: 0
   });
-  
-  // Transition presets
+
+  // Advanced effects state
+  const [advancedEffects, setAdvancedEffects] = useState({
+    colorGrading: {
+      shadows: { r: 0, g: 0, b: 0 },
+      midtones: { r: 0, g: 0, b: 0 },
+      highlights: { r: 0, g: 0, b: 0 },
+      lift: 0,
+      gamma: 1,
+      gain: 1
+    },
+    curves: {
+      red: [{ x: 0, y: 0 }, { x: 1, y: 1 }],
+      green: [{ x: 0, y: 0 }, { x: 1, y: 1 }],
+      blue: [{ x: 0, y: 0 }, { x: 1, y: 1 }],
+      luma: [{ x: 0, y: 0 }, { x: 0.5, y: 0.5 }, { x: 1, y: 1 }]
+    },
+    lut: {
+      enabled: false,
+      intensity: 100,
+      preset: 'none'
+    },
+    chromaKey: {
+      enabled: false,
+      color: '#00FF00',
+      tolerance: 10,
+      softness: 5
+    },
+    stabilization: {
+      enabled: false,
+      strength: 50,
+      smoothness: 75
+    }
+  });
+
+  // Professional transition presets
   const transitionPresets = [
-    { id: 'fade', name: 'Fade', icon: Sun },
-    { id: 'dissolve', name: 'Dissolve', icon: Sparkles },
-    { id: 'wipe', name: 'Wipe', icon: Move },
-    { id: 'slide', name: 'Slide', icon: ChevronRight },
-    { id: 'zoom', name: 'Zoom', icon: Maximize },
-    { id: 'spin', name: 'Spin', icon: RotateCw }
+    { id: 'fade', name: 'Fade', icon: Sun, category: 'Basic' },
+    { id: 'dissolve', name: 'Dissolve', icon: Sparkles, category: 'Basic' },
+    { id: 'wipe', name: 'Wipe', icon: Move, category: 'Basic' },
+    { id: 'slide', name: 'Slide', icon: ChevronRight, category: 'Basic' },
+    { id: 'zoom', name: 'Zoom', icon: Maximize, category: 'Transform' },
+    { id: 'spin', name: 'Spin', icon: RotateCw, category: 'Transform' },
+    { id: 'film_burn', name: 'Film Burn', icon: Zap, category: 'Creative' },
+    { id: 'light_leak', name: 'Light Leak', icon: Lightbulb, category: 'Creative' },
+    { id: 'glitch', name: 'Glitch', icon: Target, category: 'Creative' },
+    { id: 'morphing', name: 'Morphing', icon: Blend, category: 'Advanced' },
+    { id: 'liquid', name: 'Liquid', icon: Droplets, category: 'Advanced' },
+    { id: 'particles', name: 'Particles', icon: Sparkles, category: 'Advanced' }
   ];
   
-  // Color grading presets
+  // Professional color grading presets
   const colorPresets = [
-    { name: 'Cinematic', values: { contrast: 20, saturation: 15, temperature: -200, tint: 50 } },
-    { name: 'Vintage', values: { brightness: -10, contrast: -15, saturation: -20, temperature: 300 } },
-    { name: 'Film Noir', values: { brightness: -20, contrast: 40, saturation: -80, temperature: -100 } },
-    { name: 'Sunset', values: { temperature: 500, tint: 100, highlights: -30, shadows: 20 } },
-    { name: 'Cold Blue', values: { temperature: -400, tint: -200, vibrance: 30, saturation: 10 } },
-    { name: 'Warm Gold', values: { temperature: 600, tint: 150, exposure: 10, vibrance: 25 } }
+    { id: 'neutral', name: 'Neutral', icon: Sun },
+    { id: 'cinematic', name: 'Cinematic', icon: Film },
+    { id: 'vintage', name: 'Vintage', icon: Camera },
+    { id: 'warm', name: 'Warm Sunset', icon: Sunset },
+    { id: 'cool', name: 'Cool Morning', icon: Sunrise },
+    { id: 'dramatic', name: 'Dramatic', icon: CloudRain },
+    { id: 'noir', name: 'Film Noir', icon: Moon },
+    { id: 'vibrant', name: 'Vibrant', icon: Palette },
+    { id: 'bleach', name: 'Bleach Bypass', icon: Eye },
+    { id: 'teal_orange', name: 'Teal & Orange', icon: Target }
   ];
+
+  // LUT (Look-Up Table) presets
+  const lutPresets = [
+    { id: 'rec709', name: 'Rec.709', description: 'Standard broadcast color space' },
+    { id: 'rec2020', name: 'Rec.2020', description: 'Ultra HD color space' },
+    { id: 'dci_p3', name: 'DCI-P3', description: 'Digital cinema color space' },
+    { id: 'alexalux', name: 'Alexa LUX', description: 'ARRI Alexa film emulation' },
+    { id: 'redlog', name: 'RED Log', description: 'RED camera log profile' },
+    { id: 'slog3', name: 'S-Log3', description: 'Sony S-Log3 profile' }
+  ];
+
+  // Real-time effect processing
+  const [activeTab, setActiveTab] = useState('color');
+  const [previewMode, setPreviewMode] = useState('realtime');
+
+  // Enhanced color correction functions
+  const applyColorPreset = (presetId: string) => {
+    const presets: Record<string, Partial<ColorCorrection>> = {
+      neutral: { brightness: 0, contrast: 0, saturation: 0, temperature: 0 },
+      cinematic: { contrast: 20, saturation: 15, temperature: -200, tint: 50, shadows: -10, highlights: -15 },
+      vintage: { brightness: -10, contrast: -15, saturation: -20, temperature: 300, vibrance: -25 },
+      warm: { temperature: 400, tint: 100, highlights: 10, shadows: -5 },
+      cool: { temperature: -400, tint: -100, highlights: -10, shadows: 5 },
+      dramatic: { contrast: 35, blacks: -20, whites: 15, vibrance: 20 },
+      noir: { brightness: -20, contrast: 40, saturation: -30, shadows: -30 },
+      vibrant: { saturation: 30, vibrance: 25, contrast: 15 },
+      bleach: { contrast: 50, saturation: -40, highlights: 30, shadows: -20 },
+      teal_orange: { temperature: -100, tint: 200, shadows: -15, highlights: 10 }
+    };
+    
+    const preset = presets[presetId];
+    if (preset) {
+      setColorCorrection(prev => ({ ...prev, ...preset }));
+      // Apply changes to video element in real-time
+      applyFiltersToVideo();
+    }
+  };
+
+  const applyFiltersToVideo = useCallback(() => {
+    if (videoRef.current) {
+      const filters = [
+        `brightness(${100 + colorCorrection.brightness}%)`,
+        `contrast(${100 + colorCorrection.contrast}%)`,
+        `saturate(${100 + colorCorrection.saturation}%)`,
+        `hue-rotate(${colorCorrection.hue}deg)`,
+        `sepia(${Math.max(0, colorCorrection.temperature / 1000)})`,
+        `blur(${Math.max(0, colorCorrection.exposure < 0 ? Math.abs(colorCorrection.exposure) / 20 : 0)}px)`
+      ].join(' ');
+      
+      videoRef.current.style.filter = filters;
+    }
+  }, [colorCorrection]);
+
+  // Apply filters whenever color correction changes
+  useEffect(() => {
+    applyFiltersToVideo();
+  }, [applyFiltersToVideo]);
 
   // Video processing mutation
   const processVideoMutation = useMutation({
@@ -181,32 +284,37 @@ export default function AdvancedVideoEditor() {
 
   const applyColorCorrection = (property: keyof ColorCorrection, value: number) => {
     setColorCorrection(prev => ({ ...prev, [property]: value }));
-    
-    // Apply real-time color correction via CSS filters
-    if (videoRef.current) {
-      const filters = [
-        `brightness(${(100 + colorCorrection.brightness) / 100})`,
-        `contrast(${(100 + colorCorrection.contrast) / 100})`,
-        `saturate(${(100 + colorCorrection.saturation) / 100})`,
-        `hue-rotate(${colorCorrection.hue}deg)`,
-        `sepia(${Math.abs(colorCorrection.temperature) / 1000})`,
-      ];
-      videoRef.current.style.filter = filters.join(' ');
+    // Real-time preview update
+    if (previewMode === 'realtime') {
+      applyFiltersToVideo();
     }
   };
 
-  const applyColorPreset = (preset: any) => {
-    const newValues = { ...colorCorrection, ...preset.values };
-    setColorCorrection(newValues);
-    
-    Object.entries(preset.values).forEach(([key, value]) => {
-      applyColorCorrection(key as keyof ColorCorrection, value as number);
-    });
-    
-    toast({
-      title: "Color Preset Applied",
-      description: `Applied ${preset.name} color grading`,
-    });
+  // Transition application function
+  const applyTransition = (transitionId: string, duration: number = 1) => {
+    if (selectedClip) {
+      setClips(prev => prev.map(clip => 
+        clip.id === selectedClip 
+          ? { ...clip, transition: { type: transitionId, duration, properties: {} } }
+          : clip
+      ));
+      
+      toast({
+        title: "Transition Applied",
+        description: `${transitionPresets.find(t => t.id === transitionId)?.name} transition added`,
+      });
+    }
+  };
+
+  // Advanced effect controls
+  const updateAdvancedEffect = (category: string, property: string, value: any) => {
+    setAdvancedEffects(prev => ({
+      ...prev,
+      [category]: {
+        ...prev[category as keyof typeof prev],
+        [property]: value
+      }
+    }));
   };
 
   const addTransition = (type: string, clipId: string) => {
