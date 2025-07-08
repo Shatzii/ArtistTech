@@ -199,6 +199,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Audio file upload and management routes (without authentication for demo)
+  app.post("/api/audio/upload", upload.single('audio'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No audio file provided" });
+      }
+
+      const audioFileData = {
+        userId: 1, // Demo user ID
+        filename: req.file.filename,
+        originalName: req.file.originalname,
+        mimeType: req.file.mimetype,
+        size: req.file.size,
+        path: req.file.path
+      };
+
+      const audioFile = await storage.createAudioFile(audioFileData);
+      
+      // Trigger audio analysis in background
+      neuralAudioEngine.analyzeAudioFile(audioFile.id).catch(console.error);
+      
+      res.json(audioFile);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/audio/tracks", async (req, res) => {
+    try {
+      const tracks = await storage.getUserAudioFiles(1); // Demo user ID
+      res.json(tracks);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/audio/analyze", async (req, res) => {
+    try {
+      const { trackId } = req.body;
+      const analysis = await neuralAudioEngine.analyzeAudioFile(trackId);
+      res.json(analysis);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/audio/waveform/:trackId", async (req, res) => {
+    try {
+      const { trackId } = req.params;
+      const waveform = await neuralAudioEngine.generateWaveform(trackId);
+      res.json({ waveform });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Neural Audio Engine routes
   app.post("/api/neural-audio/generate", async (req, res) => {
     try {

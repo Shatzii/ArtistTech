@@ -1,182 +1,244 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { apiRequest } from '@/lib/queryClient';
 
-export interface AudioEngineType {
+interface AudioTrack {
+  id: string;
+  name: string;
+  url: string;
+  duration: number;
+  bpm?: number;
+  key?: string;
+  waveform?: number[];
+}
+
+interface AudioEngineState {
   isPlaying: boolean;
   currentTime: number;
+  duration: number;
+  volume: number;
   bpm: number;
-  isRecording: boolean;
-  masterVolume: number;
-  initialize: () => Promise<void>;
-  cleanup: () => void;
+  tracks: AudioTrack[];
+  activeTrack: AudioTrack | null;
+  isLoading: boolean;
+}
+
+interface UseAudioEngineReturn extends AudioEngineState {
   play: () => void;
   pause: () => void;
   stop: () => void;
-  rewind: () => void;
-  fastForward: () => void;
-  record: () => void;
-  setMasterVolume: (volume: number) => void;
+  seekTo: (time: number) => void;
+  setVolume: (volume: number) => void;
   setBPM: (bpm: number) => void;
-  loadAudioFile: (fileId: number) => Promise<AudioBuffer | null>;
+  loadTrack: (track: AudioTrack) => Promise<void>;
+  uploadAudio: (file: File) => Promise<AudioTrack>;
+  analyzeAudio: (trackId: string) => Promise<any>;
 }
 
-export function useAudioEngine(): AudioEngineType {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [bpm, setBPMState] = useState(120);
-  const [isRecording, setIsRecording] = useState(false);
-  const [masterVolume, setMasterVolumeState] = useState(1);
+export function useAudioEngine(): UseAudioEngineReturn {
+  const [state, setState] = useState<AudioEngineState>({
+    isPlaying: false,
+    currentTime: 0,
+    duration: 0,
+    volume: 75,
+    bpm: 120,
+    tracks: [],
+    activeTrack: null,
+    isLoading: false
+  });
 
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const masterGainNodeRef = useRef<GainNode | null>(null);
+  const audioContextRef = useRef<AudioContext>();
+  const audioBufferRef = useRef<AudioBuffer>();
+  const sourceNodeRef = useRef<AudioBufferSourceNode>();
+  const gainNodeRef = useRef<GainNode>();
+  const analyserRef = useRef<AnalyserNode>();
   const startTimeRef = useRef<number>(0);
   const pauseTimeRef = useRef<number>(0);
-  const animationFrameRef = useRef<number>(0);
 
-  const initialize = useCallback(async () => {
-    try {
-      if (!audioContextRef.current) {
+  // Initialize Web Audio API
+  useEffect(() => {
+    const initAudio = async () => {
+      try {
         audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+        gainNodeRef.current = audioContextRef.current.createGain();
+        analyserRef.current = audioContextRef.current.createAnalyser();
         
-        // Create master gain node
-        masterGainNodeRef.current = audioContextRef.current.createGain();
-        masterGainNodeRef.current.connect(audioContextRef.current.destination);
-        masterGainNodeRef.current.gain.value = masterVolume;
+        gainNodeRef.current.connect(analyserRef.current);
+        analyserRef.current.connect(audioContextRef.current.destination);
+        
+        console.log('Audio engine initialized');
+      } catch (error) {
+        console.error('Failed to initialize audio:', error);
       }
+    };
 
-      // Resume context if suspended
-      if (audioContextRef.current.state === 'suspended') {
-        await audioContextRef.current.resume();
+    initAudio();
+
+    return () => {
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
       }
-    } catch (error) {
-      console.error("Failed to initialize audio engine:", error);
-    }
-  }, [masterVolume]);
-
-  const cleanup = useCallback(() => {
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
-    }
-    
-    if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
-      audioContextRef.current.close();
-    }
-    
-    audioContextRef.current = null;
-    masterGainNodeRef.current = null;
+    };
   }, []);
 
-  const updateCurrentTime = useCallback(() => {
-    if (isPlaying && audioContextRef.current) {
-      const elapsed = audioContextRef.current.currentTime - startTimeRef.current + pauseTimeRef.current;
-      setCurrentTime(elapsed);
-      animationFrameRef.current = requestAnimationFrame(updateCurrentTime);
-    }
-  }, [isPlaying]);
-
-  const play = useCallback(async () => {
-    await initialize();
+  // Update current time during playback
+  useEffect(() => {
+    let animationFrame: number;
     
-    if (audioContextRef.current) {
-      if (isPlaying) return;
-      
-      startTimeRef.current = audioContextRef.current.currentTime;
-      setIsPlaying(true);
-      updateCurrentTime();
+    if (state.isPlaying && audioContextRef.current) {
+      const updateTime = () => {
+        const currentTime = audioContextRef.current!.currentTime - startTimeRef.current + pauseTimeRef.current;
+        setState(prev => ({ ...prev, currentTime }));
+        animationFrame = requestAnimationFrame(updateTime);
+      };
+      updateTime();
     }
-  }, [initialize, isPlaying, updateCurrentTime]);
+
+    return () => {
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
+    };
+  }, [state.isPlaying]);
+
+  const loadTrack = useCallback(async (track: AudioTrack) => {
+    if (!audioContextRef.current) return;
+
+    setState(prev => ({ ...prev, isLoading: true }));
+
+    try {
+      const response = await fetch(track.url);
+      const arrayBuffer = await response.arrayBuffer();
+      const audioBuffer = await audioContextRef.current.decodeAudioData(arrayBuffer);
+      
+      audioBufferRef.current = audioBuffer;
+      setState(prev => ({
+        ...prev,
+        activeTrack: track,
+        duration: audioBuffer.duration,
+        currentTime: 0,
+        isLoading: false,
+        isPlaying: false
+      }));
+
+      pauseTimeRef.current = 0;
+    } catch (error) {
+      console.error('Failed to load track:', error);
+      setState(prev => ({ ...prev, isLoading: false }));
+    }
+  }, []);
+
+  const play = useCallback(() => {
+    if (!audioContextRef.current || !audioBufferRef.current || !gainNodeRef.current) return;
+
+    // Stop current playback if any
+    if (sourceNodeRef.current) {
+      sourceNodeRef.current.stop();
+    }
+
+    // Create new source node
+    sourceNodeRef.current = audioContextRef.current.createBufferSource();
+    sourceNodeRef.current.buffer = audioBufferRef.current;
+    sourceNodeRef.current.connect(gainNodeRef.current);
+
+    // Start playback from current position
+    startTimeRef.current = audioContextRef.current.currentTime - pauseTimeRef.current;
+    sourceNodeRef.current.start(0, pauseTimeRef.current);
+
+    setState(prev => ({ ...prev, isPlaying: true }));
+
+    // Handle track end
+    sourceNodeRef.current.onended = () => {
+      setState(prev => ({ ...prev, isPlaying: false }));
+    };
+  }, []);
 
   const pause = useCallback(() => {
-    if (!isPlaying) return;
-    
-    setIsPlaying(false);
-    pauseTimeRef.current = currentTime;
-    
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
+    if (sourceNodeRef.current && audioContextRef.current) {
+      sourceNodeRef.current.stop();
+      pauseTimeRef.current = audioContextRef.current.currentTime - startTimeRef.current;
+      setState(prev => ({ ...prev, isPlaying: false }));
     }
-  }, [isPlaying, currentTime]);
+  }, []);
 
   const stop = useCallback(() => {
-    setIsPlaying(false);
-    setCurrentTime(0);
+    if (sourceNodeRef.current) {
+      sourceNodeRef.current.stop();
+    }
     pauseTimeRef.current = 0;
+    setState(prev => ({
+      ...prev,
+      isPlaying: false,
+      currentTime: 0
+    }));
+  }, []);
+
+  const seekTo = useCallback((time: number) => {
+    pauseTimeRef.current = Math.max(0, Math.min(time, state.duration));
     
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
+    if (state.isPlaying) {
+      pause();
+      setTimeout(play, 10); // Small delay to ensure clean restart
+    }
+    
+    setState(prev => ({ ...prev, currentTime: pauseTimeRef.current }));
+  }, [state.duration, state.isPlaying, pause, play]);
+
+  const setVolume = useCallback((volume: number) => {
+    if (gainNodeRef.current) {
+      const normalizedVolume = Math.max(0, Math.min(100, volume)) / 100;
+      gainNodeRef.current.gain.value = normalizedVolume;
+      setState(prev => ({ ...prev, volume }));
     }
   }, []);
 
-  const rewind = useCallback(() => {
-    const newTime = Math.max(0, currentTime - 10);
-    setCurrentTime(newTime);
-    pauseTimeRef.current = newTime;
-  }, [currentTime]);
-
-  const fastForward = useCallback(() => {
-    const newTime = currentTime + 10;
-    setCurrentTime(newTime);
-    pauseTimeRef.current = newTime;
-  }, [currentTime]);
-
-  const record = useCallback(() => {
-    setIsRecording(!isRecording);
-    // TODO: Implement recording functionality
-  }, [isRecording]);
-
-  const setMasterVolume = useCallback((volume: number) => {
-    setMasterVolumeState(volume);
-    
-    if (masterGainNodeRef.current) {
-      masterGainNodeRef.current.gain.setValueAtTime(volume, audioContextRef.current?.currentTime || 0);
-    }
+  const setBPM = useCallback((bpm: number) => {
+    setState(prev => ({ ...prev, bpm }));
   }, []);
 
-  const setBPM = useCallback((newBpm: number) => {
-    setBPMState(newBpm);
-  }, []);
+  const uploadAudio = useCallback(async (file: File): Promise<AudioTrack> => {
+    const formData = new FormData();
+    formData.append('audio', file);
 
-  const loadAudioFile = useCallback(async (fileId: number): Promise<AudioBuffer | null> => {
-    if (!audioContextRef.current) {
-      await initialize();
-    }
+    const response = await apiRequest('POST', '/api/audio/upload', formData);
+    const audioFile = await response.json();
 
-    try {
-      const response = await fetch(`/api/audio-files/${fileId}/stream`);
-      const arrayBuffer = await response.arrayBuffer();
-      
-      if (audioContextRef.current) {
-        return await audioContextRef.current.decodeAudioData(arrayBuffer);
-      }
-    } catch (error) {
-      console.error("Failed to load audio file:", error);
-    }
-    
-    return null;
-  }, [initialize]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      cleanup();
+    const newTrack: AudioTrack = {
+      id: audioFile.id,
+      name: audioFile.filename,
+      url: `/uploads/${audioFile.filename}`,
+      duration: audioFile.duration || 0,
+      bpm: audioFile.bpm,
+      key: audioFile.key
     };
-  }, [cleanup]);
+
+    setState(prev => ({
+      ...prev,
+      tracks: [...prev.tracks, newTrack]
+    }));
+
+    return newTrack;
+  }, []);
+
+  const analyzeAudio = useCallback(async (trackId: string) => {
+    try {
+      const response = await apiRequest('POST', '/api/audio/analyze', { trackId });
+      return await response.json();
+    } catch (error) {
+      console.error('Audio analysis failed:', error);
+      throw error;
+    }
+  }, []);
 
   return {
-    isPlaying,
-    currentTime,
-    bpm,
-    isRecording,
-    masterVolume,
-    initialize,
-    cleanup,
+    ...state,
     play,
     pause,
     stop,
-    rewind,
-    fastForward,
-    record,
-    setMasterVolume,
+    seekTo,
+    setVolume,
     setBPM,
-    loadAudioFile,
+    loadTrack,
+    uploadAudio,
+    analyzeAudio
   };
 }

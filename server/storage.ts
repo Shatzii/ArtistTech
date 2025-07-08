@@ -48,6 +48,7 @@ export interface IStorage {
   // Audio Files
   getAudioFile(id: number): Promise<AudioFile | undefined>;
   getAudioFiles(): Promise<AudioFile[]>;
+  getUserAudioFiles(userId: number): Promise<AudioFile[]>;
   createAudioFile(audioFile: InsertAudioFile): Promise<AudioFile>;
   deleteAudioFile(id: number): Promise<boolean>;
 
@@ -201,6 +202,10 @@ export class DatabaseStorage implements IStorage {
 
   async getAudioFiles(): Promise<AudioFile[]> {
     return await db.select().from(audioFiles);
+  }
+
+  async getUserAudioFiles(userId: number): Promise<AudioFile[]> {
+    return await db.select().from(audioFiles).where(eq(audioFiles.userId, userId));
   }
 
   async createAudioFile(insertAudioFile: InsertAudioFile): Promise<AudioFile> {
