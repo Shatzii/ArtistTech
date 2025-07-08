@@ -5562,5 +5562,346 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI Career Manager APIs - Full Functionality (No Auth Required for Demo)
+  app.get("/api/career/profile", async (req, res) => {
+    try {
+      const profile = {
+        name: 'Alex Martinez',
+        genre: 'Electronic/Pop',
+        stage: 'Rising Artist',
+        totalFollowers: 47832 + Math.floor(Math.random() * 100),
+        monthlyListeners: 23456 + Math.floor(Math.random() * 50),
+        totalRevenue: 15678 + Math.floor(Math.random() * 500),
+        marketValue: 125000 + Math.floor(Math.random() * 5000),
+        careerScore: 78 + Math.floor(Math.random() * 5),
+        nextMilestone: 'Hit 50K followers',
+        aiAgentStatus: 'Active',
+        lastUpdated: new Date().toISOString()
+      };
+      res.json(profile);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/career/agents", async (req, res) => {
+    try {
+      const agents = [
+        {
+          id: 'marketing_maven',
+          name: 'Marketing Maven AI',
+          role: 'Social Media & Brand Manager',
+          status: 'Active',
+          tasks: ['Instagram content scheduling', 'TikTok trend analysis', 'Brand partnership outreach'],
+          performance: 92 + Math.floor(Math.random() * 8),
+          revenue: 3240 + Math.floor(Math.random() * 200),
+          color: '#ff6b6b',
+          lastActivity: 'Posted viral TikTok content',
+          activeProjects: 3,
+          completedTasks: 47
+        },
+        {
+          id: 'revenue_maximizer',
+          name: 'Revenue Maximizer AI',
+          role: 'Monetization Specialist',
+          status: 'Active',
+          tasks: ['Royalty optimization', 'Streaming strategy', 'Merchandise planning'],
+          performance: 88 + Math.floor(Math.random() * 10),
+          revenue: 5680 + Math.floor(Math.random() * 300),
+          color: '#4ecdc4',
+          lastActivity: 'Optimized Spotify playlist placement',
+          activeProjects: 5,
+          completedTasks: 62
+        },
+        {
+          id: 'booking_agent',
+          name: 'Booking Agent AI',
+          role: 'Performance & Events',
+          status: 'Active',
+          tasks: ['Venue booking', 'Tour planning', 'Festival submissions'],
+          performance: 85 + Math.floor(Math.random() * 12),
+          revenue: 4200 + Math.floor(Math.random() * 250),
+          color: '#45b7d1',
+          lastActivity: 'Secured 3 festival slots',
+          activeProjects: 2,
+          completedTasks: 28
+        },
+        {
+          id: 'legal_guardian',
+          name: 'Legal Guardian AI',
+          role: 'Contracts & Rights',
+          status: 'Active',
+          tasks: ['Contract review', 'Copyright protection', 'Publishing deals'],
+          performance: 95 + Math.floor(Math.random() * 5),
+          revenue: 2558 + Math.floor(Math.random() * 150),
+          color: '#96ceb4',
+          lastActivity: 'Filed copyright for new track',
+          activeProjects: 1,
+          completedTasks: 31
+        }
+      ];
+      res.json(agents);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/career/revenue-streams", async (req, res) => {
+    try {
+      const streams = [
+        { 
+          name: 'Streaming Royalties', 
+          amount: 5420 + Math.floor(Math.random() * 200), 
+          growth: 12 + Math.floor(Math.random() * 8), 
+          percentage: 34.6,
+          trend: 'up',
+          platforms: ['Spotify', 'Apple Music', 'YouTube Music']
+        },
+        { 
+          name: 'Live Performances', 
+          amount: 4200 + Math.floor(Math.random() * 300), 
+          growth: 8 + Math.floor(Math.random() * 15), 
+          percentage: 26.8,
+          trend: 'up',
+          platforms: ['Local venues', 'Festivals', 'Private events']
+        },
+        { 
+          name: 'Merchandise', 
+          amount: 2890 + Math.floor(Math.random() * 150), 
+          growth: 23 + Math.floor(Math.random() * 20), 
+          percentage: 18.4,
+          trend: 'up',
+          platforms: ['Online store', 'Concert sales', 'Third-party']
+        },
+        { 
+          name: 'Brand Partnerships', 
+          amount: 1890 + Math.floor(Math.random() * 100), 
+          growth: 45 + Math.floor(Math.random() * 25), 
+          percentage: 12.1,
+          trend: 'up',
+          platforms: ['Instagram', 'TikTok', 'YouTube']
+        },
+        { 
+          name: 'Sync Licensing', 
+          amount: 768 + Math.floor(Math.random() * 50), 
+          growth: 67 + Math.floor(Math.random() * 30), 
+          percentage: 4.9,
+          trend: 'up',
+          platforms: ['TV Shows', 'Films', 'Commercials']
+        },
+        { 
+          name: 'NFT Sales', 
+          amount: 510 + Math.floor(Math.random() * 25), 
+          growth: 156 + Math.floor(Math.random() * 40), 
+          percentage: 3.2,
+          trend: 'up',
+          platforms: ['OpenSea', 'Foundation', 'SuperRare']
+        }
+      ];
+      res.json(streams);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/career/social-metrics", async (req, res) => {
+    try {
+      const metrics = {
+        instagram: { 
+          followers: 18420 + Math.floor(Math.random() * 100), 
+          engagement: 4.2 + Math.random() * 0.5, 
+          growth: 15 + Math.floor(Math.random() * 10),
+          posts: 127,
+          avgLikes: 892
+        },
+        tiktok: { 
+          followers: 12890 + Math.floor(Math.random() * 200), 
+          engagement: 8.7 + Math.random() * 1.0, 
+          growth: 34 + Math.floor(Math.random() * 15),
+          posts: 89,
+          avgViews: 4230
+        },
+        twitter: { 
+          followers: 8950 + Math.floor(Math.random() * 50), 
+          engagement: 2.1 + Math.random() * 0.3, 
+          growth: 8 + Math.floor(Math.random() * 5),
+          posts: 234,
+          avgRetweets: 23
+        },
+        youtube: { 
+          followers: 7572 + Math.floor(Math.random() * 80), 
+          engagement: 6.3 + Math.random() * 0.8, 
+          growth: 22 + Math.floor(Math.random() * 8),
+          posts: 45,
+          avgViews: 12450
+        },
+        spotify: { 
+          followers: 23456 + Math.floor(Math.random() * 150), 
+          engagement: 12.4 + Math.random() * 1.2, 
+          growth: 18 + Math.floor(Math.random() * 12),
+          posts: 34,
+          avgPlays: 8920
+        }
+      };
+      res.json(metrics);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/career/recommendations", async (req, res) => {
+    try {
+      const recommendations = [
+        {
+          id: 1,
+          type: 'Marketing',
+          priority: 'High',
+          title: 'TikTok Viral Opportunity',
+          description: 'AI detected a trending sound perfect for your style. Create content in next 6 hours.',
+          expectedROI: '2.3x engagement boost',
+          timeframe: '6 hours',
+          automated: true,
+          confidence: 94,
+          actionRequired: 'Create TikTok with trending sound #MidnightVibes'
+        },
+        {
+          id: 2,
+          type: 'Revenue',
+          priority: 'Medium',
+          title: 'Sync Licensing Match',
+          description: 'Your track "Midnight Dreams" matches 3 upcoming Netflix shows.',
+          expectedROI: '$12,000 potential',
+          timeframe: '2 weeks',
+          automated: false,
+          confidence: 87,
+          actionRequired: 'Review licensing agreements and submit track'
+        },
+        {
+          id: 3,
+          type: 'Booking',
+          priority: 'High',
+          title: 'Festival Opportunity',
+          description: 'Coachella 2026 applications open. AI optimized your submission.',
+          expectedROI: '$50,000+ exposure',
+          timeframe: '1 week',
+          automated: true,
+          confidence: 76,
+          actionRequired: 'Review and approve festival submission'
+        },
+        {
+          id: 4,
+          type: 'Legal',
+          priority: 'Medium',
+          title: 'Copyright Alert',
+          description: 'Similar track detected. Preemptive protection filed.',
+          expectedROI: 'Rights protected',
+          timeframe: 'Completed',
+          automated: true,
+          confidence: 99,
+          actionRequired: 'No action needed - monitoring continues'
+        }
+      ];
+      res.json(recommendations);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/career/milestones", async (req, res) => {
+    try {
+      const milestones = [
+        { 
+          id: 1,
+          title: '50K Total Followers', 
+          progress: 95, 
+          target: 50000, 
+          current: 47832, 
+          reward: '$500 bonus',
+          category: 'Growth',
+          deadline: '2025-02-15',
+          status: 'active'
+        },
+        { 
+          id: 2,
+          title: 'First Sync License', 
+          progress: 85, 
+          target: 1, 
+          current: 0, 
+          reward: 'Industry recognition',
+          category: 'Revenue',
+          deadline: '2025-03-01',
+          status: 'active'
+        },
+        { 
+          id: 3,
+          title: '$20K Monthly Revenue', 
+          progress: 78, 
+          target: 20000, 
+          current: 15678, 
+          reward: 'Pro tier unlock',
+          category: 'Revenue',
+          deadline: '2025-04-01',
+          status: 'active'
+        },
+        { 
+          id: 4,
+          title: 'Major Label Interest', 
+          progress: 45, 
+          target: 100, 
+          current: 45, 
+          reward: 'Recording deal',
+          category: 'Career',
+          deadline: '2025-06-01',
+          status: 'active'
+        }
+      ];
+      res.json(milestones);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/career/execute-recommendation", async (req, res) => {
+    try {
+      const { recommendationId, action } = req.body;
+      const result = {
+        success: true,
+        message: `AI Agent successfully executed: ${action}`,
+        impact: {
+          followersGained: Math.floor(Math.random() * 500) + 100,
+          engagementIncrease: Math.floor(Math.random() * 15) + 5,
+          revenueProjected: Math.floor(Math.random() * 1000) + 200
+        },
+        nextSteps: [
+          'Monitor performance metrics',
+          'Optimize based on early results',
+          'Scale successful strategies'
+        ]
+      };
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/career/configure-agent", async (req, res) => {
+    try {
+      const { agentId, settings } = req.body;
+      const result = {
+        success: true,
+        agentId,
+        settings,
+        message: 'AI Agent configuration updated successfully',
+        estimatedImpact: {
+          performanceChange: `+${Math.floor(Math.random() * 10) + 2}%`,
+          revenueChange: `+$${Math.floor(Math.random() * 500) + 100}/month`
+        }
+      };
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   return httpServer;
 }

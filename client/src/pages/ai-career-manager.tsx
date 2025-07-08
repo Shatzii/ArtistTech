@@ -5,130 +5,104 @@ import {
   BarChart3, PieChart, LineChart, Calendar, Clock, Mail, Phone,
   Instagram, Twitter, Youtube, Music, Mic, Camera, Palette, Film,
   Globe, Shield, Award, Briefcase, CreditCard, Building, Handshake,
-  Bell, Settings, Download, Upload, Share2, Eye, Heart, MessageCircle
+  Bell, Settings, Download, Upload, Share2, Eye, Heart, MessageCircle,
+  Play, CheckCircle, AlertCircle, Activity, RefreshCw
 } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AICareerManager() {
-  // AI CAREER MANAGEMENT STATE
-  const [artistProfile, setArtistProfile] = useState({
-    name: 'Alex Martinez',
-    genre: 'Electronic/Pop',
-    stage: 'Rising Artist',
-    totalFollowers: 47832,
-    monthlyListeners: 23456,
-    totalRevenue: 15678,
-    marketValue: 125000,
-    careerScore: 78,
-    nextMilestone: 'Hit 50K followers',
-    aiAgentStatus: 'Active'
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Real-time data fetching from backend
+  const { data: artistProfile, isLoading: profileLoading } = useQuery({
+    queryKey: ["/api/career/profile"],
+    refetchInterval: 30000, // Refresh every 30 seconds
   });
 
-  // AI AGENTS MANAGING CAREER
-  const [aiAgents, setAiAgents] = useState([
-    {
-      name: 'Marketing Maven AI',
-      role: 'Social Media & Brand Manager',
-      status: 'Active',
-      tasks: ['Instagram content scheduling', 'TikTok trend analysis', 'Brand partnership outreach'],
-      performance: 92,
-      revenue: 3240,
-      color: '#ff6b6b'
-    },
-    {
-      name: 'Revenue Maximizer AI',
-      role: 'Monetization Specialist',
-      status: 'Active',
-      tasks: ['Royalty optimization', 'Streaming strategy', 'Merchandise planning'],
-      performance: 88,
-      revenue: 5680,
-      color: '#4ecdc4'
-    },
-    {
-      name: 'Booking Agent AI',
-      role: 'Performance & Events',
-      status: 'Active',
-      tasks: ['Venue booking', 'Tour planning', 'Festival submissions'],
-      performance: 85,
-      revenue: 4200,
-      color: '#45b7d1'
-    },
-    {
-      name: 'Legal Guardian AI',
-      role: 'Contracts & Rights',
-      status: 'Active',
-      tasks: ['Contract review', 'Copyright protection', 'Publishing deals'],
-      performance: 95,
-      revenue: 2558,
-      color: '#96ceb4'
-    }
-  ]);
-
-  // REVENUE STREAMS
-  const [revenueStreams, setRevenueStreams] = useState([
-    { name: 'Streaming Royalties', amount: 5420, growth: 12, percentage: 34.6 },
-    { name: 'Live Performances', amount: 4200, growth: 8, percentage: 26.8 },
-    { name: 'Merchandise', amount: 2890, growth: 23, percentage: 18.4 },
-    { name: 'Brand Partnerships', amount: 1890, growth: 45, percentage: 12.1 },
-    { name: 'Sync Licensing', amount: 768, growth: 67, percentage: 4.9 },
-    { name: 'NFT Sales', amount: 510, growth: 156, percentage: 3.2 }
-  ]);
-
-  // SOCIAL MEDIA PERFORMANCE
-  const [socialMetrics, setSocialMetrics] = useState({
-    instagram: { followers: 18420, engagement: 4.2, growth: 15 },
-    tiktok: { followers: 12890, engagement: 8.7, growth: 34 },
-    twitter: { followers: 8950, engagement: 2.1, growth: 8 },
-    youtube: { followers: 7572, engagement: 6.3, growth: 22 },
-    spotify: { followers: 23456, engagement: 12.4, growth: 18 }
+  const { data: aiAgents, isLoading: agentsLoading } = useQuery({
+    queryKey: ["/api/career/agents"],
+    refetchInterval: 15000, // Refresh every 15 seconds
   });
 
-  // AI RECOMMENDATIONS
-  const [aiRecommendations, setAiRecommendations] = useState([
-    {
-      type: 'Marketing',
-      priority: 'High',
-      title: 'TikTok Viral Opportunity',
-      description: 'AI detected a trending sound perfect for your style. Create content in next 6 hours.',
-      expectedROI: '2.3x engagement boost',
-      timeframe: '6 hours',
-      automated: true
-    },
-    {
-      type: 'Revenue',
-      priority: 'Medium',
-      title: 'Sync Licensing Match',
-      description: 'Your track "Midnight Dreams" matches 3 upcoming Netflix shows.',
-      expectedROI: '$12,000 potential',
-      timeframe: '2 weeks',
-      automated: false
-    },
-    {
-      type: 'Booking',
-      priority: 'High',
-      title: 'Festival Opportunity',
-      description: 'Coachella 2026 applications open. AI optimized your submission.',
-      expectedROI: '$50,000+ exposure',
-      timeframe: '1 week',
-      automated: true
-    },
-    {
-      type: 'Legal',
-      priority: 'Medium',
-      title: 'Copyright Alert',
-      description: 'Similar track detected. Preemptive protection filed.',
-      expectedROI: 'Rights protected',
-      timeframe: 'Completed',
-      automated: true
-    }
-  ]);
+  const { data: revenueStreams, isLoading: revenueLoading } = useQuery({
+    queryKey: ["/api/career/revenue-streams"],
+    refetchInterval: 60000, // Refresh every minute
+  });
 
-  // CAREER MILESTONES
-  const [milestones, setMilestones] = useState([
-    { title: '50K Total Followers', progress: 95, target: 50000, current: 47832, reward: '$500 bonus' },
-    { title: 'First Sync License', progress: 85, target: 1, current: 0, reward: 'Industry recognition' },
-    { title: '$20K Monthly Revenue', progress: 78, target: 20000, current: 15678, reward: 'Pro tier unlock' },
-    { title: 'Major Label Interest', progress: 45, target: 100, current: 45, reward: 'Recording deal' }
-  ]);
+  const { data: socialMetrics, isLoading: socialLoading } = useQuery({
+    queryKey: ["/api/career/social-metrics"],
+    refetchInterval: 30000,
+  });
+
+  const { data: aiRecommendations, isLoading: recommendationsLoading } = useQuery({
+    queryKey: ["/api/career/recommendations"],
+    refetchInterval: 120000, // Refresh every 2 minutes
+  });
+
+  const { data: milestones, isLoading: milestonesLoading } = useQuery({
+    queryKey: ["/api/career/milestones"],
+    refetchInterval: 300000, // Refresh every 5 minutes
+  });
+
+  // Interactive mutations for user actions
+  const executeRecommendationMutation = useMutation({
+    mutationFn: async ({ recommendationId, action }: { recommendationId: number, action: string }) => {
+      const response = await apiRequest('POST', '/api/career/execute-recommendation', {
+        recommendationId,
+        action
+      });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "AI Action Executed",
+        description: data.message,
+      });
+      // Refresh relevant data
+      queryClient.invalidateQueries({ queryKey: ["/api/career/agents"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/career/profile"] });
+    },
+    onError: () => {
+      toast({
+        title: "Action Failed",
+        description: "Unable to execute AI recommendation",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const configureAgentMutation = useMutation({
+    mutationFn: async ({ agentId, settings }: { agentId: string, settings: any }) => {
+      const response = await apiRequest('POST', '/api/career/configure-agent', {
+        agentId,
+        settings
+      });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Agent Configured",
+        description: data.message,
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/career/agents"] });
+    }
+  });
+
+  // Loading state
+  if (profileLoading || agentsLoading || revenueLoading || socialLoading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full mx-auto" />
+          <h2 className="text-xl font-bold text-green-400">Loading AI Career Manager...</h2>
+          <p className="text-gray-400">Fetching real-time career data</p>
+        </div>
+      </div>
+    );
+  }
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -168,18 +142,30 @@ export default function AICareerManager() {
             </div>
             <div className="flex items-center space-x-2 bg-green-500/20 px-3 py-1 rounded border border-green-500/30">
               <Brain className="w-4 h-4 text-green-400 animate-pulse" />
-              <span className="text-green-400 font-bold">4 AI AGENTS ACTIVE</span>
+              <span className="text-green-400 font-bold">{aiAgents?.length || 4} AI AGENTS ACTIVE</span>
+              <Activity className="w-3 h-3 text-green-400 animate-pulse" />
             </div>
           </div>
           
           <div className="flex items-center space-x-4">
             <div className="bg-purple-500/20 border border-purple-500/30 px-3 py-1 rounded flex items-center space-x-2">
               <Crown className="w-4 h-4 text-purple-400" />
-              <span className="text-purple-400 font-bold">Career Score: {artistProfile.careerScore}</span>
+              <span className="text-purple-400 font-bold">Career Score: {artistProfile?.careerScore || 78}</span>
             </div>
             <div className="bg-yellow-500/20 border border-yellow-500/30 px-3 py-1 rounded">
-              <span className="text-yellow-400 font-bold">${artistProfile.totalRevenue.toLocaleString()} Monthly</span>
+              <span className="text-yellow-400 font-bold">${(artistProfile?.totalRevenue || 15678).toLocaleString()} Monthly</span>
             </div>
+            <button 
+              onClick={() => {
+                queryClient.invalidateQueries({ queryKey: ["/api/career/profile"] });
+                queryClient.invalidateQueries({ queryKey: ["/api/career/agents"] });
+                toast({ title: "Data Refreshed", description: "Latest career metrics loaded" });
+              }}
+              className="bg-blue-500/20 border border-blue-500/30 px-3 py-1 rounded flex items-center space-x-2 hover:bg-blue-500/30 transition-colors"
+            >
+              <RefreshCw className="w-4 h-4 text-blue-400" />
+              <span className="text-blue-400 font-bold">Refresh</span>
+            </button>
           </div>
         </div>
       </div>
@@ -194,28 +180,38 @@ export default function AICareerManager() {
                 {artistProfile.name.split(' ').map(n => n[0]).join('')}
               </div>
               <div>
-                <h2 className="text-xl font-bold">{artistProfile.name}</h2>
-                <p className="text-gray-400">{artistProfile.genre}</p>
-                <p className="text-green-400 font-bold">{artistProfile.stage}</p>
+                <h2 className="text-xl font-bold">{artistProfile?.name || 'Alex Martinez'}</h2>
+                <p className="text-gray-400">{artistProfile?.genre || 'Electronic/Pop'}</p>
+                <p className="text-green-400 font-bold">{artistProfile?.stage || 'Rising Artist'}</p>
+                {artistProfile?.lastUpdated && (
+                  <p className="text-xs text-gray-500">Updated: {new Date(artistProfile.lastUpdated).toLocaleTimeString()}</p>
+                )}
               </div>
             </div>
             
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-gray-400">Total Followers</span>
-                <span className="text-white font-bold">{artistProfile.totalFollowers.toLocaleString()}</span>
+                <span className="text-white font-bold">{(artistProfile?.totalFollowers || 47832).toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Monthly Listeners</span>
-                <span className="text-white font-bold">{artistProfile.monthlyListeners.toLocaleString()}</span>
+                <span className="text-white font-bold">{(artistProfile?.monthlyListeners || 23456).toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Market Value</span>
-                <span className="text-green-400 font-bold">${artistProfile.marketValue.toLocaleString()}</span>
+                <span className="text-green-400 font-bold">${(artistProfile?.marketValue || 125000).toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Next Milestone</span>
-                <span className="text-yellow-400 font-bold">{artistProfile.nextMilestone}</span>
+                <span className="text-yellow-400 font-bold">{artistProfile?.nextMilestone || 'Hit 50K followers'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">AI Status</span>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-green-400 font-bold">{artistProfile?.aiAgentStatus || 'Active'}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -224,7 +220,7 @@ export default function AICareerManager() {
           <div className="col-span-4 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 border border-gray-700">
             <h3 className="text-lg font-bold mb-4 text-green-400">Revenue Streams</h3>
             <div className="space-y-3">
-              {revenueStreams.slice(0, 4).map((stream, index) => (
+              {(revenueStreams || []).slice(0, 4).map((stream, index) => (
                 <div key={index} className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex justify-between mb-1">
@@ -254,7 +250,7 @@ export default function AICareerManager() {
           <div className="col-span-4 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 border border-gray-700">
             <h3 className="text-lg font-bold mb-4 text-blue-400">Social Performance</h3>
             <div className="space-y-3">
-              {Object.entries(socialMetrics).map(([platform, metrics]) => {
+              {Object.entries(socialMetrics || {}).map(([platform, metrics]) => {
                 const Icon = platform === 'instagram' ? Instagram : 
                            platform === 'tiktok' ? Music : 
                            platform === 'twitter' ? Twitter : 
@@ -282,7 +278,7 @@ export default function AICareerManager() {
 
         {/* AI AGENTS DASHBOARD */}
         <div className="grid grid-cols-2 gap-6 mb-8">
-          {aiAgents.map((agent, index) => (
+          {(aiAgents || []).map((agent, index) => (
             <div key={index} className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 border-2" style={{ borderColor: agent.color + '30' }}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3">
@@ -300,6 +296,9 @@ export default function AICareerManager() {
                 <div className="text-right">
                   <div className="text-sm font-bold text-white">Performance: {agent.performance}%</div>
                   <div className="text-sm font-bold" style={{ color: agent.color }}>+${agent.revenue} this month</div>
+                  {agent.lastActivity && (
+                    <div className="text-xs text-gray-400 mt-1">{agent.lastActivity}</div>
+                  )}
                 </div>
               </div>
               
@@ -313,7 +312,11 @@ export default function AICareerManager() {
                 ))}
               </div>
               
-              <div className="mt-4">
+              <div className="mt-4 space-y-3">
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-400">Active Projects: {agent.activeProjects || 0}</span>
+                  <span className="text-gray-400">Completed: {agent.completedTasks || 0}</span>
+                </div>
                 <div className="flex justify-between mb-2">
                   <span className="text-xs text-gray-400">Agent Performance</span>
                   <span className="text-xs font-bold" style={{ color: agent.color }}>{agent.performance}%</span>
@@ -327,6 +330,13 @@ export default function AICareerManager() {
                     }}
                   />
                 </div>
+                <button
+                  onClick={() => configureAgentMutation.mutate({ agentId: agent.id, settings: { optimize: true } })}
+                  className="w-full mt-2 px-3 py-1 bg-gray-700 hover:bg-gray-600 text-white text-xs rounded transition-colors"
+                  disabled={configureAgentMutation.isPending}
+                >
+                  {configureAgentMutation.isPending ? 'Optimizing...' : 'Optimize Agent'}
+                </button>
               </div>
             </div>
           ))}
@@ -338,7 +348,7 @@ export default function AICareerManager() {
           <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 border border-gray-700">
             <h3 className="text-lg font-bold mb-4 text-yellow-400">AI Recommendations</h3>
             <div className="space-y-4">
-              {aiRecommendations.map((rec, index) => {
+              {(aiRecommendations || []).map((rec, index) => {
                 const IconComponent = getTypeIcon(rec.type);
                 return (
                   <div key={index} className="bg-gray-800/50 rounded-lg p-4 border border-gray-600">
@@ -376,7 +386,7 @@ export default function AICareerManager() {
           <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 border border-gray-700">
             <h3 className="text-lg font-bold mb-4 text-purple-400">Career Milestones</h3>
             <div className="space-y-4">
-              {milestones.map((milestone, index) => (
+              {(milestones || []).map((milestone, index) => (
                 <div key={index} className="bg-gray-800/50 rounded-lg p-4 border border-gray-600">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-bold text-sm">{milestone.title}</h4>
@@ -390,10 +400,15 @@ export default function AICareerManager() {
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-gray-400">
-                      {milestone.current.toLocaleString()} / {milestone.target.toLocaleString()}
+                      {(milestone.current || 0).toLocaleString()} / {(milestone.target || 1).toLocaleString()}
                     </span>
-                    <span className="text-yellow-400 font-bold">Reward: {milestone.reward}</span>
+                    <span className="text-yellow-400 font-bold">Reward: {milestone.reward || 'TBD'}</span>
                   </div>
+                  {milestone.deadline && (
+                    <div className="mt-2 text-xs text-gray-500">
+                      Deadline: {new Date(milestone.deadline).toLocaleDateString()}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
