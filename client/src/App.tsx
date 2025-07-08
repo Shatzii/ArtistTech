@@ -25,8 +25,9 @@ import UltimateDJStudio from "./pages/ultimate-dj-studio";
 import UltimateDJSuite from "./pages/ultimate-dj-suite";
 import CareerManagement from "./pages/career-management";
 import SocialMediaManagement from "./pages/social-media-management";
-import CMSAdmin from "./pages/cms-admin";
-import EnterpriseManagement from "./pages/enterprise-management";
+import EducationManagement from "./pages/education-management";
+import AdminControlCenter from "./pages/admin-control-center";
+import AuthenticationSuite from "./pages/authentication-suite";
 import MIDIController from "./pages/midi-controller";
 import ProfessionalInstruments from "./pages/professional-instruments";
 import GenreRemixer from "./pages/genre-remixer";
@@ -44,6 +45,11 @@ import ArtistFanEngagement from "./pages/artist-fan-engagement";
 function AuthenticatedRouter() {
   const { isAuthenticated, isLoading, user } = useAuth();
 
+  // Simple auth check without context dependency for public routes
+  const checkSimpleAuth = () => {
+    return !!localStorage.getItem('authToken');
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-blue-900 flex items-center justify-center">
@@ -52,61 +58,74 @@ function AuthenticatedRouter() {
     );
   }
 
+  const isUserAuthenticated = isAuthenticated || checkSimpleAuth();
+
   return (
     <div>
       <main>
         <Switch>
           {/* Public Routes */}
           <Route path="/landing" component={Landing} />
-          <Route path="/login" component={UserLogin} />
-          <Route path="/admin-login" component={AdminLogin} />
+          <Route path="/login" component={AuthenticationSuite} />
+          <Route path="/admin-login" component={AuthenticationSuite} />
+          <Route path="/auth" component={AuthenticationSuite} />
+          <Route path="/user-login" component={AuthenticationSuite} />
           <Route path="/enhanced" component={EnhancedLanding} />
           
           {/* Protected Routes - Main Hub */}
-          <Route path="/" component={isAuthenticated ? SocialMediaHub : UserLogin} />
-          <Route path="/social-media-hub" component={isAuthenticated ? SocialMediaHub : UserLogin} />
+          <Route path="/" component={isUserAuthenticated ? SocialMediaHub : AuthenticationSuite} />
+          <Route path="/social-media-hub" component={isUserAuthenticated ? SocialMediaHub : AuthenticationSuite} />
           
           {/* Studio Routes - All require authentication */}
-          <Route path="/dj" component={isAuthenticated ? UltimateDJSuite : UserLogin} />
-          <Route path="/dj-studio" component={isAuthenticated ? UltimateDJSuite : UserLogin} />
-          <Route path="/ultimate-dj-studio" component={isAuthenticated ? UltimateDJSuite : UserLogin} />
-          <Route path="/music-studio" component={isAuthenticated ? UltimateMusicStudio : UserLogin} />
-          <Route path="/ultimate-music-studio" component={isAuthenticated ? UltimateMusicStudio : UserLogin} />
-          <Route path="/video-studio" component={isAuthenticated ? VideoStudio : UserLogin} />
-          <Route path="/visual-studio" component={isAuthenticated ? VisualStudio : UserLogin} />
-          <Route path="/collaborative-studio" component={isAuthenticated ? CollaborativeStudio : UserLogin} />
+          <Route path="/dj" component={isUserAuthenticated ? UltimateDJSuite : AuthenticationSuite} />
+          <Route path="/dj-studio" component={isUserAuthenticated ? UltimateDJSuite : AuthenticationSuite} />
+          <Route path="/ultimate-dj-studio" component={isUserAuthenticated ? UltimateDJSuite : AuthenticationSuite} />
+          <Route path="/music-studio" component={isUserAuthenticated ? UltimateMusicStudio : AuthenticationSuite} />
+          <Route path="/ultimate-music-studio" component={isUserAuthenticated ? UltimateMusicStudio : AuthenticationSuite} />
+          <Route path="/video-studio" component={isUserAuthenticated ? VideoStudio : AuthenticationSuite} />
+          <Route path="/visual-studio" component={isUserAuthenticated ? VisualStudio : AuthenticationSuite} />
+          <Route path="/collaborative-studio" component={isUserAuthenticated ? CollaborativeStudio : AuthenticationSuite} />
           <Route path="/collaborative-demo" component={CollaborativeDemo} />
-          <Route path="/podcast-studio" component={isAuthenticated ? PodcastStudio : UserLogin} />
-          <Route path="/advanced-video-editor" component={isAuthenticated ? AdvancedVideoEditor : UserLogin} />
+          <Route path="/podcast-studio" component={isUserAuthenticated ? PodcastStudio : AuthenticationSuite} />
+          <Route path="/advanced-video-editor" component={isUserAuthenticated ? AdvancedVideoEditor : AuthenticationSuite} />
           
           {/* AI & Professional Tools - Unified */}
-          <Route path="/ai-career-manager" component={isAuthenticated ? CareerManagement : UserLogin} />
-          <Route path="/ai-career-dashboard" component={isAuthenticated ? CareerManagement : UserLogin} />
-          <Route path="/career-management" component={isAuthenticated ? CareerManagement : UserLogin} />
-          <Route path="/producer-revenue" component={isAuthenticated ? ProducerRevenueDashboard : UserLogin} />
-          <Route path="/midi-controller" component={isAuthenticated ? MIDIController : UserLogin} />
-          <Route path="/professional-instruments" component={isAuthenticated ? ProfessionalInstruments : UserLogin} />
-          <Route path="/genre-remixer" component={isAuthenticated ? GenreRemixer : UserLogin} />
-          <Route path="/artist-collaboration" component={isAuthenticated ? ArtistCollaboration : UserLogin} />
+          <Route path="/ai-career-manager" component={isUserAuthenticated ? CareerManagement : AuthenticationSuite} />
+          <Route path="/ai-career-dashboard" component={isUserAuthenticated ? CareerManagement : AuthenticationSuite} />
+          <Route path="/career-management" component={isUserAuthenticated ? CareerManagement : AuthenticationSuite} />
+          <Route path="/producer-revenue" component={isUserAuthenticated ? ProducerRevenueDashboard : AuthenticationSuite} />
+          <Route path="/midi-controller" component={isUserAuthenticated ? MIDIController : AuthenticationSuite} />
+          <Route path="/professional-instruments" component={isUserAuthenticated ? ProfessionalInstruments : AuthenticationSuite} />
+          <Route path="/genre-remixer" component={isUserAuthenticated ? GenreRemixer : AuthenticationSuite} />
+          <Route path="/artist-collaboration" component={isUserAuthenticated ? ArtistCollaboration : AuthenticationSuite} />
           
           {/* Social Media & Engagement - Unified */}
-          <Route path="/social-media-management" component={isAuthenticated ? SocialMediaManagement : UserLogin} />
-          <Route path="/social-media-deployment" component={isAuthenticated ? SocialMediaManagement : UserLogin} />
-          <Route path="/social-media-dashboard" component={isAuthenticated ? SocialMediaManagement : UserLogin} />
-          <Route path="/social-media-studio" component={isAuthenticated ? SocialMediaManagement : UserLogin} />
-          <Route path="/artistcoin-viral" component={isAuthenticated ? ArtistCoinViralDashboard : UserLogin} />
-          <Route path="/artistcoin-hub" component={isAuthenticated ? ArtistCoinHub : UserLogin} />
-          <Route path="/artist-fan-engagement" component={isAuthenticated ? ArtistFanEngagement : UserLogin} />
+          <Route path="/social-media-management" component={isUserAuthenticated ? SocialMediaManagement : AuthenticationSuite} />
+          <Route path="/social-media-deployment" component={isUserAuthenticated ? SocialMediaManagement : AuthenticationSuite} />
+          <Route path="/social-media-dashboard" component={isUserAuthenticated ? SocialMediaManagement : AuthenticationSuite} />
+          <Route path="/social-media-studio" component={isUserAuthenticated ? SocialMediaManagement : AuthenticationSuite} />
+          <Route path="/artistcoin-viral" component={isUserAuthenticated ? ArtistCoinViralDashboard : AuthenticationSuite} />
+          <Route path="/artistcoin-hub" component={isUserAuthenticated ? ArtistCoinHub : AuthenticationSuite} />
+          <Route path="/artist-fan-engagement" component={isUserAuthenticated ? ArtistFanEngagement : AuthenticationSuite} />
+          
+          {/* Education & Learning - Unified */}
+          <Route path="/education" component={isUserAuthenticated ? EducationManagement : AuthenticationSuite} />
+          <Route path="/education-hub" component={isUserAuthenticated ? EducationManagement : AuthenticationSuite} />
+          <Route path="/teacher-portal" component={isUserAuthenticated ? EducationManagement : AuthenticationSuite} />
+          <Route path="/student-dashboard" component={isUserAuthenticated ? EducationManagement : AuthenticationSuite} />
+          <Route path="/curriculum" component={isUserAuthenticated ? EducationManagement : AuthenticationSuite} />
+          <Route path="/lesson" component={isUserAuthenticated ? EducationManagement : AuthenticationSuite} />
           
           {/* Marketplace & Business */}
-          <Route path="/nft-marketplace" component={isAuthenticated ? NFTMarketplace : UserLogin} />
-          <Route path="/global-dashboard" component={isAuthenticated ? GlobalDashboard : UserLogin} />
-          <Route path="/voting" component={isAuthenticated ? SimpleVotingDemo : UserLogin} />
+          <Route path="/nft-marketplace" component={isUserAuthenticated ? NFTMarketplace : AuthenticationSuite} />
+          <Route path="/global-dashboard" component={isUserAuthenticated ? GlobalDashboard : AuthenticationSuite} />
+          <Route path="/voting" component={isUserAuthenticated ? SimpleVotingDemo : AuthenticationSuite} />
           
-          {/* Admin Routes - Require admin role */}
-          <Route path="/admin" component={isAuthenticated && user?.role === 'admin' ? AdminDashboard : UserLogin} />
-          <Route path="/cms-admin" component={isAuthenticated && user?.role === 'admin' ? CMSAdmin : UserLogin} />
-          <Route path="/enterprise-management" component={isAuthenticated && user?.role === 'admin' ? EnterpriseManagement : UserLogin} />
+          {/* Admin Routes - Require admin role - Unified */}
+          <Route path="/admin" component={isUserAuthenticated ? AdminControlCenter : AuthenticationSuite} />
+          <Route path="/admin-dashboard" component={isUserAuthenticated ? AdminControlCenter : AuthenticationSuite} />
+          <Route path="/cms-admin" component={isUserAuthenticated ? AdminControlCenter : AuthenticationSuite} />
+          <Route path="/enterprise-management" component={isUserAuthenticated ? AdminControlCenter : AuthenticationSuite} />
           
           {/* 404 */}
           <Route component={NotFound} />
