@@ -167,7 +167,7 @@ export default function SocialMediaHub() {
       description: "Professional DAW with AI composition, unlimited tracks, VST support",
       icon: Music,
       color: "from-purple-600 to-blue-600",
-      route: "/music-studio",
+      route: "/ultimate-music-studio",
       badge: "PRO"
     },
     {
@@ -176,7 +176,7 @@ export default function SocialMediaHub() {
       description: "Real-time stem separation, harmonic mixing, crowd analytics",
       icon: Headphones,
       color: "from-orange-600 to-red-600",
-      route: "/dj-studio",
+      route: "/ultimate-dj-studio",
       badge: "LIVE"
     },
     {

@@ -12,7 +12,7 @@ const navigationItems = [
   { path: '/video-studio', label: 'Video Studio', icon: Video, category: 'Visual', badge: 'NEW' },
   { path: '/visual-studio', label: 'Visual Arts', icon: Palette, category: 'Visual' },
   { path: '/collaborative-studio', label: 'Collaboration', icon: Users, category: 'Social' },
-  { path: '/business-dashboard', label: 'Business', icon: Briefcase, category: 'Business' },
+  { path: '/ai-career-manager', label: 'AI Career Manager', icon: Briefcase, category: 'Business' },
   { path: '/curriculum', label: 'Education', icon: GraduationCap, category: 'Education' }
 ];
 

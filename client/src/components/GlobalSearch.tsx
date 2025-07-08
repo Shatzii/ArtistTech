@@ -94,7 +94,7 @@ export default function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
       description: 'Analytics automation, marketing AI, revenue optimization',
       type: 'studio',
       category: 'business',
-      route: '/ai-career-dashboard',
+      route: '/ai-career-manager',
       tags: ['ai', 'career', 'analytics', 'marketing', 'revenue'],
       relevanceScore: 0.80
     }

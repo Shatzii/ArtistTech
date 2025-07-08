@@ -69,6 +69,22 @@ const studios: Studio[] = [
     color: 'from-teal-500 to-blue-500'
   },
   {
+    name: 'Advanced Video Editor',
+    path: '/advanced-video-editor',
+    icon: Video,
+    description: '15 Social Features • Multi-Platform • AI Enhancement',
+    color: 'from-orange-500 to-red-500',
+    new: true
+  },
+  {
+    name: 'Genre Remixer',
+    path: '/genre-remixer',
+    icon: Radio,
+    description: 'Cross-Genre AI • Viral Analysis • Music Video Creator',
+    color: 'from-yellow-500 to-orange-500',
+    new: true
+  },
+  {
     name: 'AI Career Dashboard',
     path: '/ai-career-dashboard',
     icon: TrendingUp,
