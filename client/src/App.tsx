@@ -22,6 +22,9 @@ import SocialMediaDeployment from "./pages/social-media-deployment";
 import NotFound from "./pages/not-found";
 import UltimateMusicStudio from "./pages/ultimate-music-studio";
 import UltimateDJStudio from "./pages/ultimate-dj-studio";
+import UltimateDJSuite from "./pages/ultimate-dj-suite";
+import CareerManagement from "./pages/career-management";
+import SocialMediaManagement from "./pages/social-media-management";
 import CMSAdmin from "./pages/cms-admin";
 import EnterpriseManagement from "./pages/enterprise-management";
 import MIDIController from "./pages/midi-controller";
@@ -64,11 +67,11 @@ function AuthenticatedRouter() {
           <Route path="/social-media-hub" component={isAuthenticated ? SocialMediaHub : UserLogin} />
           
           {/* Studio Routes - All require authentication */}
-          <Route path="/dj" component={isAuthenticated ? UltimateDJStudio : UserLogin} />
-          <Route path="/dj-studio" component={isAuthenticated ? UltimateDJStudio : UserLogin} />
+          <Route path="/dj" component={isAuthenticated ? UltimateDJSuite : UserLogin} />
+          <Route path="/dj-studio" component={isAuthenticated ? UltimateDJSuite : UserLogin} />
+          <Route path="/ultimate-dj-studio" component={isAuthenticated ? UltimateDJSuite : UserLogin} />
           <Route path="/music-studio" component={isAuthenticated ? UltimateMusicStudio : UserLogin} />
           <Route path="/ultimate-music-studio" component={isAuthenticated ? UltimateMusicStudio : UserLogin} />
-          <Route path="/ultimate-dj-studio" component={isAuthenticated ? UltimateDJStudio : UserLogin} />
           <Route path="/video-studio" component={isAuthenticated ? VideoStudio : UserLogin} />
           <Route path="/visual-studio" component={isAuthenticated ? VisualStudio : UserLogin} />
           <Route path="/collaborative-studio" component={isAuthenticated ? CollaborativeStudio : UserLogin} />
@@ -76,19 +79,21 @@ function AuthenticatedRouter() {
           <Route path="/podcast-studio" component={isAuthenticated ? PodcastStudio : UserLogin} />
           <Route path="/advanced-video-editor" component={isAuthenticated ? AdvancedVideoEditor : UserLogin} />
           
-          {/* AI & Professional Tools */}
-          <Route path="/ai-career-manager" component={isAuthenticated ? AICareerDashboard : UserLogin} />
-          <Route path="/ai-career-dashboard" component={isAuthenticated ? AICareerDashboard : UserLogin} />
+          {/* AI & Professional Tools - Unified */}
+          <Route path="/ai-career-manager" component={isAuthenticated ? CareerManagement : UserLogin} />
+          <Route path="/ai-career-dashboard" component={isAuthenticated ? CareerManagement : UserLogin} />
+          <Route path="/career-management" component={isAuthenticated ? CareerManagement : UserLogin} />
           <Route path="/producer-revenue" component={isAuthenticated ? ProducerRevenueDashboard : UserLogin} />
           <Route path="/midi-controller" component={isAuthenticated ? MIDIController : UserLogin} />
           <Route path="/professional-instruments" component={isAuthenticated ? ProfessionalInstruments : UserLogin} />
           <Route path="/genre-remixer" component={isAuthenticated ? GenreRemixer : UserLogin} />
           <Route path="/artist-collaboration" component={isAuthenticated ? ArtistCollaboration : UserLogin} />
           
-          {/* Social Media & Engagement */}
-          <Route path="/social-media-deployment" component={isAuthenticated ? SocialMediaDeployment : UserLogin} />
-          <Route path="/social-media-dashboard" component={isAuthenticated ? SocialMediaDashboard : UserLogin} />
-          <Route path="/social-media-studio" component={isAuthenticated ? SocialMediaStudio : UserLogin} />
+          {/* Social Media & Engagement - Unified */}
+          <Route path="/social-media-management" component={isAuthenticated ? SocialMediaManagement : UserLogin} />
+          <Route path="/social-media-deployment" component={isAuthenticated ? SocialMediaManagement : UserLogin} />
+          <Route path="/social-media-dashboard" component={isAuthenticated ? SocialMediaManagement : UserLogin} />
+          <Route path="/social-media-studio" component={isAuthenticated ? SocialMediaManagement : UserLogin} />
           <Route path="/artistcoin-viral" component={isAuthenticated ? ArtistCoinViralDashboard : UserLogin} />
           <Route path="/artistcoin-hub" component={isAuthenticated ? ArtistCoinHub : UserLogin} />
           <Route path="/artist-fan-engagement" component={isAuthenticated ? ArtistFanEngagement : UserLogin} />
