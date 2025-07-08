@@ -41,6 +41,9 @@ import ArtistCoinViralDashboard from "./pages/artistcoin-viral-dashboard";
 import ArtistCoinHub from "./pages/artistcoin-hub";
 import GlobalDashboard from "./pages/global-dashboard";
 import ArtistFanEngagement from "./pages/artist-fan-engagement";
+import UltimateSocialSuite from "./pages/ultimate-social-suite";
+import CreativeStudiosHub from "./pages/creative-studios-hub";
+import MonetizationHub from "./pages/monetization-hub";
 
 function AuthenticatedRouter() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -107,6 +110,11 @@ function AuthenticatedRouter() {
           <Route path="/artistcoin-viral" component={isUserAuthenticated ? ArtistCoinViralDashboard : AuthenticationSuite} />
           <Route path="/artistcoin-hub" component={isUserAuthenticated ? ArtistCoinHub : AuthenticationSuite} />
           <Route path="/artist-fan-engagement" component={isUserAuthenticated ? ArtistFanEngagement : AuthenticationSuite} />
+          
+          {/* Phase 3 Unified Suites */}
+          <Route path="/ultimate-social-suite" component={isUserAuthenticated ? UltimateSocialSuite : AuthenticationSuite} />
+          <Route path="/creative-studios-hub" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
+          <Route path="/monetization-hub" component={isUserAuthenticated ? MonetizationHub : AuthenticationSuite} />
           
           {/* Education & Learning - Unified */}
           <Route path="/education" component={isUserAuthenticated ? EducationManagement : AuthenticationSuite} />
