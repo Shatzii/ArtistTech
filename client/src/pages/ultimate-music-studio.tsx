@@ -12,8 +12,53 @@ import StudioNavigation from '../components/studio-navigation';
 import CuttingEdgeBeatMaker from '../components/cutting-edge-beatmaker';
 import { HolographicPanel, HolographicButton, DataStream } from '../components/holographic-ui';
 import NeuralBackground from '../components/neural-background';
+import CollaborativeEditor from '../components/CollaborativeEditor';
+import CollaborativeTimeline from '../components/CollaborativeTimeline';
 
 export default function UltimateMusicStudio() {
+  // COLLABORATIVE EDITING STATE
+  const [collaborativeMode, setCollaborativeMode] = useState(false);
+  const [sessionId] = useState(`music_session_${Date.now()}`);
+  const [collaborators, setCollaborators] = useState([
+    {
+      id: '1',
+      name: 'Alex Rodriguez (You)',
+      role: 'Producer',
+      status: 'active',
+      avatar: 'AR',
+      color: '#3b82f6'
+    },
+    {
+      id: '2', 
+      name: 'Sarah Chen',
+      role: 'Vocalist',
+      status: 'recording',
+      avatar: 'SC',
+      color: '#10b981'
+    },
+    {
+      id: '3',
+      name: 'Marcus Williams', 
+      role: 'Mix Engineer',
+      status: 'mixing',
+      avatar: 'MW',
+      color: '#f59e0b'
+    }
+  ]);
+
+  const [liveCollaboration, setLiveCollaboration] = useState({
+    activeEdits: [
+      { user: 'Sarah Chen', action: 'Recording vocals on Track 3', timestamp: Date.now() - 30000 },
+      { user: 'Marcus Williams', action: 'Adjusting EQ on master bus', timestamp: Date.now() - 15000 },
+      { user: 'Alex Rodriguez', action: 'Adding reverb to drums', timestamp: Date.now() - 5000 }
+    ],
+    conflicts: [],
+    versionControl: {
+      currentVersion: '2.1.4',
+      branches: ['main', 'vocal-experiment', 'beat-variation'],
+      pendingMerges: 2
+    }
+  });
   // HIT SONG ANALYZER STATE
   const [hitAnalysis, setHitAnalysis] = useState({
     currentHits: [
@@ -1041,8 +1086,15 @@ export default function UltimateMusicStudio() {
                   </div>
                 </div>
                 
-                <button className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 rounded-lg transition-colors">
-                  Start Collaboration
+                <button 
+                  onClick={() => setCollaborativeMode(!collaborativeMode)}
+                  className={`w-full font-bold py-2 rounded-lg transition-colors ${
+                    collaborativeMode 
+                      ? 'bg-green-500 hover:bg-green-600 text-white' 
+                      : 'bg-cyan-500 hover:bg-cyan-600 text-white'
+                  }`}
+                >
+                  {collaborativeMode ? '🤝 Live Collaboration Active' : '👥 Start Collaboration'}
                 </button>
               </div>
 
@@ -1267,6 +1319,131 @@ export default function UltimateMusicStudio() {
             </div>
           </div>
         </div>
+
+        {/* Enhanced Collaborative Editing Panel */}
+        {collaborativeMode && (
+          <div className="fixed top-24 right-6 z-50 w-96 space-y-4">
+            {/* Live Collaboration Status */}
+            <div className="bg-gray-900/95 backdrop-blur-lg border border-green-500/30 rounded-lg p-4 shadow-2xl">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-green-400 flex items-center">
+                  <Wifi className="w-5 h-5 mr-2 animate-pulse" />
+                  LIVE COLLABORATION
+                </h3>
+                <div className="text-xs text-gray-400">Session: {sessionId.slice(-6)}</div>
+              </div>
+
+              {/* Active Collaborators */}
+              <div className="space-y-2 mb-4">
+                {collaborators.map((collaborator) => (
+                  <div key={collaborator.id} className="flex items-center justify-between p-2 bg-gray-800/50 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div 
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                        style={{ backgroundColor: collaborator.color }}
+                      >
+                        {collaborator.avatar}
+                      </div>
+                      <div>
+                        <div className="font-bold text-sm">{collaborator.name}</div>
+                        <div className="text-xs text-gray-400">{collaborator.role}</div>
+                      </div>
+                    </div>
+                    <div className={`w-2 h-2 rounded-full ${
+                      collaborator.status === 'active' ? 'bg-green-500' :
+                      collaborator.status === 'recording' ? 'bg-red-500' :
+                      'bg-yellow-500'
+                    }`} />
+                  </div>
+                ))}
+              </div>
+
+              {/* Recent Activity */}
+              <div className="mb-4">
+                <h4 className="text-sm font-bold text-cyan-400 mb-2">Recent Activity</h4>
+                <div className="space-y-1 max-h-32 overflow-y-auto">
+                  {liveCollaboration.activeEdits.map((edit, index) => (
+                    <div key={index} className="text-xs p-2 bg-gray-800/30 rounded">
+                      <div className="text-white">{edit.user}</div>
+                      <div className="text-gray-400">{edit.action}</div>
+                      <div className="text-gray-500">{Math.floor((Date.now() - edit.timestamp) / 1000)}s ago</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Version Control */}
+              <div className="bg-gray-800/50 rounded-lg p-3 mb-4">
+                <h4 className="text-sm font-bold text-purple-400 mb-2">Version Control</h4>
+                <div className="flex justify-between text-xs mb-2">
+                  <span>Current: v{liveCollaboration.versionControl.currentVersion}</span>
+                  <span>{liveCollaboration.versionControl.pendingMerges} pending merges</span>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {liveCollaboration.versionControl.branches.map((branch, index) => (
+                    <span key={index} className="bg-purple-500/20 px-2 py-1 rounded text-xs text-purple-400">
+                      {branch}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Collaborative Actions */}
+              <div className="grid grid-cols-2 gap-2">
+                <button className="bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-2 px-3 rounded transition-colors">
+                  Share Screen
+                </button>
+                <button className="bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold py-2 px-3 rounded transition-colors">
+                  Voice Chat
+                </button>
+              </div>
+            </div>
+
+            {/* Integrated Collaborative Components */}
+            <CollaborativeEditor
+              sessionId={sessionId}
+              projectType="audio"
+              onUserJoin={(user) => {
+                setCollaborators(prev => [...prev.filter(c => c.id !== user.id), {
+                  id: user.id,
+                  name: user.name,
+                  role: user.role || 'Collaborator',
+                  status: user.status || 'active',
+                  avatar: user.name.split(' ').map(n => n[0]).join(''),
+                  color: user.color
+                }]);
+              }}
+              onUserLeave={(userId) => {
+                setCollaborators(prev => prev.filter(c => c.id !== userId));
+              }}
+            />
+
+            <CollaborativeTimeline
+              sessionId={sessionId}
+              projectType="audio"
+              userId="1"
+              userName="Alex Rodriguez"
+              onTrackEdit={(trackId, changes) => {
+                setLiveCollaboration(prev => ({
+                  ...prev,
+                  activeEdits: [
+                    { user: 'Alex Rodriguez', action: `Edited track ${trackId}`, timestamp: Date.now() },
+                    ...prev.activeEdits.slice(0, 4)
+                  ]
+                }));
+              }}
+              onClipEdit={(clipId, changes) => {
+                setLiveCollaboration(prev => ({
+                  ...prev,
+                  activeEdits: [
+                    { user: 'Alex Rodriguez', action: `Modified clip ${clipId}`, timestamp: Date.now() },
+                    ...prev.activeEdits.slice(0, 4)
+                  ]
+                }));
+              }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

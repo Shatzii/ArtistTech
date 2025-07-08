@@ -12,6 +12,7 @@ import VideoStudio from "./pages/video-studio";
 import VisualStudio from "./pages/visual-studio";
 import MusicStudio from "./pages/music-studio";
 import CollaborativeStudio from "./pages/collaborative-studio";
+import CollaborativeDemo from "./pages/collaborative-demo";
 import NFTMarketplace from "./pages/nft-marketplace";
 import PodcastStudio from "./pages/podcast-studio";
 import AICareerManager from "./pages/ai-career-manager";
@@ -70,6 +71,7 @@ function AuthenticatedRouter() {
           <Route path="/video-studio" component={isAuthenticated ? VideoStudio : UserLogin} />
           <Route path="/visual-studio" component={isAuthenticated ? VisualStudio : UserLogin} />
           <Route path="/collaborative-studio" component={isAuthenticated ? CollaborativeStudio : UserLogin} />
+          <Route path="/collaborative-demo" component={CollaborativeDemo} />
           <Route path="/podcast-studio" component={isAuthenticated ? PodcastStudio : UserLogin} />
           <Route path="/advanced-video-editor" component={isAuthenticated ? AdvancedVideoEditor : UserLogin} />
           

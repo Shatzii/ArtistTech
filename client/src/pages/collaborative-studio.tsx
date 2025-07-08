@@ -21,6 +21,8 @@ import { Slider } from '../components/ui/slider';
 import { useToast } from '../hooks/use-toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '../lib/queryClient';
+import CollaborativeEditor from '../components/CollaborativeEditor';
+import CollaborativeTimeline from '../components/CollaborativeTimeline';
 
 export default function CollaborativeStudio() {
   // REAL-TIME COLLABORATION STATE

@@ -1,5 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
+import { initializeCollaborativeEngine } from "./collaborative-engine";
 import { setupVite, serveStatic, log } from "./vite";
 
 // Initialize all advanced AI engines

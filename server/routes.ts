@@ -12,7 +12,7 @@ import { registerUser, loginUser, authenticateToken, seedDemoAccounts, type Auth
 import { createCheckoutSession, handleWebhook, getSubscriptionStatus } from "./payments";
 import { selfHostedMusicAI } from "./self-hosted-ai";
 import { selfHostedVideoAI } from "./ai-video-generation";
-import { initializeCollaborativeEngine } from "./collaborative-engine";
+import { initializeCollaborativeEngine, getCollaborativeEngine } from "./collaborative-engine";
 import { neuralAudioEngine } from "./neural-audio-engine";
 import { motionCaptureEngine } from "./motion-capture-engine";
 import { immersiveMediaEngine } from "./immersive-media-engine";
@@ -6447,7 +6447,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Collaborative editing routes
+  // Enhanced Real-time Collaborative Editing API
+  app.post("/api/collaboration/create-session", async (req, res) => {
+    try {
+      const { projectId, userId } = req.body;
+      const collaborativeEngine = getCollaborativeEngine();
+      
+      if (!collaborativeEngine) {
+        return res.status(500).json({ error: 'Collaborative engine not initialized' });
+      }
+
+      const sessionId = await collaborativeEngine.createSession(projectId, userId);
+      res.json({ sessionId, message: 'Real-time collaboration session created' });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/collaboration/session/:sessionId/status", async (req, res) => {
+    try {
+      const { sessionId } = req.params;
+      const collaborativeEngine = getCollaborativeEngine();
+      
+      if (!collaborativeEngine) {
+        return res.status(500).json({ error: 'Collaborative engine not initialized' });
+      }
+
+      const status = collaborativeEngine.getSessionStatus(sessionId);
+      if (!status) {
+        return res.status(404).json({ error: 'Session not found' });
+      }
+      res.json(status);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/collaboration/sessions/all", async (req, res) => {
+    try {
+      const collaborativeEngine = getCollaborativeEngine();
+      
+      if (!collaborativeEngine) {
+        return res.status(500).json({ error: 'Collaborative engine not initialized' });
+      }
+
+      const sessions = collaborativeEngine.getAllSessions();
+      res.json({ sessions, total: sessions.length });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Legacy collaborative editing routes
   app.get("/api/collaboration/sessions", authenticateToken, async (req, res) => {
     try {
       const stats = collaborativeEngine.getSessionStats();
