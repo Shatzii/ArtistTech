@@ -9,6 +9,9 @@ import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import Waveform from './Waveform';
 import { useAudioEngine } from '@/hooks/useAudioEngine';
+import AIAssistant from './AIAssistant';
+import RealTimeMetrics from './RealTimeMetrics';
+import AdvancedAudioProcessor from './AdvancedAudioProcessor';
 
 interface DJDeck {
   id: 'left' | 'right';
@@ -45,6 +48,9 @@ export default function DJController({ onMixChange, realTimeAnalytics = false }:
   const [sync, setSync] = useState(false);
   const [autoCue, setAutoCue] = useState(true);
   const [beatmatch, setBeatmatch] = useState(false);
+  const [showAIAssistant, setShowAIAssistant] = useState(true);
+  const [showMetrics, setShowMetrics] = useState(true);
+  const [showAdvancedProcessor, setShowAdvancedProcessor] = useState(false);
   
   const [decks, setDecks] = useState<{ left: DJDeck; right: DJDeck }>({
     left: {
@@ -415,6 +421,43 @@ export default function DJController({ onMixChange, realTimeAnalytics = false }:
           </div>
         </div>
       </div>
+
+      {/* Professional Enhancement Panels */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        {/* AI Assistant */}
+        {showAIAssistant && (
+          <div className="lg:col-span-1">
+            <AIAssistant 
+              context="dj"
+              onSuggestion={(suggestion) => {
+                console.log('DJ AI Suggestion:', suggestion);
+              }}
+            />
+          </div>
+        )}
+
+        {/* Real-time Metrics */}
+        {showMetrics && (
+          <div className="lg:col-span-2">
+            <RealTimeMetrics context="live" />
+          </div>
+        )}
+      </div>
+
+      {/* Advanced Audio Processor */}
+      {showAdvancedProcessor && (
+        <div className="mt-6">
+          <AdvancedAudioProcessor
+            onEffectChange={(effects) => {
+              effects.forEach(effect => {
+                if (effect.enabled) {
+                  audioEngine.setMasterEffect(effect.name.toLowerCase(), effect.parameters);
+                }
+              });
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

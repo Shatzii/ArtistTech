@@ -14,6 +14,9 @@ import { useAudioEngine } from '@/hooks/useAudioEngine';
 import { useCollaborativeSession } from '@/hooks/useCollaborativeSession';
 import CollaborativePanel from './CollaborativePanel';
 import CollaborativeCursor from './CollaborativeCursor';
+import AIAssistant from './AIAssistant';
+import RealTimeMetrics from './RealTimeMetrics';
+import AdvancedAudioProcessor from './AdvancedAudioProcessor';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 
@@ -48,6 +51,9 @@ export default function MusicStudioInterface() {
   const spectrumRef = useRef<HTMLCanvasElement>(null);
   const [showRecordingPanel, setShowRecordingPanel] = useState(false);
   const [showMasterEffects, setShowMasterEffects] = useState(false);
+  const [showAIAssistant, setShowAIAssistant] = useState(true);
+  const [showMetrics, setShowMetrics] = useState(true);
+  const [showAdvancedProcessor, setShowAdvancedProcessor] = useState(false);
 
   // Real-time spectrum visualization
   useEffect(() => {
@@ -469,6 +475,20 @@ export default function MusicStudioInterface() {
         
         <div className="flex items-center gap-2">
           <Button 
+            onClick={() => setShowAIAssistant(!showAIAssistant)} 
+            variant={showAIAssistant ? "default" : "outline"}
+            className="border-purple-500 text-purple-400 hover:bg-purple-500/20"
+          >
+            🤖 AI Assistant
+          </Button>
+          <Button 
+            onClick={() => setShowAdvancedProcessor(!showAdvancedProcessor)} 
+            variant={showAdvancedProcessor ? "default" : "outline"}
+            className="border-green-500 text-green-400 hover:bg-green-500/20"
+          >
+            🎛️ Pro Audio
+          </Button>
+          <Button 
             onClick={() => setShowCollaboration(!showCollaboration)} 
             variant={showCollaboration ? "default" : "outline"}
             className={showCollaboration ? "bg-cyan-600 hover:bg-cyan-700" : "border-cyan-500 text-cyan-400 hover:bg-cyan-500/20"}
@@ -645,6 +665,43 @@ export default function MusicStudioInterface() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Professional Enhancement Panels */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        {/* AI Assistant */}
+        {showAIAssistant && (
+          <div className="lg:col-span-1">
+            <AIAssistant 
+              context="music"
+              onSuggestion={(suggestion) => {
+                console.log('AI Suggestion received:', suggestion);
+              }}
+            />
+          </div>
+        )}
+
+        {/* Real-time Metrics */}
+        {showMetrics && (
+          <div className="lg:col-span-2">
+            <RealTimeMetrics context="studio" />
+          </div>
+        )}
+      </div>
+
+      {/* Advanced Audio Processor */}
+      {showAdvancedProcessor && (
+        <div className="mb-6">
+          <AdvancedAudioProcessor
+            onEffectChange={(effects) => {
+              effects.forEach(effect => {
+                if (effect.enabled) {
+                  audioEngine.setMasterEffect(effect.name.toLowerCase(), effect.parameters);
+                }
+              });
+            }}
+          />
+        </div>
+      )}
 
       {/* Track List */}
       <div className="space-y-4">
