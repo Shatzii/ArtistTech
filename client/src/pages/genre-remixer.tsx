@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { apiRequest } from '../lib/queryClient';
-import { SiInstagram, SiYoutube, SiTwitter, SiFacebook, SiTiktok, SiSpotify, SiSoundcloud, SiApple } from 'react-icons/si';
+import { SiInstagram, SiYoutube, SiX, SiFacebook, SiTiktok, SiSpotify, SiSoundcloud, SiApplemusic } from 'react-icons/si';
 import { 
   Play, 
   Pause, 
@@ -135,7 +135,7 @@ export default function GenreRemixer() {
   const [musicPlatforms] = useState([
     { id: 'spotify', name: 'Spotify', icon: SiSpotify, connected: true, streams: 245000 },
     { id: 'soundcloud', name: 'SoundCloud', icon: SiSoundcloud, connected: true, streams: 89000 },
-    { id: 'apple', name: 'Apple Music', icon: SiApple, connected: true, streams: 156000 },
+    { id: 'apple', name: 'Apple Music', icon: SiApplemusic, connected: true, streams: 156000 },
     { id: 'youtube', name: 'YouTube Music', icon: SiYoutube, connected: true, streams: 432000 },
     { id: 'instagram', name: 'Instagram Reels', icon: SiInstagram, connected: true, streams: 523000 },
     { id: 'tiktok', name: 'TikTok Music', icon: VideoIcon, connected: true, streams: 1200000 }

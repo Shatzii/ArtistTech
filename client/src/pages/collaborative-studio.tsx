@@ -11,7 +11,7 @@ import {
   Tv, Radio, Target, Wand2, Sparkles, Trending, Activity, BookOpen, PaintBucket,
   Megaphone, Clock3, Users2, Heart, Repeat2, Eye as Views, MessageSquare
 } from 'lucide-react';
-import { SiInstagram, SiYoutube, SiTwitter, SiFacebook, SiTiktok } from 'react-icons/si';
+import { SiInstagram, SiYoutube, SiX, SiFacebook, SiTiktok } from 'react-icons/si';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
@@ -148,7 +148,7 @@ export default function CollaborativeStudio() {
     { id: 'instagram', name: 'Instagram', icon: SiInstagram, connected: true, followers: 15420 },
     { id: 'tiktok', name: 'TikTok', icon: SiTiktok, connected: true, followers: 8750 },
     { id: 'youtube', name: 'YouTube', icon: SiYoutube, connected: true, followers: 32100 },
-    { id: 'twitter', name: 'Twitter', icon: SiTwitter, connected: false, followers: 0 },
+    { id: 'twitter', name: 'Twitter', icon: SiX, connected: false, followers: 0 },
     { id: 'facebook', name: 'Facebook', icon: SiFacebook, connected: true, followers: 12300 },
     { id: 'twitch', name: 'Twitch', icon: Twitch, connected: true, followers: 5680 }
   ]);
