@@ -8,7 +8,7 @@ import { predictiveAnalyticsEngine } from "./predictive-analytics-engine";
 import { spatialInterfaceEngine } from "./spatial-interface-engine";
 import { enterpriseAIManagement } from "./enterprise-ai-management";
 import { LiveStreamingService } from "./websocket";
-import { registerUser, loginUser, authenticateToken, seedDemoAccounts, type AuthRequest } from "./auth";
+// Using simple demo authentication - no database required
 import { createCheckoutSession, handleWebhook, getSubscriptionStatus } from "./payments";
 import { selfHostedMusicAI } from "./self-hosted-ai";
 import { selfHostedVideoAI } from "./ai-video-generation";
@@ -66,16 +66,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize Collaborative Engine for real-time editing
   const collaborativeEngine = initializeCollaborativeEngine(httpServer);
 
-  // Seed demo accounts on startup
-  await seedDemoAccounts();
+  // Simple demo authentication system (no database required)
+  
+  // Demo authentication middleware - validates base64 encoded tokens
+  const authenticateToken = (req: any, res: any, next: any) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
 
-  // Authentication middleware using real JWT verification
+    if (!token) {
+      return res.status(401).json({ message: 'Access token required' });
+    }
+
+    try {
+      // Decode the base64 token
+      const decoded = JSON.parse(Buffer.from(token, 'base64').toString('utf-8'));
+      
+      // Check if token is expired
+      if (decoded.exp && Date.now() > decoded.exp) {
+        return res.status(401).json({ message: 'Token expired' });
+      }
+      
+      // Attach user info to request
+      req.user = decoded;
+      next();
+    } catch (error) {
+      return res.status(403).json({ message: 'Invalid token' });
+    }
+  };
+
+  // Demo type for requests with user info
+  interface AuthRequest extends Request {
+    user?: {
+      id: string;
+      email: string;
+      role: string;
+    };
+  }
 
   // Authentication routes
   app.post("/api/auth/register", async (req, res) => {
     try {
-      const result = await registerUser(req.body);
-      res.json(result);
+      // Demo registration - just return success
+      const { email, name } = req.body;
+      
+      const user = {
+        id: Date.now().toString(), // Simple ID generation
+        email,
+        name,
+        username: email.split('@')[0],
+        role: 'user' as const
+      };
+      
+      const token = Buffer.from(JSON.stringify({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        exp: Date.now() + 24 * 60 * 60 * 1000 // 24 hours
+      })).toString('base64');
+      
+      res.json({ ...user, token });
     } catch (error: any) {
       res.status(400).json({ error: error.message });
     }
@@ -84,17 +133,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/login", async (req, res) => {
     try {
       const { email, password } = req.body;
-      const result = await loginUser(email, password);
-      res.json(result);
+      
+      // Demo credentials check
+      if (email === 'user@artisttech.com' && password === 'demo123') {
+        const user = {
+          id: '1',
+          email: 'user@artisttech.com',
+          name: 'Demo User',
+          username: 'demo_user',
+          role: 'user' as const
+        };
+        
+        const token = Buffer.from(JSON.stringify({
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          exp: Date.now() + 24 * 60 * 60 * 1000 // 24 hours
+        })).toString('base64');
+        
+        return res.json({ ...user, token });
+      }
+      
+      if (email === 'admin@artisttech.com' && password === 'admin2024!') {
+        const user = {
+          id: '2',
+          email: 'admin@artisttech.com',
+          name: 'Admin User',
+          username: 'admin_user',
+          role: 'admin' as const
+        };
+        
+        const token = Buffer.from(JSON.stringify({
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          exp: Date.now() + 24 * 60 * 60 * 1000 // 24 hours
+        })).toString('base64');
+        
+        return res.json({ ...user, token });
+      }
+      
+      return res.status(401).json({ error: 'Invalid credentials' });
     } catch (error: any) {
-      res.status(401).json({ error: error.message });
+      res.status(500).json({ error: error.message });
     }
   });
 
   // User profile route
   app.get("/api/auth/user", authenticateToken, async (req: AuthRequest, res) => {
     try {
-      const user = await storage.getUser(req.user!.id);
+      const user = req.user;
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
@@ -102,13 +190,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({
         id: user.id,
         email: user.email,
-        name: user.name,
-        userType: user.userType,
-        subscriptionTier: user.subscriptionTier,
-        subscriptionStatus: user.subscriptionStatus,
-        profileImageUrl: user.profileImageUrl,
-        emailVerified: user.emailVerified,
-        createdAt: user.createdAt
+        name: user.email === 'admin@artisttech.com' ? 'Admin User' : 'Demo User',
+        role: user.role,
+        userType: 'demo',
+        subscriptionTier: 'premium',
+        subscriptionStatus: 'active',
+        profileImageUrl: null,
+        emailVerified: true,
+        createdAt: new Date().toISOString()
       });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
