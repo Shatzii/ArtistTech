@@ -385,10 +385,6 @@ export const insertUserSchema = createInsertSchema(users, {
   email: z.string().email(),
   password: z.string().min(8),
   name: z.string().min(1),
-}).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
 });
 
 export const loginUserSchema = z.object({
@@ -396,58 +392,24 @@ export const loginUserSchema = z.object({
   password: z.string().min(1),
 });
 
-export const insertProjectSchema = createInsertSchema(projects).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
+export const insertProjectSchema = createInsertSchema(projects);
 
-export const insertAudioFileSchema = createInsertSchema(audioFiles).omit({
-  id: true,
-  createdAt: true,
-});
+export const insertAudioFileSchema = createInsertSchema(audioFiles);
 
-export const insertVideoFileSchema = createInsertSchema(videoFiles).omit({
-  id: true,
-  createdAt: true,
-});
+export const insertVideoFileSchema = createInsertSchema(videoFiles);
 
-export const insertAiGenerationSchema = createInsertSchema(aiGenerations).omit({
-  id: true,
-  createdAt: true,
-  completedAt: true,
-});
+export const insertAiGenerationSchema = createInsertSchema(aiGenerations);
 
 // CMS validation schemas
-export const insertCmsSettingSchema = createInsertSchema(cmsSettings).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
+export const insertCmsSettingSchema = createInsertSchema(cmsSettings);
 
-export const insertCmsPageSchema = createInsertSchema(cmsPages).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
+export const insertCmsPageSchema = createInsertSchema(cmsPages);
 
-export const insertCmsFeatureSchema = createInsertSchema(cmsFeatures).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
+export const insertCmsFeatureSchema = createInsertSchema(cmsFeatures);
 
-export const insertCmsMediaSchema = createInsertSchema(cmsMedia).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
+export const insertCmsMediaSchema = createInsertSchema(cmsMedia);
 
-export const insertCmsNavigationSchema = createInsertSchema(cmsNavigation).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
+export const insertCmsNavigationSchema = createInsertSchema(cmsNavigation);
 
 // Types
 export type User = typeof users.$inferSelect;
@@ -716,34 +678,15 @@ export const marketplacePurchases = pgTable("marketplace_purchases", {
 });
 
 // Creative Economy Schema Validation
-export const insertCreativeCurrencySchema = createInsertSchema(creativeCurrency).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
+export const insertCreativeCurrencySchema = createInsertSchema(creativeCurrency);
 
-export const insertListeningRewardSchema = createInsertSchema(listeningRewards).omit({
-  id: true,
-  createdAt: true,
-});
+export const insertListeningRewardSchema = createInsertSchema(listeningRewards);
 
-export const insertArtistEarningSchema = createInsertSchema(artistEarnings).omit({
-  id: true,
-  createdAt: true,
-  processedAt: true,
-});
+export const insertArtistEarningSchema = createInsertSchema(artistEarnings);
 
-export const insertCreativeNFTSchema = createInsertSchema(creativeNFTs).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
+export const insertCreativeNFTSchema = createInsertSchema(creativeNFTs);
 
-export const insertMarketplaceListingSchema = createInsertSchema(marketplaceListing).omit({
-  id: true,
-  listedAt: true,
-  soldAt: true,
-});
+export const insertMarketplaceListingSchema = createInsertSchema(marketplaceListing);
 
 // Creative Economy Types
 export type CreativeCurrency = typeof creativeCurrency.$inferSelect;

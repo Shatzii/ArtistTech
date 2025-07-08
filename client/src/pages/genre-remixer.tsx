@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '../lib/queryClient';
 import { 
   Shuffle, Music, Zap, Play, Pause, Volume2, Download,
-  Settings, TrendingUp, Star, Target, Layers, Waveform,
+  Settings, TrendingUp, Star, Target, Layers, Waves,
   BarChart3, Sliders, Clock, Award, ArrowRight, Sparkles
 } from 'lucide-react';
 

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Waveform, BarChart3, Settings, Sliders, Zap, Filter, Volume2 } from 'lucide-react';
+import { Activity, BarChart3, Settings, Sliders, Zap, Filter, Volume2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
