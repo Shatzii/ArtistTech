@@ -115,7 +115,7 @@ export default function EnhancedLanding() {
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-900/50 to-pink-900/50"></div>
         <div className="relative max-w-7xl mx-auto px-4 pt-20 pb-16">
-          
+
           {/* Main Headline */}
           <div className="text-center mb-16">
             <h1 className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-6">
@@ -127,7 +127,7 @@ export default function EnhancedLanding() {
             <p className="text-xl text-gray-300 mb-8 max-w-4xl mx-auto">
               The world's first AI-powered multimedia empire. Replace TikTok, Instagram, Spotify, and YouTube with one revolutionary platform that pays artists 10x more.
             </p>
-            
+
             {/* Quick Access Buttons */}
             <div className="flex flex-wrap justify-center gap-4 mb-12">
               <Link href="/login">
@@ -168,10 +168,10 @@ export default function EnhancedLanding() {
                         </button>
                       </Link>
                     </div>
-                    
+
                     <h3 className="text-xl font-bold text-white mb-2">{studio.name}</h3>
                     <p className="text-gray-300 text-sm mb-4">{studio.description}</p>
-                    
+
                     {/* Feature List */}
                     <div className={`transition-all duration-300 ${
                       activeStudio === studio.id ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'

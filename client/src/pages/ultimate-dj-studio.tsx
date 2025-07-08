@@ -16,7 +16,7 @@ export default function UltimateDJStudio() {
     engagement: 94,
     faceDetection: true
   });
-  
+
   const [tracks, setTracks] = useState({
     deckA: {
       title: "Epic Future Bass",
@@ -113,7 +113,7 @@ export default function UltimateDJStudio() {
           </div>
         </div>
       </div>
-      
+
       {/* STUDIO HEADER */}
       <div className="bg-gradient-to-r from-black via-blue-900/50 to-black border-b-2 border-blue-500/30 p-3 relative z-10">
         <div className="flex items-center justify-between">
@@ -215,7 +215,7 @@ export default function UltimateDJStudio() {
                         <span className="text-green-400">{tracks.deckA.energy}% Energy</span>
                       </div>
                     </div>
-                    
+
                     <div className="h-16 bg-gradient-to-r from-blue-500/20 to-blue-600/20 rounded border border-blue-500/30 flex items-center justify-center">
                       <div className="text-blue-400 text-sm">WAVEFORM DISPLAY</div>
                     </div>
@@ -339,7 +339,7 @@ export default function UltimateDJStudio() {
                         <span className="text-green-400">{tracks.deckB.energy}% Energy</span>
                       </div>
                     </div>
-                    
+
                     <div className="h-16 bg-gradient-to-r from-red-500/20 to-red-600/20 rounded border border-red-500/30 flex items-center justify-center">
                       <div className="text-red-400 text-sm">WAVEFORM DISPLAY</div>
                     </div>
