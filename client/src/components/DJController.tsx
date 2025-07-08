@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { 
   Play, Pause, Volume2, RotateCcw, Sliders, 
-  Filter, Zap, Radio, Music, Headphones 
+  Filter, Zap, Radio, Music, Headphones, 
+  Sync, Shuffle, Settings, Upload
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -39,6 +40,12 @@ interface DJControllerProps {
 }
 
 export default function DJController({ onMixChange, realTimeAnalytics = false }: DJControllerProps) {
+  const audioEngine = useAudioEngine();
+  const [crossfader, setCrossfader] = useState(50);
+  const [sync, setSync] = useState(false);
+  const [autoCue, setAutoCue] = useState(true);
+  const [beatmatch, setBeatmatch] = useState(false);
+  
   const [decks, setDecks] = useState<{ left: DJDeck; right: DJDeck }>({
     left: {
       id: 'left',

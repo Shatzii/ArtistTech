@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   Play, Pause, Square, Volume2, Music, Mic, 
   Upload, Save, Share2, Plus, Trash2, Settings,
@@ -43,10 +43,52 @@ interface Project {
 }
 
 export default function MusicStudioInterface() {
+  const audioEngine = useAudioEngine();
+  const [spectrum, setSpectrum] = useState<Uint8Array>(new Uint8Array(0));
+  const spectrumRef = useRef<HTMLCanvasElement>(null);
+  const [showRecordingPanel, setShowRecordingPanel] = useState(false);
+  const [showMasterEffects, setShowMasterEffects] = useState(false);
+
+  // Real-time spectrum visualization
+  useEffect(() => {
+    const updateSpectrum = () => {
+      const spectrumData = audioEngine.getSpectrum();
+      setSpectrum(spectrumData);
+      
+      if (spectrumRef.current && spectrumData.length > 0) {
+        const canvas = spectrumRef.current;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        
+        const width = canvas.width;
+        const height = canvas.height;
+        
+        ctx.clearRect(0, 0, width, height);
+        
+        const barWidth = width / spectrumData.length;
+        let x = 0;
+        
+        for (let i = 0; i < spectrumData.length; i++) {
+          const barHeight = (spectrumData[i] / 255) * height;
+          
+          const hue = (i / spectrumData.length) * 360;
+          ctx.fillStyle = `hsl(${hue}, 70%, 60%)`;
+          ctx.fillRect(x, height - barHeight, barWidth - 1, barHeight);
+          
+          x += barWidth;
+        }
+      }
+      
+      requestAnimationFrame(updateSpectrum);
+    };
+    
+    updateSpectrum();
+  }, [audioEngine]);
+
   const [project, setProject] = useState<Project>({
     name: 'New Project',
-    bpm: 120,
-    masterVolume: 75,
+    bpm: audioEngine.bpm,
+    masterVolume: audioEngine.volume,
     tracks: [
       { id: '1', name: 'Kick', color: 'bg-red-500', volume: 80, muted: false, solo: false, pan: 0, effects: { reverb: 0, delay: 0, filter: 50, compressor: 0 } },
       { id: '2', name: 'Snare', color: 'bg-blue-500', volume: 70, muted: false, solo: false, pan: 0, effects: { reverb: 0, delay: 0, filter: 50, compressor: 0 } },
@@ -162,7 +204,76 @@ export default function MusicStudioInterface() {
     }
   };
 
-  const handleFileUpload = async (file: File, trackId: string) => {
+  const handleFileUpload = async (file: File, trackId?: string) => {
+    try {
+      const audioTrack = await audioEngine.uploadAudio(file);
+      
+      if (trackId) {
+        // Update existing track
+        updateTrack(trackId, { 
+          audioFileId: audioTrack.id, 
+          name: audioTrack.name 
+        });
+      } else {
+        // Add new track
+        const newTrack: Track = {
+          id: audioTrack.id,
+          name: audioTrack.name,
+          color: '#3b82f6',
+          volume: 75,
+          muted: false,
+          solo: false,
+          pan: 0,
+          effects: { reverb: 0, delay: 0, filter: 0, compressor: 0 },
+          audioFileId: audioTrack.id
+        };
+        
+        setProject(prev => ({
+          ...prev,
+          tracks: [...prev.tracks, newTrack]
+        }));
+      }
+    } catch (error) {
+      console.error('Upload failed:', error);
+    }
+  };
+
+  // Handle recording
+  const handleRecord = () => {
+    if (audioEngine.isRecording) {
+      audioEngine.stopRecording();
+      setShowRecordingPanel(false);
+    } else {
+      audioEngine.record();
+      setShowRecordingPanel(true);
+    }
+  };
+
+  // Handle export
+  const handleExport = async (format: 'wav' | 'mp3') => {
+    try {
+      const blob = await audioEngine.exportProject(format);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${project.name}.${format}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error exporting project:', error);
+    }
+  };
+
+  // Format time display
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const handleExportFile = async (file: File, trackId: string) => {
     try {
       const uploadedTrack = await audioEngine.uploadAudio(file);
       updateTrack(trackId, { 
@@ -366,11 +477,11 @@ export default function MusicStudioInterface() {
             Collaboration {isConnected ? `(${session?.users.length || 0})` : '(Offline)'}
           </Button>
           <Button
-            variant={isRecording ? "destructive" : "default"}
-            onClick={() => setIsRecording(!isRecording)}
+            variant={audioEngine.isRecording ? "destructive" : "default"}
+            onClick={handleRecord}
           >
             <Mic className="h-4 w-4 mr-2" />
-            {isRecording ? 'Stop Recording' : 'Record'}
+            {audioEngine.isRecording ? 'Stop Recording' : 'Record'}
           </Button>
           <Button
             onClick={handleSaveProject}
@@ -379,34 +490,112 @@ export default function MusicStudioInterface() {
             <Save className="h-4 w-4 mr-2" />
             Save Project
           </Button>
-          <Button variant="outline">
-            <Share2 className="h-4 w-4 mr-2" />
-            Export
-          </Button>
+          <div className="flex gap-1">
+            <Button variant="outline" onClick={() => handleExport('wav')}>
+              <Download className="h-4 w-4 mr-2" />
+              Export WAV
+            </Button>
+            <Button variant="outline" onClick={() => handleExport('mp3')}>
+              <Download className="h-4 w-4 mr-2" />
+              Export MP3
+            </Button>
+          </div>
         </div>
       </div>
+
+      {/* Professional Transport Controls */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center">
+              <Play className="h-5 w-5 mr-2" />
+              Transport Controls
+            </div>
+            <div className="text-sm font-mono bg-black/20 px-3 py-1 rounded">
+              {formatTime(audioEngine.currentTime)} / {formatTime(audioEngine.duration)}
+            </div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center space-x-4 mb-6">
+            <Button 
+              size="lg"
+              variant="ghost"
+              onClick={audioEngine.stop}
+            >
+              <Square className="h-6 w-6" />
+            </Button>
+            <Button 
+              size="lg"
+              variant={audioEngine.isPlaying ? "default" : "ghost"}
+              onClick={audioEngine.isPlaying ? audioEngine.pause : audioEngine.play}
+              disabled={audioEngine.isLoading}
+            >
+              {audioEngine.isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
+            </Button>
+            <Button 
+              size="lg"
+              variant={audioEngine.isRecording ? "destructive" : "ghost"}
+              onClick={handleRecord}
+            >
+              <Mic className="h-6 w-6" />
+            </Button>
+          </div>
+          
+          {/* Spectrum Analyzer */}
+          <div className="mb-6">
+            <h3 className="text-sm font-medium mb-2">Real-time Spectrum Analyzer</h3>
+            <canvas
+              ref={spectrumRef}
+              width={800}
+              height={150}
+              className="w-full h-24 bg-black/10 rounded border"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Master Controls */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
             <Sliders className="h-5 w-5 mr-2" />
-            Master Controls
+            Master Controls & Effects
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {/* Master Volume */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Volume2 className="h-4 w-4" />
-                <span className="text-sm">{project.masterVolume}%</span>
+                <span className="text-sm">{audioEngine.volume}%</span>
               </div>
               <Slider
-                value={[project.masterVolume]}
-                onValueChange={([value]) => setProject(prev => ({ ...prev, masterVolume: value }))}
+                value={[audioEngine.volume]}
+                onValueChange={([value]) => audioEngine.setVolume(value)}
                 min={0}
                 max={100}
+                step={1}
+                className="w-full"
+              />
+            </div>
+
+            {/* Master Effects */}
+            {Object.entries(audioEngine.masterEffects).map(([effect, value]) => (
+              <div key={effect} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm capitalize flex items-center">
+                    <Filter className="h-4 w-4 mr-1" />
+                    {effect}
+                  </span>
+                  <span className="text-sm">{value}%</span>
+                </div>
+                <Slider
+                  value={[value]}
+                  onValueChange={([newValue]) => audioEngine.setMasterEffect(effect, newValue)}
+                  min={0}
+                  max={100}
                 step={1}
                 className="w-full"
               />
