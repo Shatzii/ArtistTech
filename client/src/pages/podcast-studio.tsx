@@ -3,6 +3,9 @@ import { Link } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '../hooks/use-toast';
 import { apiRequest } from '../lib/queryClient';
+import AIAssistant from '../components/AIAssistant';
+import RealTimeMetrics from '../components/RealTimeMetrics';
+import AdvancedAudioProcessor from '../components/AdvancedAudioProcessor';
 import { 
   Mic, Headphones, Volume2, Play, Pause, Square, Circle, Settings,
   BarChart3, Users, Upload, Download, Share2, Edit3,
@@ -31,6 +34,11 @@ export default function PodcastStudio() {
     listeners: 1247,
     chatActive: true
   });
+
+  // AI Enhancement Controls
+  const [showAIAssistant, setShowAIAssistant] = useState(true);
+  const [showMetrics, setShowMetrics] = useState(true);
+  const [showAdvancedProcessor, setShowAdvancedProcessor] = useState(false);
 
   // NEW: Episode Management State
   const [newEpisode, setNewEpisode] = useState({
@@ -740,6 +748,69 @@ export default function PodcastStudio() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* AI Enhancement Suite */}
+        <div className="mt-8 space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-white">AI Enhancement Suite</h2>
+            <div className="flex space-x-2">
+              <button 
+                onClick={() => setShowAIAssistant(!showAIAssistant)}
+                className={`px-3 py-1 rounded text-sm ${showAIAssistant ? 'bg-purple-600' : 'bg-gray-600'} text-white`}
+              >
+                🤖 AI Assistant
+              </button>
+              <button 
+                onClick={() => setShowMetrics(!showMetrics)}
+                className={`px-3 py-1 rounded text-sm ${showMetrics ? 'bg-blue-600' : 'bg-gray-600'} text-white`}
+              >
+                📊 Metrics
+              </button>
+              <button 
+                onClick={() => setShowAdvancedProcessor(!showAdvancedProcessor)}
+                className={`px-3 py-1 rounded text-sm ${showAdvancedProcessor ? 'bg-orange-600' : 'bg-gray-600'} text-white`}
+              >
+                🎛️ Advanced
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* AI Assistant */}
+            {showAIAssistant && (
+              <div className="lg:col-span-1">
+                <AIAssistant 
+                  context="podcast"
+                  onSuggestion={(suggestion) => {
+                    console.log('Podcast AI Suggestion:', suggestion);
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Real-time Metrics */}
+            {showMetrics && (
+              <div className="lg:col-span-2">
+                <RealTimeMetrics context="podcast" />
+              </div>
+            )}
+          </div>
+
+          {/* Advanced Audio Processor */}
+          {showAdvancedProcessor && (
+            <div className="mt-6">
+              <AdvancedAudioProcessor
+                onEffectChange={(effects) => {
+                  effects.forEach(effect => {
+                    if (effect.enabled) {
+                      console.log('Apply podcast effect:', effect.name, effect.parameters);
+                    }
+                  });
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

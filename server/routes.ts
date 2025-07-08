@@ -5530,5 +5530,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Podcast-specific AI endpoints
+  app.post('/api/podcast/ai-transcript', async (req, res) => {
+    try {
+      const { audioData, episodeId } = req.body;
+      const mockTranscript = `[00:00] Host: Welcome to today's episode where we dive deep into AI technology trends.
+[00:15] Guest: Thanks for having me. I'm excited to discuss the future of artificial intelligence.
+[00:30] Host: Let's start with your thoughts on machine learning applications in creative industries.`;
+      res.json({ transcript: mockTranscript, confidence: 0.94, processingTime: 2.3 });
+    } catch (error: any) {
+      res.status(500).json({ error: 'Failed to generate transcript' });
+    }
+  });
+
+  app.post('/api/podcast/ai-show-notes', async (req, res) => {
+    try {
+      const { transcript, episodeTitle } = req.body;
+      const mockShowNotes = `## Episode Summary\n${episodeTitle || 'AI Technology Discussion'} - A deep dive into AI technology trends.\n\n## Key Topics\n- Machine learning in music production\n- AI-powered content creation tools`;
+      res.json({ showNotes: mockShowNotes, suggestedTags: ['AI', 'Technology', 'Creative'], estimatedListenTime: '25 minutes' });
+    } catch (error: any) {
+      res.status(500).json({ error: 'Failed to generate show notes' });
+    }
+  });
+
+  app.post('/api/podcast/ai-social-clips', async (req, res) => {
+    try {
+      const mockClips = [{ startTime: '00:30', endTime: '00:45', text: 'AI is transforming music production', platform: 'twitter', suggestedCaption: 'Mind-blowing AI insights! 🎵🤖', viralScore: 0.87 }];
+      res.json({ clips: mockClips, totalClips: 1, averageViralScore: 0.91 });
+    } catch (error: any) {
+      res.status(500).json({ error: 'Failed to generate social clips' });
+    }
+  });
+
   return httpServer;
 }
