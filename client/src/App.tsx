@@ -3,7 +3,6 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Landing from "./pages/landing";
-import DJStudio from "./pages/dj-studio";
 
 import AdminDashboard from "./pages/admin-dashboard";
 import AdminLogin from "./pages/admin-login";
@@ -18,7 +17,16 @@ import PodcastStudio from "./pages/podcast-studio";
 // AI Career Manager uses ai-career-dashboard component
 import AICareerDashboard from "./pages/ai-career-dashboard";
 
-
+// Functional Studios - Core Creative Tools
+import UltimateMusicStudio from "./pages/ultimate-music-studio";
+import VideoStudio from "./pages/video-studio";
+import VisualStudio from "./pages/visual-studio";
+import CollaborativeStudio from "./pages/collaborative-studio";
+import AICareerManager from "./pages/ai-career-manager";
+import DJStudio from "./pages/dj-studio";
+import SocialMediaStudio from "./pages/social-media-studio";
+import CryptoStudio from "./pages/crypto-studio";
+import VRStudio from "./pages/vr-studio";
 import NotFound from "./pages/not-found";
 
 import UltimateDJStudio from "./pages/ultimate-dj-studio";
@@ -74,21 +82,26 @@ function AuthenticatedRouter() {
           <Route path="/" component={isUserAuthenticated ? SocialMediaHub : AuthenticationSuite} />
           <Route path="/social-media-hub" component={isUserAuthenticated ? SocialMediaHub : AuthenticationSuite} />
           
-          {/* Studio Routes - All require authentication */}
-          <Route path="/dj" component={isUserAuthenticated ? UltimateDJSuite : AuthenticationSuite} />
-          <Route path="/dj-studio" component={isUserAuthenticated ? UltimateDJSuite : AuthenticationSuite} />
+          {/* Studio Routes - All require authentication - FUNCTIONAL STUDIOS RESTORED */}
+          <Route path="/dj" component={isUserAuthenticated ? DJStudio : AuthenticationSuite} />
+          <Route path="/dj-studio" component={isUserAuthenticated ? DJStudio : AuthenticationSuite} />
           <Route path="/ultimate-dj-studio" component={isUserAuthenticated ? UltimateDJSuite : AuthenticationSuite} />
-          <Route path="/music-studio" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
-          <Route path="/ultimate-music-studio" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
-          <Route path="/video-studio" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
-          <Route path="/visual-studio" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
-          <Route path="/collaborative-studio" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
+          
+          {/* Core Creative Studios - Fully Functional */}
+          <Route path="/music-studio" component={isUserAuthenticated ? UltimateMusicStudio : AuthenticationSuite} />
+          <Route path="/ultimate-music-studio" component={isUserAuthenticated ? UltimateMusicStudio : AuthenticationSuite} />
+          <Route path="/video-studio" component={isUserAuthenticated ? VideoStudio : AuthenticationSuite} />
+          <Route path="/visual-studio" component={isUserAuthenticated ? VisualStudio : AuthenticationSuite} />
+          <Route path="/collaborative-studio" component={isUserAuthenticated ? CollaborativeStudio : AuthenticationSuite} />
           <Route path="/collaborative-demo" component={CollaborativeDemo} />
           <Route path="/podcast-studio" component={isUserAuthenticated ? PodcastStudio : AuthenticationSuite} />
-          <Route path="/advanced-video-editor" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
+          <Route path="/social-media-studio" component={isUserAuthenticated ? SocialMediaStudio : AuthenticationSuite} />
+          <Route path="/crypto-studio" component={isUserAuthenticated ? CryptoStudio : AuthenticationSuite} />
+          <Route path="/vr-studio" component={isUserAuthenticated ? VRStudio : AuthenticationSuite} />
+          <Route path="/advanced-video-editor" component={isUserAuthenticated ? VideoStudio : AuthenticationSuite} />
           
-          {/* AI & Professional Tools - Unified */}
-          <Route path="/ai-career-manager" component={isUserAuthenticated ? CareerManagement : AuthenticationSuite} />
+          {/* AI & Professional Tools - FUNCTIONAL STUDIOS RESTORED */}
+          <Route path="/ai-career-manager" component={isUserAuthenticated ? AICareerManager : AuthenticationSuite} />
           <Route path="/ai-career-dashboard" component={isUserAuthenticated ? CareerManagement : AuthenticationSuite} />
           <Route path="/career-management" component={isUserAuthenticated ? CareerManagement : AuthenticationSuite} />
           <Route path="/producer-revenue" component={isUserAuthenticated ? MonetizationHub : AuthenticationSuite} />
@@ -110,13 +123,11 @@ function AuthenticatedRouter() {
           <Route path="/professional-tools-suite" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
           <Route path="/analytics-business-suite" component={isUserAuthenticated ? AnalyticsBusinessSuite : AuthenticationSuite} />
           
-          {/* Consolidated Routes - Phase 3 */}
+          {/* Consolidated Routes - Phase 3 - Hub Access */}
           <Route path="/social-media-hub" component={isUserAuthenticated ? UltimateSocialSuite : AuthenticationSuite} />
-          <Route path="/ultimate-music-studio" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
           <Route path="/artistcoin-hub" component={isUserAuthenticated ? MonetizationHub : AuthenticationSuite} />
           <Route path="/midi-controller" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
           <Route path="/professional-instruments" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
-          <Route path="/advanced-video-editor" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
           <Route path="/global-dashboard" component={isUserAuthenticated ? AnalyticsBusinessSuite : AuthenticationSuite} />
           <Route path="/artist-fan-engagement" component={isUserAuthenticated ? AnalyticsBusinessSuite : AuthenticationSuite} />
           <Route path="/voting" component={isUserAuthenticated ? AnalyticsBusinessSuite : AuthenticationSuite} />

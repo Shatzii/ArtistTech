@@ -1,884 +1,643 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useAudioEngine } from '../hooks/useAudioEngine';
-import Waveform from '../components/Waveform';
-import { Link } from 'wouter';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useToast } from '../hooks/use-toast';
-import { apiRequest } from '../lib/queryClient';
-import AIAssistant from '../components/AIAssistant';
-import RealTimeMetrics from '../components/RealTimeMetrics';
-import AdvancedAudioProcessor from '../components/AdvancedAudioProcessor';
+import { useState, useRef, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 import { 
-  Mic, Headphones, Volume2, Play, Pause, Square, Circle, Settings,
-  BarChart3, Users, Upload, Download, Share2, Edit3,
-  Filter, Sliders, Music, Camera, Video, Eye, Clock, Calendar,
-  TrendingUp, Star, Crown, Globe, Instagram, Twitter, Youtube,
-  Zap, Brain, Target, Award, Bell, MessageCircle, Heart, Rss,
-  FileText, Scissors, RadioIcon, Sparkles, Wand2, RefreshCw
+  Mic, MicOff, Play, Pause, Square, SkipBack, SkipForward,
+  Volume2, VolumeX, Settings, Users, Headphones, Radio,
+  Upload, Download, Share2, Eye, MessageCircle, Heart,
+  Zap, TrendingUp, DollarSign, Clock, Cpu, Wifi,
+  Video, VideoOff, Camera, Monitor, Globe, Youtube,
+  Instagram, Twitter, Facebook, Twitch, Music,
+  Edit3, Layers, Filter, Sparkles, BarChart3
 } from 'lucide-react';
 
+interface RecordingState {
+  isRecording: boolean;
+  isPaused: boolean;
+  duration: number;
+  isPlaying: boolean;
+}
+
+interface StreamingState {
+  isLive: boolean;
+  viewers: number;
+  platform: string;
+  bitrate: number;
+  quality: string;
+}
+
+interface AIFeature {
+  id: string;
+  name: string;
+  description: string;
+  enabled: boolean;
+  processing: boolean;
+}
+
 export default function PodcastStudio() {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  
-  // Enhanced Audio Engine Integration
-  const audioEngine = useAudioEngine();
-  
-  // PROFESSIONAL PODCAST STATE
-  const [podcastSession, setPodcastSession] = useState({
+  const [recordingState, setRecordingState] = useState<RecordingState>({
     isRecording: false,
+    isPaused: false,
+    duration: 0,
+    isPlaying: false
+  });
+
+  const [streamingState, setStreamingState] = useState<StreamingState>({
     isLive: false,
-    currentTime: 0,
-    totalTime: 3600, // 1 hour
-    currentEpisodeId: null as string | null,
-    participants: [
-      { id: '1', name: 'Host (You)', role: 'Host', muted: false, volume: 85, color: '#3b82f6' },
-      { id: '2', name: 'Sarah Mitchell', role: 'Guest', muted: false, volume: 78, color: '#10b981' },
-      { id: '3', name: 'Dr. James Wong', role: 'Expert', muted: true, volume: 82, color: '#f59e0b' }
-    ],
-    listeners: 1247,
-    chatActive: true
+    viewers: 1247,
+    platform: 'YouTube',
+    bitrate: 128,
+    quality: 'HD'
   });
 
-  // AI Enhancement Controls
-  const [showAIAssistant, setShowAIAssistant] = useState(true);
-  const [showMetrics, setShowMetrics] = useState(true);
-  const [showAdvancedProcessor, setShowAdvancedProcessor] = useState(false);
+  const [micLevel, setMicLevel] = useState(75);
+  const [outputLevel, setOutputLevel] = useState(85);
+  const [micMuted, setMicMuted] = useState(false);
+  const [cameraEnabled, setCameraEnabled] = useState(true);
+  const [selectedTab, setSelectedTab] = useState("recording");
 
-  // NEW: Episode Management State
-  const [newEpisode, setNewEpisode] = useState({
-    title: '',
-    description: '',
-    guests: [],
-    liveStream: false
-  });
-
-  // NEW: AI Processing State
-  const [aiFeatures, setAiFeatures] = useState({
-    transcript: '',
-    showNotes: '',
-    socialClips: [],
-    isGeneratingTranscript: false,
-    isGeneratingShowNotes: false,
-    isGeneratingSocialClips: false
-  });
-
-  // Backend Integration Mutations
-  const startRecordingMutation = useMutation({
-    mutationFn: async (episodeData: any) => {
-      const response = await fetch('/api/podcast/start-recording', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(episodeData)
-      });
-      if (!response.ok) throw new Error('Failed to start recording');
-      return response.json();
-    },
-    onSuccess: (data) => {
-      setPodcastSession(prev => ({ 
-        ...prev, 
-        isRecording: true, 
-        currentEpisodeId: data.episodeId 
-      }));
-      toast({
-        title: "Recording Started",
-        description: "Professional podcast recording is now active"
-      });
-    }
-  });
-
-  const generateTranscriptMutation = useMutation({
-    mutationFn: async (episodeId: string) => {
-      const response = await fetch(`/api/podcast/generate-transcript/${episodeId}`, {
-        method: 'POST'
-      });
-      if (!response.ok) throw new Error('Failed to generate transcript');
-      return response.json();
-    },
-    onSuccess: (data) => {
-      setAiFeatures(prev => ({ 
-        ...prev, 
-        transcript: data.transcript,
-        isGeneratingTranscript: false 
-      }));
-      toast({
-        title: "AI Transcript Generated",
-        description: "Professional transcript with timestamps ready"
-      });
-    }
-  });
-
-  const generateShowNotesMutation = useMutation({
-    mutationFn: async (episodeId: string) => {
-      const response = await fetch(`/api/podcast/generate-show-notes/${episodeId}`, {
-        method: 'POST'
-      });
-      if (!response.ok) throw new Error('Failed to generate show notes');
-      return response.json();
-    },
-    onSuccess: (data) => {
-      setAiFeatures(prev => ({ 
-        ...prev, 
-        showNotes: data.showNotes,
-        isGeneratingShowNotes: false 
-      }));
-      toast({
-        title: "AI Show Notes Generated",
-        description: "Professional show notes with chapters and links ready"
-      });
-    }
-  });
-
-  const createSocialClipsMutation = useMutation({
-    mutationFn: async ({ episodeId, clipCount }: { episodeId: string, clipCount: number }) => {
-      const response = await fetch(`/api/podcast/create-social-clips/${episodeId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clipCount })
-      });
-      if (!response.ok) throw new Error('Failed to create social clips');
-      return response.json();
-    },
-    onSuccess: (data) => {
-      setAiFeatures(prev => ({ 
-        ...prev, 
-        socialClips: data.clips,
-        isGeneratingSocialClips: false 
-      }));
-      toast({
-        title: "Social Clips Created",
-        description: `${data.clips.length} optimized clips ready for TikTok, Instagram, YouTube`
-      });
-    }
-  });
-
-  // Enhanced Recording Functions
-  const handleStartRecording = useCallback(() => {
-    audioEngine.startRecording();
-    setPodcastSession(prev => ({ ...prev, isRecording: true }));
-    if (!newEpisode.title) {
-      toast({
-        title: "Episode Title Required",
-        description: "Please enter an episode title before recording",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    startRecordingMutation.mutate({
-      title: newEpisode.title,
-      description: newEpisode.description,
-      guests: newEpisode.guests,
-      liveStream: newEpisode.liveStream
-    });
-  }, [audioEngine, newEpisode, startRecordingMutation, toast]);
-
-  const handleGenerateTranscript = () => {
-    if (!podcastSession.currentEpisodeId) return;
-    
-    setAiFeatures(prev => ({ ...prev, isGeneratingTranscript: true }));
-    generateTranscriptMutation.mutate(podcastSession.currentEpisodeId);
-  };
-
-  const handleGenerateShowNotes = () => {
-    if (!podcastSession.currentEpisodeId) return;
-    
-    setAiFeatures(prev => ({ ...prev, isGeneratingShowNotes: true }));
-    generateShowNotesMutation.mutate(podcastSession.currentEpisodeId);
-  };
-
-  const handleCreateSocialClips = () => {
-    if (!podcastSession.currentEpisodeId) return;
-    
-    setAiFeatures(prev => ({ ...prev, isGeneratingSocialClips: true }));
-    createSocialClipsMutation.mutate({ 
-      episodeId: podcastSession.currentEpisodeId, 
-      clipCount: 3 
-    });
-  };
-
-  // AUDIO PROCESSING TOOLS
-  const [audioTools, setAudioTools] = useState([
+  const [aiFeatures] = useState<AIFeature[]>([
     {
-      name: 'AI Noise Cancellation',
-      icon: Filter,
-      description: 'Professional noise removal',
-      category: 'AI Audio',
-      enabled: true,
-      intensity: 85
-    },
-    {
-      name: 'Voice Enhancement',
-      icon: Mic,
-      description: 'Studio-quality voice processing',
-      category: 'AI Audio',
-      enabled: true,
-      intensity: 70
-    },
-    {
-      name: 'Auto-Leveling',
-      icon: BarChart3,
-      description: 'Automatic volume balancing',
-      category: 'Processing',
-      enabled: true,
-      intensity: 90
-    },
-    {
+      id: 'transcription',
       name: 'Real-time Transcription',
-      icon: Edit3,
-      description: 'Live speech-to-text with AI',
-      category: 'AI Features',
+      description: 'AI-powered speech-to-text with speaker identification',
       enabled: true,
-      intensity: 95
+      processing: true
     },
     {
-      name: 'Sentiment Analysis',
-      icon: Brain,
-      description: 'Real-time audience mood tracking',
-      category: 'AI Features',
+      id: 'enhancement',
+      name: 'Audio Enhancement',
+      description: 'Noise reduction, EQ optimization, and dynamic range',
       enabled: true,
-      intensity: 75
+      processing: false
     },
     {
-      name: 'Topic Extraction',
-      icon: Target,
-      description: 'AI-powered content tagging',
-      category: 'AI Features',
+      id: 'highlights',
+      name: 'Auto Highlights',
+      description: 'AI detects best moments for social media clips',
+      enabled: true,
+      processing: false
+    },
+    {
+      id: 'chapters',
+      name: 'Chapter Generation',
+      description: 'Automatic topic detection and chapter creation',
       enabled: false,
-      intensity: 80
+      processing: false
     }
   ]);
 
-  // STREAMING PLATFORMS
-  const [streamingPlatforms, setStreamingPlatforms] = useState([
-    { name: 'Spotify', connected: true, listeners: 456, status: 'live' },
-    { name: 'YouTube', connected: true, listeners: 342, status: 'live' },
-    { name: 'Twitch', connected: true, listeners: 287, status: 'live' },
-    { name: 'Apple Podcasts', connected: false, listeners: 0, status: 'offline' },
-    { name: 'Google Podcasts', connected: true, listeners: 162, status: 'live' }
-  ]);
+  const platforms = [
+    { name: 'YouTube', icon: Youtube, color: 'text-red-500', connected: true },
+    { name: 'Spotify', icon: Music, color: 'text-green-500', connected: true },
+    { name: 'Twitch', icon: Twitch, color: 'text-purple-500', connected: false },
+    { name: 'Instagram', icon: Instagram, color: 'text-pink-500', connected: true },
+    { name: 'Twitter', icon: Twitter, color: 'text-blue-500', connected: false }
+  ];
 
-  // LIVE CHAT & ENGAGEMENT
-  const [liveChat, setLiveChat] = useState([
-    { id: '1', user: 'PodcastFan2024', message: 'Great discussion on AI in music!', time: '2 min ago', type: 'message' },
-    { id: '2', user: 'MusicProducer', message: 'Can you talk about mixing techniques?', time: '3 min ago', type: 'question' },
-    { id: '3', user: 'System', message: 'Sarah Mitchell joined the stream', time: '5 min ago', type: 'system' },
-    { id: '4', user: 'ArtistLife', message: 'Love this show! Following on Spotify 🎵', time: '7 min ago', type: 'message' }
-  ]);
-
-  // PODCAST ANALYTICS
-  const [analytics, setAnalytics] = useState({
-    totalDownloads: 45632,
-    monthlyGrowth: 23,
-    averageListenTime: 28.5,
-    engagement: 4.2,
-    topCountries: ['United States', 'Canada', 'United Kingdom', 'Australia'],
-    peakHours: ['9 AM', '2 PM', '7 PM'],
-    demographics: {
-      '18-24': 15,
-      '25-34': 38,
-      '35-44': 28,
-      '45-54': 14,
-      '55+': 5
+  // Simulate recording timer
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (recordingState.isRecording && !recordingState.isPaused) {
+      interval = setInterval(() => {
+        setRecordingState(prev => ({
+          ...prev,
+          duration: prev.duration + 1
+        }));
+      }, 1000);
     }
-  });
-
-  // AI EPISODE FEATURES (merged with professional features above)
-  const [episodeFeatures, setEpisodeFeatures] = useState({
-    autoEdit: false,
-    highlightReel: true,
-    chapterMarks: true,
-    contentSuggestions: true
-  });
+    return () => clearInterval(interval);
+  }, [recordingState.isRecording, recordingState.isPaused]);
 
   const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
+    const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'AI Audio': return 'from-purple-500 to-pink-500';
-      case 'Processing': return 'from-blue-500 to-cyan-500';
-      case 'AI Features': return 'from-green-500 to-emerald-500';
-      default: return 'from-gray-500 to-gray-600';
-    }
+  const handleStartRecording = () => {
+    setRecordingState(prev => ({ ...prev, isRecording: true, isPaused: false }));
   };
 
-  const getPlatformStatus = (status: string) => {
-    switch (status) {
-      case 'live': return 'text-red-400';
-      case 'offline': return 'text-gray-400';
-      default: return 'text-yellow-400';
-    }
+  const handlePauseRecording = () => {
+    setRecordingState(prev => ({ ...prev, isPaused: !prev.isPaused }));
+  };
+
+  const handleStopRecording = () => {
+    setRecordingState({ isRecording: false, isPaused: false, duration: 0, isPlaying: false });
+  };
+
+  const handleGoLive = () => {
+    setStreamingState(prev => ({ ...prev, isLive: !prev.isLive }));
   };
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-hidden">
-      {/* PODCAST STUDIO HEADER */}
-      <div className="bg-gradient-to-r from-black via-gray-900 to-black border-b-2 border-red-500/30 p-3">
-        <div className="flex items-center justify-between max-w-[2000px] mx-auto">
-          <div className="flex items-center space-x-6">
-            <Link href="/admin" className="hover:scale-110 transition-transform">
-              <img 
-                src="/assets/artist-tech-logo.jpeg" 
-                alt="Artist Tech" 
-                className="w-10 h-10 rounded-lg object-cover border border-red-500/50"
-              />
-            </Link>
-            <div>
-              <h1 className="text-xl font-bold text-red-500">PODCAST STUDIO PRO</h1>
-              <p className="text-gray-400 text-xs">Professional Podcasting • Live Streaming • AI-Enhanced</p>
-            </div>
-            <div className="flex items-center space-x-2 bg-red-500/20 px-3 py-1 rounded border border-red-500/30">
-              <Circle className="w-4 h-4 text-red-400 fill-current animate-pulse" />
-              <span className="text-red-400 font-bold">LIVE</span>
-            </div>
+    <div className="flex flex-col h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 bg-black/50 backdrop-blur-sm border-b border-purple-500/20">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+            <Radio className="w-6 h-6 text-white" />
           </div>
-          
-          <div className="flex items-center space-x-4">
-            <div className="bg-green-500/20 border border-green-500/30 px-3 py-1 rounded flex items-center space-x-2">
-              <Users className="w-4 h-4 text-green-400" />
-              <span className="text-green-400 font-bold">{podcastSession.listeners} Listeners</span>
-            </div>
-            <div className="bg-blue-500/20 border border-blue-500/30 px-3 py-1 rounded">
-              <span className="text-blue-400 font-bold">Recording: {formatTime(podcastSession.currentTime)}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* NEW AI-POWERED PODCAST CONTROL CENTER */}
-      <div className="bg-gradient-to-r from-purple-900/30 via-blue-900/30 to-purple-900/30 border-y border-purple-500/30 p-4">
-        <div className="max-w-[2000px] mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            
-            {/* Episode Setup */}
-            <div className="bg-gray-900/50 rounded-lg border border-purple-500/30 p-4">
-              <h3 className="text-purple-400 font-bold mb-3 flex items-center">
-                <Sparkles className="w-4 h-4 mr-2" />
-                Episode Setup
-              </h3>
-              <div className="space-y-2">
-                <input
-                  type="text"
-                  placeholder="Episode Title"
-                  value={newEpisode.title}
-                  onChange={(e) => setNewEpisode(prev => ({...prev, title: e.target.value}))}
-                  className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white placeholder-gray-400"
-                />
-                <textarea
-                  placeholder="Episode Description"
-                  value={newEpisode.description}
-                  onChange={(e) => setNewEpisode(prev => ({...prev, description: e.target.value}))}
-                  className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white placeholder-gray-400 h-16 resize-none"
-                />
-                <button
-                  onClick={handleStartRecording}
-                  disabled={startRecordingMutation.isPending}
-                  className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-2 px-4 rounded transition-all duration-200 flex items-center justify-center"
-                >
-                  {startRecordingMutation.isPending ? (
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <>
-                      <Circle className="w-4 h-4 mr-2 fill-current" />
-                      Start Recording
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* AI Transcript Generation */}
-            <div className="bg-gray-900/50 rounded-lg border border-blue-500/30 p-4">
-              <h3 className="text-blue-400 font-bold mb-3 flex items-center">
-                <FileText className="w-4 h-4 mr-2" />
-                AI Transcript
-              </h3>
-              <div className="space-y-2">
-                <div className="bg-gray-800/50 rounded p-2 h-16 text-xs text-gray-300 overflow-y-auto">
-                  {aiFeatures.transcript || "AI transcript will appear here after generation..."}
-                </div>
-                <button
-                  onClick={handleGenerateTranscript}
-                  disabled={!podcastSession.currentEpisodeId || aiFeatures.isGeneratingTranscript}
-                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded transition-all duration-200 flex items-center justify-center disabled:opacity-50"
-                >
-                  {aiFeatures.isGeneratingTranscript ? (
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <>
-                      <Wand2 className="w-4 h-4 mr-2" />
-                      Generate Transcript
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* AI Show Notes */}
-            <div className="bg-gray-900/50 rounded-lg border border-green-500/30 p-4">
-              <h3 className="text-green-400 font-bold mb-3 flex items-center">
-                <Edit3 className="w-4 h-4 mr-2" />
-                AI Show Notes
-              </h3>
-              <div className="space-y-2">
-                <div className="bg-gray-800/50 rounded p-2 h-16 text-xs text-gray-300 overflow-y-auto">
-                  {aiFeatures.showNotes || "Professional show notes with chapters and links will appear here..."}
-                </div>
-                <button
-                  onClick={handleGenerateShowNotes}
-                  disabled={!podcastSession.currentEpisodeId || aiFeatures.isGeneratingShowNotes}
-                  className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-2 px-4 rounded transition-all duration-200 flex items-center justify-center disabled:opacity-50"
-                >
-                  {aiFeatures.isGeneratingShowNotes ? (
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <>
-                      <Brain className="w-4 h-4 mr-2" />
-                      Generate Show Notes
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* Social Media Clips */}
-            <div className="bg-gray-900/50 rounded-lg border border-yellow-500/30 p-4">
-              <h3 className="text-yellow-400 font-bold mb-3 flex items-center">
-                <Scissors className="w-4 h-4 mr-2" />
-                Social Clips
-              </h3>
-              <div className="space-y-2">
-                <div className="bg-gray-800/50 rounded p-2 h-16 text-xs text-gray-300 overflow-y-auto">
-                  {aiFeatures.socialClips.length > 0 ? 
-                    `${aiFeatures.socialClips.length} clips ready for TikTok, Instagram, YouTube` : 
-                    "AI-optimized clips for social media platforms..."
-                  }
-                </div>
-                <button
-                  onClick={handleCreateSocialClips}
-                  disabled={!podcastSession.currentEpisodeId || aiFeatures.isGeneratingSocialClips}
-                  className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-bold py-2 px-4 rounded transition-all duration-200 flex items-center justify-center disabled:opacity-50"
-                >
-                  {aiFeatures.isGeneratingSocialClips ? (
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <>
-                      <Scissors className="w-4 h-4 mr-2" />
-                      Create Social Clips
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex h-[calc(100vh-160px)]">
-        {/* LEFT PANEL - AUDIO CONTROLS */}
-        <div className="w-80 bg-gray-900/50 border-r border-gray-700 p-4 overflow-y-auto">
-          <h2 className="text-lg font-bold mb-4 text-red-400">AUDIO CONTROLS</h2>
-          
-          {/* Participants Audio Mixer */}
-          <div className="mb-6">
-            <h3 className="text-md font-bold mb-3 text-cyan-400">PARTICIPANTS</h3>
-            <div className="space-y-3">
-              {podcastSession.participants.map((participant) => (
-                <div key={participant.id} className="bg-gray-800/50 rounded-lg p-3 border border-gray-700">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-2">
-                      <div 
-                        className="w-4 h-4 rounded-full"
-                        style={{ backgroundColor: participant.color }}
-                      />
-                      <span className="font-bold text-sm">{participant.name}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <button 
-                        className={`p-1 rounded ${participant.muted ? 'bg-red-500' : 'bg-green-500'}`}
-                        onClick={() => setPodcastSession(prev => ({
-                          ...prev,
-                          participants: prev.participants.map(p => 
-                            p.id === participant.id ? { ...p, muted: !p.muted } : p
-                          )
-                        }))}
-                      >
-                        <Mic className="w-3 h-3" />
-                      </button>
-                      <span className="text-xs text-gray-400">{participant.role}</span>
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-xs">
-                      <span className="text-gray-400">Volume</span>
-                      <span className="text-white">{participant.volume}%</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={participant.volume}
-                      className="w-full accent-cyan-500"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* AI Audio Tools */}
-          <div className="mb-6">
-            <h3 className="text-md font-bold mb-3 text-purple-400">AI AUDIO TOOLS</h3>
-            <div className="space-y-2">
-              {audioTools.map((tool, index) => (
-                <div key={index} className="bg-gray-800/50 rounded-lg p-3 border border-gray-700">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-2">
-                      <div className={`p-1 rounded bg-gradient-to-r ${getCategoryColor(tool.category)}`}>
-                        <tool.icon className="w-3 h-3 text-white" />
-                      </div>
-                      <div>
-                        <span className="font-bold text-xs">{tool.name}</span>
-                        <p className="text-xs text-gray-400">{tool.description}</p>
-                      </div>
-                    </div>
-                    <button 
-                      className={`w-8 h-4 rounded-full transition-colors ${
-                        tool.enabled ? 'bg-purple-500' : 'bg-gray-600'
-                      }`}
-                      onClick={() => setAudioTools(prev => 
-                        prev.map((t, i) => i === index ? { ...t, enabled: !t.enabled } : t)
-                      )}
-                    >
-                      <div className={`w-3 h-3 bg-white rounded-full transition-transform ${
-                        tool.enabled ? 'translate-x-4' : 'translate-x-0'
-                      }`} />
-                    </button>
-                  </div>
-                  {tool.enabled && (
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-xs">
-                        <span className="text-gray-400">Intensity</span>
-                        <span className="text-purple-400">{tool.intensity}%</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={tool.intensity}
-                        className="w-full accent-purple-500"
-                      />
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Recording Controls */}
-          <div className="space-y-2">
-            <button 
-              onClick={() => setPodcastSession(prev => ({ ...prev, isRecording: !prev.isRecording }))}
-              className={`w-full font-bold py-3 rounded-lg transition-colors ${
-                podcastSession.isRecording 
-                  ? 'bg-red-500 hover:bg-red-600 text-white' 
-                  : 'bg-green-500 hover:bg-green-600 text-white'
-              }`}
-            >
-              {podcastSession.isRecording ? (
-                <>
-                  <Square className="w-5 h-5 inline mr-2" />
-                  Stop Recording
-                </>
-              ) : (
-                <>
-                  <Circle className="w-5 h-5 inline mr-2" />
-                  Start Recording
-                </>
-              )}
-            </button>
-            <button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-lg transition-colors">
-              <Video className="w-4 h-4 inline mr-2" />
-              Start Video Stream
-            </button>
+          <div>
+            <h1 className="text-xl font-bold text-white">Podcast Studio Pro</h1>
+            <p className="text-sm text-gray-400">Professional podcast production & streaming</p>
           </div>
         </div>
 
-        {/* MAIN STUDIO AREA */}
-        <div className="flex-1 flex flex-col">
-          {/* Studio Header */}
-          <div className="bg-gray-800/50 border-b border-gray-700 p-3 flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <h3 className="text-lg font-bold">Live Studio</h3>
-              <div className="flex items-center space-x-2 text-sm text-gray-400">
-                <BarChart3 className="w-4 h-4" />
-                <span>Professional Audio Processing Active</span>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <button className="p-2 bg-gray-700 rounded hover:bg-gray-600 transition-colors">
-                <Settings className="w-4 h-4" />
-              </button>
-              <button className="p-2 bg-purple-500 rounded hover:bg-purple-600 transition-colors">
-                <Upload className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* Main Studio Visualization */}
-          <div className="flex-1 bg-gradient-to-br from-gray-900 to-black relative overflow-hidden p-6">
-            {/* Audio Waveform Visualization */}
-            <div className="mb-6">
-              <h4 className="text-lg font-bold mb-3 text-red-400">Live Audio Waveform</h4>
-              <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
-                <div className="flex items-end space-x-1 h-32">
-                  {Array.from({length: 120}).map((_, i) => (
-                    <div
-                      key={i}
-                      className="flex-1 bg-gradient-to-t from-red-500/50 to-red-300/50 rounded-t transition-all duration-75"
-                      style={{ height: `${Math.random() * 80 + 20}%` }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Live Transcript */}
-            <div className="grid grid-cols-2 gap-6">
-              <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
-                <h4 className="text-lg font-bold mb-3 text-green-400">Live Transcript</h4>
-                <div className="space-y-2 text-sm max-h-40 overflow-y-auto">
-                  <div className="p-2 bg-blue-500/20 rounded">
-                    <span className="text-blue-400 font-bold">Host:</span> Welcome back to the Artist Tech podcast. Today we're discussing the future of AI in music production...
-                  </div>
-                  <div className="p-2 bg-green-500/20 rounded">
-                    <span className="text-green-400 font-bold">Sarah:</span> Thanks for having me! I'm excited to share insights about how AI is transforming creative workflows...
-                  </div>
-                  <div className="p-2 bg-yellow-500/20 rounded">
-                    <span className="text-yellow-400 font-bold">Dr. Wong:</span> From a technical perspective, the advances in neural networks are remarkable...
-                  </div>
-                </div>
-              </div>
-
-              {/* Episode Analytics */}
-              <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
-                <h4 className="text-lg font-bold mb-3 text-yellow-400">Live Analytics</h4>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Current Listeners</span>
-                    <span className="text-white font-bold">{podcastSession.listeners}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Peak Listeners</span>
-                    <span className="text-green-400 font-bold">1,456</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Engagement Rate</span>
-                    <span className="text-blue-400 font-bold">{analytics.engagement}/5</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Chat Messages</span>
-                    <span className="text-purple-400 font-bold">237</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Recording Time</span>
-                    <span className="text-red-400 font-bold">{formatTime(podcastSession.currentTime)}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT PANEL - STREAMING & CHAT */}
-        <div className="w-80 bg-gray-900/50 border-l border-gray-700 flex flex-col">
-          {/* Streaming Platforms */}
-          <div className="p-4 border-b border-gray-700">
-            <h3 className="text-md font-bold mb-3 text-blue-400">LIVE STREAMING</h3>
-            <div className="space-y-2">
-              {streamingPlatforms.map((platform, index) => (
-                <div key={index} className="flex items-center justify-between p-2 bg-gray-800/50 rounded border border-gray-700">
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-2 h-2 rounded-full ${
-                      platform.status === 'live' ? 'bg-red-500 animate-pulse' : 'bg-gray-500'
-                    }`} />
-                    <span className="font-bold text-sm">{platform.name}</span>
-                  </div>
-                  <div className="text-right">
-                    <div className={`text-xs font-bold ${getPlatformStatus(platform.status)}`}>
-                      {platform.status.toUpperCase()}
-                    </div>
-                    <div className="text-xs text-gray-400">{platform.listeners} listeners</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Live Chat */}
-          <div className="flex-1 flex flex-col">
-            <div className="p-4 border-b border-gray-700">
-              <h3 className="text-md font-bold text-green-400">LIVE CHAT</h3>
-            </div>
-            
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
-              {liveChat.map((message) => (
-                <div key={message.id} className={`p-2 rounded-lg ${
-                  message.type === 'system' ? 'bg-blue-500/20 border border-blue-500/30' :
-                  message.type === 'question' ? 'bg-yellow-500/20 border border-yellow-500/30' :
-                  'bg-gray-800/50 border border-gray-700'
-                }`}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold text-xs">{message.user}</span>
-                    <span className="text-xs text-gray-400">{message.time}</span>
-                  </div>
-                  <p className="text-sm">{message.message}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="p-4 border-t border-gray-700">
-              <div className="flex space-x-2">
-                <input
-                  type="text"
-                  placeholder="Chat with listeners..."
-                  className="flex-1 bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white placeholder-gray-400"
-                />
-                <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition-colors">
-                  Send
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* AI Enhancement Suite */}
-        <div className="mt-8 space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-white">AI Enhancement Suite</h2>
-            <div className="flex space-x-2">
-              <button 
-                onClick={() => setShowAIAssistant(!showAIAssistant)}
-                className={`px-3 py-1 rounded text-sm ${showAIAssistant ? 'bg-purple-600' : 'bg-gray-600'} text-white`}
-              >
-                🤖 AI Assistant
-              </button>
-              <button 
-                onClick={() => setShowMetrics(!showMetrics)}
-                className={`px-3 py-1 rounded text-sm ${showMetrics ? 'bg-blue-600' : 'bg-gray-600'} text-white`}
-              >
-                📊 Metrics
-              </button>
-              <button 
-                onClick={() => setShowAdvancedProcessor(!showAdvancedProcessor)}
-                className={`px-3 py-1 rounded text-sm ${showAdvancedProcessor ? 'bg-orange-600' : 'bg-gray-600'} text-white`}
-              >
-                🎛️ Advanced
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* AI Assistant */}
-            {showAIAssistant && (
-              <div className="lg:col-span-1">
-                <AIAssistant 
-                  context="podcast"
-                  onSuggestion={(suggestion) => {
-                    console.log('Podcast AI Suggestion:', suggestion);
-                  }}
-                />
-              </div>
-            )}
-
-            {/* Real-time Metrics */}
-            {showMetrics && (
-              <div className="lg:col-span-2">
-                <RealTimeMetrics context="podcast" />
-              </div>
-            )}
-          </div>
-
-          {/* Enhanced Audio Waveform Display */}
-          <div className="bg-gradient-to-r from-green-800/30 to-blue-800/30 rounded-lg p-4 border border-green-500/30">
-            <h4 className="text-green-300 font-bold mb-2 flex items-center gap-2">
-              <Volume2 className="w-4 h-4" />
-              AUDIO WAVEFORM
-            </h4>
-            <div className="h-16 bg-black rounded overflow-hidden">
-              <Waveform
-                audioBuffer={audioEngine.audioBuffer}
-                currentTime={audioEngine.currentTime}
-                onSeek={(time) => audioEngine.seek(time)}
-                color="#10b981"
-                height={64}
-              />
-            </div>
-            <div className="flex items-center justify-between mt-2">
-              <button 
-                onClick={() => podcastSession.isRecording ? audioEngine.pause() : audioEngine.play()}
-                className="bg-green-500 hover:bg-green-600 px-3 py-1 rounded text-sm flex items-center gap-1"
-              >
-                {podcastSession.isRecording ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
-                {podcastSession.isRecording ? 'Pause' : 'Play'}
-              </button>
-              <div className="text-xs text-green-400">
-                {Math.floor(audioEngine.currentTime / 60)}:{(audioEngine.currentTime % 60).toFixed(0).padStart(2, '0')} / {Math.floor(audioEngine.duration / 60)}:{(audioEngine.duration % 60).toFixed(0).padStart(2, '0')}
-              </div>
-            </div>
-          </div>
-
-          {/* Professional Recording Controls */}
-          <div className="bg-gradient-to-r from-red-800/30 to-orange-800/30 rounded-lg p-4 border border-red-500/30">
-            <h4 className="text-red-300 font-bold mb-2 flex items-center gap-2">
-              <Mic className="w-4 h-4" />
-              RECORDING CONTROLS
-            </h4>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <button 
-                  onClick={handleStartRecording}
-                  className={`px-3 py-1 rounded text-sm font-bold ${
-                    podcastSession.isRecording 
-                      ? 'bg-red-500 hover:bg-red-600 text-white' 
-                      : 'bg-green-500 hover:bg-green-600 text-white'
-                  }`}
-                >
-                  {podcastSession.isRecording ? 'Stop Recording' : 'Start Recording'}
-                </button>
-                <div className="flex-1 bg-black rounded-full h-2 overflow-hidden">
-                  <div 
-                    className="h-full bg-red-500 transition-all duration-100"
-                    style={{ width: `${(audioEngine.currentTime / audioEngine.duration) * 100}%` }}
-                  />
-                </div>
-              </div>
-              <div className="flex items-center justify-between text-xs text-red-400">
-                <span>Status: {podcastSession.isRecording ? 'Recording' : 'Ready'}</span>
-                <span>Duration: {Math.floor(audioEngine.currentTime / 60)}:{(audioEngine.currentTime % 60).toFixed(0).padStart(2, '0')}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Advanced Audio Processor */}
-          {showAdvancedProcessor && (
-            <div className="mt-6">
-              <AdvancedAudioProcessor
-                onEffectChange={(effects) => {
-                  effects.forEach(effect => {
-                    if (effect.enabled) {
-                      console.log('Apply podcast effect:', effect.name, effect.parameters);
-                    }
-                  });
-                }}
-              />
+        <div className="flex items-center space-x-2">
+          <Badge variant={streamingState.isLive ? "destructive" : "secondary"} className="animate-pulse">
+            <div className="w-2 h-2 bg-current rounded-full mr-2" />
+            {streamingState.isLive ? 'LIVE' : 'OFFLINE'}
+          </Badge>
+          {streamingState.isLive && (
+            <div className="flex items-center space-x-2 text-white">
+              <Eye className="w-4 h-4" />
+              <span className="font-bold">{streamingState.viewers.toLocaleString()}</span>
             </div>
           )}
+        </div>
+      </div>
+
+      <div className="flex-1 flex">
+        {/* Main Content */}
+        <div className="flex-1 p-6 space-y-6 overflow-auto">
+          <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
+            <TabsList className="grid grid-cols-5 w-full bg-black/30">
+              <TabsTrigger value="recording">Recording</TabsTrigger>
+              <TabsTrigger value="streaming">Live Stream</TabsTrigger>
+              <TabsTrigger value="editing">Edit & Post</TabsTrigger>
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              <TabsTrigger value="ai-tools">AI Tools</TabsTrigger>
+            </TabsList>
+
+            {/* Recording Tab */}
+            <TabsContent value="recording" className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Recording Controls */}
+                <Card className="bg-black/40 border-purple-500/20">
+                  <CardHeader>
+                    <CardTitle className="text-white flex items-center">
+                      <Mic className="w-5 h-5 mr-2" />
+                      Recording Controls
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="text-center">
+                      <div className="text-4xl font-bold text-white mb-2">
+                        {formatTime(recordingState.duration)}
+                      </div>
+                      <div className="flex justify-center space-x-2 mb-4">
+                        {!recordingState.isRecording ? (
+                          <Button 
+                            onClick={handleStartRecording}
+                            className="bg-red-500 hover:bg-red-600 text-white"
+                          >
+                            <Mic className="w-4 h-4 mr-2" />
+                            Start Recording
+                          </Button>
+                        ) : (
+                          <>
+                            <Button 
+                              onClick={handlePauseRecording}
+                              variant="outline"
+                              className="border-yellow-500 text-yellow-500"
+                            >
+                              {recordingState.isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+                            </Button>
+                            <Button 
+                              onClick={handleStopRecording}
+                              variant="outline"
+                              className="border-red-500 text-red-500"
+                            >
+                              <Square className="w-4 h-4" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Audio Levels */}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <label className="text-sm text-gray-300">Microphone Level</label>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setMicMuted(!micMuted)}
+                          className={micMuted ? "text-red-500" : "text-green-500"}
+                        >
+                          {micMuted ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                        </Button>
+                      </div>
+                      <Slider
+                        value={[micLevel]}
+                        onValueChange={(value) => setMicLevel(value[0])}
+                        max={100}
+                        step={1}
+                        className="w-full"
+                      />
+                      <Progress value={micLevel} className="h-2" />
+                    </div>
+
+                    <div className="space-y-3">
+                      <label className="text-sm text-gray-300">Output Level</label>
+                      <Slider
+                        value={[outputLevel]}
+                        onValueChange={(value) => setOutputLevel(value[0])}
+                        max={100}
+                        step={1}
+                        className="w-full"
+                      />
+                      <Progress value={outputLevel} className="h-2" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Video Controls */}
+                <Card className="bg-black/40 border-purple-500/20">
+                  <CardHeader>
+                    <CardTitle className="text-white flex items-center">
+                      <Camera className="w-5 h-5 mr-2" />
+                      Video Setup
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="aspect-video bg-black/60 rounded-lg flex items-center justify-center">
+                      {cameraEnabled ? (
+                        <div className="text-center">
+                          <Video className="w-12 h-12 text-green-500 mx-auto mb-2" />
+                          <p className="text-sm text-gray-300">Camera Preview</p>
+                        </div>
+                      ) : (
+                        <div className="text-center">
+                          <VideoOff className="w-12 h-12 text-red-500 mx-auto mb-2" />
+                          <p className="text-sm text-gray-300">Camera Disabled</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm text-gray-300">Enable Camera</label>
+                      <Switch 
+                        checked={cameraEnabled}
+                        onCheckedChange={setCameraEnabled}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button variant="outline" size="sm" className="text-white border-purple-500">
+                        <Settings className="w-4 h-4 mr-2" />
+                        Settings
+                      </Button>
+                      <Button variant="outline" size="sm" className="text-white border-purple-500">
+                        <Filter className="w-4 h-4 mr-2" />
+                        Filters
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* Streaming Tab */}
+            <TabsContent value="streaming" className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Live Stream Controls */}
+                <Card className="bg-black/40 border-purple-500/20">
+                  <CardHeader>
+                    <CardTitle className="text-white flex items-center">
+                      <Globe className="w-5 h-5 mr-2" />
+                      Live Stream
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="text-center">
+                      <Button 
+                        onClick={handleGoLive}
+                        className={streamingState.isLive ? 
+                          "bg-red-500 hover:bg-red-600 text-white" : 
+                          "bg-green-500 hover:bg-green-600 text-white"
+                        }
+                        size="lg"
+                      >
+                        {streamingState.isLive ? (
+                          <>
+                            <Square className="w-4 h-4 mr-2" />
+                            End Stream
+                          </>
+                        ) : (
+                          <>
+                            <Radio className="w-4 h-4 mr-2" />
+                            Go Live
+                          </>
+                        )}
+                      </Button>
+                    </div>
+
+                    {streamingState.isLive && (
+                      <div className="grid grid-cols-2 gap-4 text-center">
+                        <div>
+                          <div className="text-2xl font-bold text-white">{streamingState.viewers}</div>
+                          <div className="text-sm text-gray-400">Viewers</div>
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold text-white">{streamingState.bitrate}k</div>
+                          <div className="text-sm text-gray-400">Bitrate</div>
+                        </div>
+                      </div>
+                    )}
+
+                    <Separator className="bg-purple-500/20" />
+
+                    <div className="space-y-2">
+                      <label className="text-sm text-gray-300">Stream Title</label>
+                      <Input 
+                        placeholder="Enter your podcast episode title..."
+                        className="bg-black/60 border-purple-500/30 text-white"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm text-gray-300">Description</label>
+                      <Textarea 
+                        placeholder="Describe your episode..."
+                        className="bg-black/60 border-purple-500/30 text-white"
+                        rows={3}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Platform Integration */}
+                <Card className="bg-black/40 border-purple-500/20">
+                  <CardHeader>
+                    <CardTitle className="text-white flex items-center">
+                      <Share2 className="w-5 h-5 mr-2" />
+                      Multi-Platform Streaming
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {platforms.map((platform) => {
+                      const IconComponent = platform.icon;
+                      return (
+                        <div key={platform.name} className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <IconComponent className={`w-5 h-5 ${platform.color}`} />
+                            <span className="text-white">{platform.name}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Badge variant={platform.connected ? "default" : "secondary"}>
+                              {platform.connected ? "Connected" : "Disconnected"}
+                            </Badge>
+                            <Switch checked={platform.connected} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                    
+                    <Button className="w-full bg-purple-500 hover:bg-purple-600 text-white mt-4">
+                      <Zap className="w-4 h-4 mr-2" />
+                      Stream to All Platforms
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* Editing Tab */}
+            <TabsContent value="editing" className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="bg-black/40 border-purple-500/20">
+                  <CardHeader>
+                    <CardTitle className="text-white flex items-center">
+                      <Edit3 className="w-5 h-5 mr-2" />
+                      Post-Production
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
+                        <Upload className="w-4 h-4 mr-2" />
+                        Import Recording
+                      </Button>
+                      
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button variant="outline" size="sm" className="text-white border-purple-500">
+                          <Sparkles className="w-4 h-4 mr-2" />
+                          AI Enhance
+                        </Button>
+                        <Button variant="outline" size="sm" className="text-white border-purple-500">
+                          <Layers className="w-4 h-4 mr-2" />
+                          Multi-track
+                        </Button>
+                      </div>
+                      
+                      <Button className="w-full bg-green-500 hover:bg-green-600 text-white">
+                        <Download className="w-4 h-4 mr-2" />
+                        Export Episode
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-black/40 border-purple-500/20">
+                  <CardHeader>
+                    <CardTitle className="text-white flex items-center">
+                      <Sparkles className="w-5 h-5 mr-2" />
+                      AI-Powered Clips
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-gray-400">
+                      AI automatically creates social media clips from your best moments
+                    </p>
+                    
+                    <div className="space-y-2">
+                      {['Best Quote (0:45)', 'Funny Moment (1:23)', 'Key Insight (2:17)'].map((clip, i) => (
+                        <div key={i} className="flex items-center justify-between p-2 bg-black/60 rounded">
+                          <span className="text-white text-sm">{clip}</span>
+                          <Button size="sm" variant="outline" className="text-purple-400 border-purple-500">
+                            Export
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* Analytics Tab */}
+            <TabsContent value="analytics" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card className="bg-black/40 border-purple-500/20">
+                  <CardContent className="p-6">
+                    <div className="flex items-center">
+                      <TrendingUp className="w-8 h-8 text-green-500" />
+                      <div className="ml-4">
+                        <p className="text-sm font-medium text-gray-400">Total Downloads</p>
+                        <p className="text-2xl font-bold text-white">47.2K</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-black/40 border-purple-500/20">
+                  <CardContent className="p-6">
+                    <div className="flex items-center">
+                      <Clock className="w-8 h-8 text-blue-500" />
+                      <div className="ml-4">
+                        <p className="text-sm font-medium text-gray-400">Avg. Listen Time</p>
+                        <p className="text-2xl font-bold text-white">32m 15s</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-black/40 border-purple-500/20">
+                  <CardContent className="p-6">
+                    <div className="flex items-center">
+                      <DollarSign className="w-8 h-8 text-yellow-500" />
+                      <div className="ml-4">
+                        <p className="text-sm font-medium text-gray-400">Revenue</p>
+                        <p className="text-2xl font-bold text-white">$1,247</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card className="bg-black/40 border-purple-500/20">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <BarChart3 className="w-5 h-5 mr-2" />
+                    Performance Analytics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64 bg-black/60 rounded-lg flex items-center justify-center">
+                    <p className="text-gray-400">Analytics Chart Placeholder</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* AI Tools Tab */}
+            <TabsContent value="ai-tools" className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {aiFeatures.map((feature) => (
+                  <Card key={feature.id} className="bg-black/40 border-purple-500/20">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-white flex items-center">
+                          <Cpu className="w-5 h-5 mr-2" />
+                          {feature.name}
+                        </CardTitle>
+                        <div className="flex items-center space-x-2">
+                          {feature.processing && (
+                            <div className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse" />
+                          )}
+                          <Switch checked={feature.enabled} />
+                        </div>
+                      </div>
+                      <CardDescription className="text-gray-400">
+                        {feature.description}
+                      </CardDescription>
+                    </CardHeader>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        {/* Side Panel */}
+        <div className="w-80 p-6 bg-black/60 border-l border-purple-500/20 space-y-6">
+          {/* Live Chat */}
+          <Card className="bg-black/40 border-purple-500/20">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <MessageCircle className="w-5 h-5 mr-2" />
+                Live Chat
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {streamingState.isLive ? (
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <div key={i} className="text-sm">
+                      <span className="text-purple-400 font-semibold">User{i + 1}: </span>
+                      <span className="text-gray-300">Great episode!</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-400 text-sm text-center py-8">
+                  Start streaming to see live chat
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Episodes */}
+          <Card className="bg-black/40 border-purple-500/20">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <Headphones className="w-5 h-5 mr-2" />
+                Recent Episodes
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {Array.from({ length: 3 }, (_, i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <div>
+                    <p className="text-white text-sm font-medium">Episode {i + 47}</p>
+                    <p className="text-gray-400 text-xs">2 days ago</p>
+                  </div>
+                  <Button size="sm" variant="ghost" className="text-purple-400">
+                    <Play className="w-3 h-3" />
+                  </Button>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* System Status */}
+          <Card className="bg-black/40 border-purple-500/20">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <Wifi className="w-5 h-5 mr-2" />
+                System Status
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-gray-400 text-sm">CPU Usage</span>
+                <span className="text-green-400 text-sm">34%</span>
+              </div>
+              <Progress value={34} className="h-2" />
+              
+              <div className="flex justify-between">
+                <span className="text-gray-400 text-sm">Memory</span>
+                <span className="text-yellow-400 text-sm">67%</span>
+              </div>
+              <Progress value={67} className="h-2" />
+              
+              <div className="flex justify-between">
+                <span className="text-gray-400 text-sm">Network</span>
+                <span className="text-green-400 text-sm">Excellent</span>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
