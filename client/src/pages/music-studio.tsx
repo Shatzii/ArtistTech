@@ -1,7 +1,7 @@
 import { Link } from 'wouter';
 import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import MusicStudioInterface from '@/components/MusicStudioInterface';
+import EnhancedMusicStudio from '@/components/EnhancedMusicStudio';
 
 export default function MusicStudio() {
   const { user } = useAuth();
@@ -35,8 +35,8 @@ export default function MusicStudio() {
           </div>
         </div>
 
-        {/* Professional Music Studio Interface */}
-        <MusicStudioInterface />
+        {/* Enhanced Professional Music Studio */}
+        <EnhancedMusicStudio />
       </div>
     </div>
   );

@@ -1,37 +1,47 @@
 import { useEffect, useRef, useState } from 'react';
 
 interface WaveformProps {
-  audioData?: Float32Array;
   currentTime: number;
   duration: number;
   isPlaying: boolean;
   onSeek: (time: number) => void;
   height?: number;
-  className?: string;
+  waveformData?: number[];
+  color?: string;
+  backgroundColor?: string;
+  progressColor?: string;
 }
 
-export default function Waveform({ 
-  audioData, 
-  currentTime, 
-  duration, 
-  isPlaying, 
-  onSeek, 
-  height = 100,
-  className = ""
+export default function Waveform({
+  currentTime,
+  duration,
+  isPlaying,
+  onSeek,
+  height = 60,
+  waveformData,
+  color = '#3b82f6',
+  backgroundColor = '#1f2937',
+  progressColor = '#60a5fa'
 }: WaveformProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  // Generate sample waveform data if none provided
-  const generateSampleWaveform = (length: number = 1000): Float32Array => {
-    const data = new Float32Array(length);
-    for (let i = 0; i < length; i++) {
-      data[i] = Math.sin(i * 0.02) * 0.5 + Math.random() * 0.3 - 0.15;
+  // Generate demo waveform data if none provided
+  const generateWaveform = () => {
+    const samples = 200;
+    const data = [];
+    for (let i = 0; i < samples; i++) {
+      // Create a realistic waveform pattern
+      const base = Math.sin(i * 0.1) * 0.5;
+      const variation = Math.random() * 0.3;
+      const envelope = Math.sin((i / samples) * Math.PI) * 0.8;
+      data.push(Math.abs(base + variation) * envelope);
     }
     return data;
   };
 
-  const waveData = audioData || generateSampleWaveform();
+  const waveform = waveformData || generateWaveform();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -40,97 +50,86 @@ export default function Waveform({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const { width, height: canvasHeight } = canvas;
-    const centerY = canvasHeight / 2;
-    
+    const width = canvas.width;
+    const height = canvas.height;
+    const progress = duration > 0 ? currentTime / duration : 0;
+
     // Clear canvas
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-    ctx.fillRect(0, 0, width, canvasHeight);
+    ctx.clearRect(0, 0, width, height);
+
+    // Draw background
+    ctx.fillStyle = backgroundColor;
+    ctx.fillRect(0, 0, width, height);
 
     // Draw waveform
-    const sliceWidth = width / waveData.length;
-    let x = 0;
+    const barWidth = width / waveform.length;
+    const maxBarHeight = height * 0.8;
 
-    ctx.beginPath();
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = '#3B82F6'; // Blue color
+    for (let i = 0; i < waveform.length; i++) {
+      const barHeight = waveform[i] * maxBarHeight;
+      const x = i * barWidth;
+      const y = (height - barHeight) / 2;
 
-    for (let i = 0; i < waveData.length; i++) {
-      const v = waveData[i] * 0.5;
-      const y = centerY + v * centerY;
-
-      if (i === 0) {
-        ctx.moveTo(x, y);
-      } else {
-        ctx.lineTo(x, y);
-      }
-
-      x += sliceWidth;
+      // Determine color based on progress
+      const barProgress = i / waveform.length;
+      const isPlayed = barProgress <= progress;
+      
+      ctx.fillStyle = isPlayed ? progressColor : color;
+      ctx.fillRect(x, y, barWidth - 1, barHeight);
     }
 
+    // Draw progress line
+    const progressX = width * progress;
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(progressX, 0);
+    ctx.lineTo(progressX, height);
     ctx.stroke();
 
-    // Draw played portion in different color
-    if (duration > 0) {
-      const playedWidth = (currentTime / duration) * width;
-      
-      ctx.beginPath();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = '#10B981'; // Green color for played portion
-      
-      x = 0;
-      for (let i = 0; i < waveData.length && x < playedWidth; i++) {
-        const v = waveData[i] * 0.5;
-        const y = centerY + v * centerY;
-
-        if (i === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          ctx.lineTo(x, y);
+    // Draw time markers every 10 seconds
+    if (duration > 10) {
+      ctx.fillStyle = '#9ca3af';
+      ctx.font = '10px monospace';
+      for (let t = 0; t <= duration; t += 10) {
+        const markerX = (t / duration) * width;
+        const minutes = Math.floor(t / 60);
+        const seconds = Math.floor(t % 60);
+        const timeText = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        // Draw marker line
+        ctx.strokeStyle = '#4b5563';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(markerX, height - 10);
+        ctx.lineTo(markerX, height);
+        ctx.stroke();
+        
+        // Draw time text
+        if (markerX < width - 30) {
+          ctx.fillText(timeText, markerX + 2, height - 2);
         }
-
-        x += sliceWidth;
       }
+    }
 
-      ctx.stroke();
-
-      // Draw playhead
+    // Draw playing indicator
+    if (isPlaying) {
+      ctx.fillStyle = '#10b981';
       ctx.beginPath();
-      ctx.strokeStyle = '#EF4444'; // Red color for playhead
-      ctx.lineWidth = 2;
-      ctx.moveTo(playedWidth, 0);
-      ctx.lineTo(playedWidth, canvasHeight);
-      ctx.stroke();
+      ctx.arc(progressX, height / 2, 4, 0, Math.PI * 2);
+      ctx.fill();
     }
 
-    // Draw time markers
-    ctx.fillStyle = '#9CA3AF';
-    ctx.font = '12px sans-serif';
-    
-    const minutes = Math.floor(currentTime / 60);
-    const seconds = Math.floor(currentTime % 60);
-    const timeText = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-    
-    ctx.fillText(timeText, 10, 20);
-    
-    if (duration > 0) {
-      const durationMinutes = Math.floor(duration / 60);
-      const durationSeconds = Math.floor(duration % 60);
-      const durationText = `${durationMinutes}:${durationSeconds.toString().padStart(2, '0')}`;
-      
-      ctx.fillText(durationText, width - 60, 20);
-    }
+  }, [currentTime, duration, isPlaying, waveform, color, backgroundColor, progressColor]);
 
-  }, [waveData, currentTime, duration, isPlaying]);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleMouseDown = (event: React.MouseEvent) => {
     setIsDragging(true);
-    handleSeek(e);
+    handleSeek(event);
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handleMouseMove = (event: React.MouseEvent) => {
     if (isDragging) {
-      handleSeek(e);
+      handleSeek(event);
     }
   };
 
@@ -138,36 +137,55 @@ export default function Waveform({
     setIsDragging(false);
   };
 
-  const handleSeek = (e: React.MouseEvent) => {
+  const handleSeek = (event: React.MouseEvent) => {
     const canvas = canvasRef.current;
-    if (!canvas || duration === 0) return;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const seekTime = (x / canvas.width) * duration;
+    const x = event.clientX - rect.left;
+    const width = rect.width;
+    const seekTime = (x / width) * duration;
     
-    onSeek(Math.max(0, Math.min(seekTime, duration)));
+    onSeek(Math.max(0, Math.min(duration, seekTime)));
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
-    <div className={`relative ${className}`}>
+    <div ref={containerRef} className="relative w-full">
+      {/* Time display */}
+      <div className="flex justify-between text-xs text-gray-400 mb-1">
+        <span>{formatTime(currentTime)}</span>
+        <span>{formatTime(duration)}</span>
+      </div>
+      
+      {/* Waveform canvas */}
       <canvas
         ref={canvasRef}
         width={800}
         height={height}
-        className="w-full h-full cursor-pointer border border-gray-600 rounded-lg"
+        className="w-full cursor-pointer rounded border border-gray-600 hover:border-gray-500 transition-colors"
+        style={{ height: `${height}px` }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       />
       
-      {/* Loading overlay */}
-      {!audioData && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-lg">
-          <div className="text-white text-sm">Loading waveform...</div>
-        </div>
-      )}
+      {/* Additional controls overlay */}
+      <div className="absolute top-0 right-0 p-2 text-xs text-gray-400">
+        {isPlaying && (
+          <div className="flex items-center space-x-1">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            <span>LIVE</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
