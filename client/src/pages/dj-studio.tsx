@@ -9,7 +9,7 @@ import { Slider } from "@/components/ui/slider";
 import { 
   Play, Pause, SkipForward, SkipBack, Volume2, 
   Headphones, Radio, Users, Vote, DollarSign,
-  Music, Disc, Waveform, Zap, Crown, Star,
+  Music, Disc, Waves, Zap, Crown, Star,
   Search, Filter, Shuffle, Repeat, Heart
 } from "lucide-react";
 

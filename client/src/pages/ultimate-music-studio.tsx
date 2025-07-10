@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { 
   Music, Play, Pause, Square, RotateCcw, Volume2, Mic, 
   Settings, Save, Upload, Download, Headphones, Piano,
-  Disc, Layers, Waveform, AudioWaveform, Zap, Sparkles,
+  Disc, Layers, Waves, AudioWaveform, Zap, Sparkles,
   Users, Video, Share, Crown, Star, TrendingUp
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -43,7 +43,7 @@ export default function UltimateMusicStudio() {
     { id: "synthesizer", name: "Synthesizer", icon: Zap, color: "bg-purple-600" },
     { id: "drums", name: "Drum Kit", icon: Disc, color: "bg-red-600" },
     { id: "bass", name: "Bass Guitar", icon: AudioWaveform, color: "bg-green-600" },
-    { id: "guitar", name: "Electric Guitar", icon: Waveform, color: "bg-orange-600" },
+    { id: "guitar", name: "Electric Guitar", icon: Waves, color: "bg-orange-600" },
     { id: "strings", name: "String Section", icon: Music, color: "bg-pink-600" }
   ];
 
