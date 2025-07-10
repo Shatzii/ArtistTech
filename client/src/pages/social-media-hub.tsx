@@ -232,6 +232,69 @@ export default function SocialMediaHub() {
       color: "from-teal-600 to-cyan-600",
       route: "/genre-remixer",
       badge: "AI"
+    },
+    {
+      id: "social-media-studio",
+      name: "Social Media Studio",
+      description: "Multi-platform content creation, AI optimization, viral tracking",
+      icon: Globe,
+      color: "from-rose-600 to-pink-600",
+      route: "/social-media-studio",
+      badge: "VIRAL"
+    },
+    {
+      id: "crypto-studio",
+      name: "ArtistCoin Studio",
+      description: "Cryptocurrency rewards, gamification, influencer partnerships",
+      icon: Coins,
+      color: "from-amber-600 to-yellow-600",
+      route: "/crypto-studio",
+      badge: "CRYPTO"
+    },
+    {
+      id: "vr-studio",
+      name: "VR Studio",
+      description: "Immersive VR environments, spatial audio, hand tracking",
+      icon: Zap,
+      color: "from-violet-600 to-purple-600",
+      route: "/vr-studio",
+      badge: "VR"
+    },
+    {
+      id: "artist-collaboration",
+      name: "Artist Collaboration",
+      description: "Cross-genre partnerships, AI matchmaking, project discovery",
+      icon: Users,
+      color: "from-emerald-600 to-teal-600",
+      route: "/artist-collaboration",
+      badge: "COLLAB"
+    },
+    {
+      id: "nft-marketplace",
+      name: "NFT Marketplace",
+      description: "Blockchain integration, automated royalties, artist profiles",
+      icon: Crown,
+      color: "from-fuchsia-600 to-purple-600",
+      route: "/nft-marketplace",
+      badge: "NFT"
+    },
+    {
+      id: "admin-dashboard",
+      name: "Admin Control Center",
+      description: "System monitoring, user management, enterprise controls",
+      icon: Settings,
+      color: "from-red-600 to-pink-600",
+      route: "/admin",
+      badge: "ADMIN"
+    },
+    {
+      id: "education-hub",
+      name: "Education Hub",
+      description: "Live streaming classes, curriculum management, progress tracking",
+      icon: Brain,
+      color: "from-blue-600 to-indigo-600",
+      route: "/education",
+      badge: "EDU"
     }
   ];
 
