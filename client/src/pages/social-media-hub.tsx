@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -42,7 +43,8 @@ import {
   Home,
   X,
   LogOut,
-  User
+  User,
+  Settings
 } from "lucide-react";
 import { SiTiktok, SiInstagram, SiYoutube, SiX, SiSpotify, SiFacebook, SiTwitch, SiDiscord } from "react-icons/si";
 import { Link } from "wouter";
@@ -544,7 +546,7 @@ export default function SocialMediaHub() {
                 <Card key={index} className="bg-gray-900 border-gray-600">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-3">
-                      <platform.icon className="h-6 w-6" style={{ color: platform.color }} />
+                      {platform.icon && React.createElement(platform.icon, { className: "h-6 w-6", style: { color: platform.color } })}
                       <Badge className="bg-green-600 text-xs">+{platform.growth}%</Badge>
                     </div>
                     <h3 className="font-bold text-white">{platform.platform}</h3>
@@ -578,7 +580,7 @@ export default function SocialMediaHub() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between mb-4">
                       <div className={`w-12 h-12 bg-gradient-to-r ${studio.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                        <studio.icon className="w-6 h-6 text-white" />
+                        {React.createElement(studio.icon, { className: "w-6 h-6 text-white" })}
                       </div>
                       {studio.badge && (
                         <Badge className="bg-blue-600 text-white text-xs">
