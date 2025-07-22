@@ -205,24 +205,26 @@ export default function UltimateMusicStudio() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 p-4">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
+        {/* Professional Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <Crown className="w-8 h-8 text-yellow-400" />
-              <h1 className="text-2xl font-bold text-white">Ultimate Music Studio</h1>
-              <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black">
-                PRO
+              <div className="w-10 h-10 artist-gradient rounded-lg flex items-center justify-center professional-glow">
+                <Music className="w-5 h-5 text-white" />
+              </div>
+              <h1 className="text-2xl font-bold metallic-text">Music Studio</h1>
+              <Badge className="artist-gradient text-white professional-glow">
+                Professional
               </Badge>
             </div>
-            <div className="flex items-center space-x-2 text-sm text-gray-300">
+            <div className="flex items-center space-x-2 text-sm text-slate-300">
               <span>Project:</span>
               <Input
                 value={currentProject}
                 onChange={(e) => setCurrentProject(e.target.value)}
-                className="bg-gray-700 border-gray-600 text-white w-48"
+                className="bg-slate-800 border-slate-600 text-white w-48"
               />
             </div>
           </div>
@@ -231,16 +233,16 @@ export default function UltimateMusicStudio() {
             <Button
               onClick={toggleCollaboration}
               variant={collaborationMode ? "default" : "outline"}
-              className="bg-green-600 hover:bg-green-700"
+              className={collaborationMode ? "artist-gradient professional-glow" : "bg-slate-700 border-slate-600 hover:bg-slate-600"}
             >
               <Users className="w-4 h-4 mr-2" />
               {collaborationMode ? "Exit Collab" : "Collaborate"}
             </Button>
-            <Button onClick={handleSaveProject} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={handleSaveProject} className="bg-slate-700 border-slate-600 hover:bg-slate-600">
               <Save className="w-4 h-4 mr-2" />
               Save
             </Button>
-            <Button onClick={handleExportProject} className="bg-purple-600 hover:bg-purple-700">
+            <Button onClick={handleExportProject} className="artist-gradient professional-glow">
               <Download className="w-4 h-4 mr-2" />
               Export
             </Button>
@@ -252,17 +254,17 @@ export default function UltimateMusicStudio() {
           {/* Main DAW Section */}
           <div className="xl:col-span-3 space-y-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-5 bg-gray-800">
-                <TabsTrigger value="daw">DAW</TabsTrigger>
-                <TabsTrigger value="instruments">Instruments</TabsTrigger>
-                <TabsTrigger value="effects">Effects</TabsTrigger>
-                <TabsTrigger value="ai">AI Assistant</TabsTrigger>
-                <TabsTrigger value="mix">Mix & Master</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-5 bg-slate-800 border-slate-700">
+                <TabsTrigger value="daw" className="data-[state=active]:artist-gradient data-[state=active]:text-white">DAW</TabsTrigger>
+                <TabsTrigger value="instruments" className="data-[state=active]:artist-gradient data-[state=active]:text-white">Instruments</TabsTrigger>
+                <TabsTrigger value="effects" className="data-[state=active]:artist-gradient data-[state=active]:text-white">Effects</TabsTrigger>
+                <TabsTrigger value="ai" className="data-[state=active]:artist-gradient data-[state=active]:text-white">AI Assistant</TabsTrigger>
+                <TabsTrigger value="mix" className="data-[state=active]:artist-gradient data-[state=active]:text-white">Mix & Master</TabsTrigger>
               </TabsList>
 
               <TabsContent value="daw" className="space-y-4">
-                {/* Transport Controls */}
-                <Card className="bg-gray-800 border-gray-700">
+                {/* Professional Transport Controls */}
+                <Card className="studio-panel border-slate-700/50">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
