@@ -51,9 +51,15 @@ export default function AuthenticationSuite() {
         localStorage.setItem('userRole', data.user.role);
         localStorage.setItem('userEmail', data.user.email);
         
+        // Show success message
+        alert(`Welcome ${data.user.name}! Login successful. Redirecting to ${userType === 'admin' ? 'Admin Dashboard' : 'Social Media Hub'}...`);
+        
         // Navigate to appropriate page
-        const redirectTo = userType === 'admin' ? '/admin' : '/social-media-hub';
-        navigate(redirectTo);
+        const redirectTo = userType === 'admin' ? '/admin-control-center' : '/social-media-hub';
+        console.log('Navigating to:', redirectTo);
+        
+        // Force immediate navigation
+        window.location.href = redirectTo;
       } else {
         alert('Invalid credentials. Please use the demo accounts provided.');
       }

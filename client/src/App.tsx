@@ -124,7 +124,6 @@ function AuthenticatedRouter() {
           <Route path="/analytics-business-suite" component={isUserAuthenticated ? AnalyticsBusinessSuite : AuthenticationSuite} />
           
           {/* Consolidated Routes - Phase 3 - Hub Access */}
-          <Route path="/social-media-hub" component={isUserAuthenticated ? UltimateSocialSuite : AuthenticationSuite} />
           <Route path="/artistcoin-hub" component={isUserAuthenticated ? MonetizationHub : AuthenticationSuite} />
           <Route path="/midi-controller" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
           <Route path="/professional-instruments" component={isUserAuthenticated ? CreativeStudiosHub : AuthenticationSuite} />
