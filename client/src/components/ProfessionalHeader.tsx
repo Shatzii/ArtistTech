@@ -14,7 +14,11 @@ export default function ProfessionalHeader() {
             <img 
               src="/artist-tech-logo.png" 
               alt="Artist Tech" 
-              className="h-8 w-8 object-contain"
+              className="h-10 w-10 object-contain"
+              onError={(e) => {
+                console.log('Logo failed to load, trying fallback');
+                e.currentTarget.src = '/artist-tech-logo.jpeg';
+              }}
             />
             <div className="flex flex-col">
               <span className="text-xl font-bold metallic-text">ARTIST</span>
@@ -62,12 +66,16 @@ export default function ProfessionalHeader() {
                   </Button>
                 </Link>
                 <Link href="/admin-login">
-                  <Button 
-                    size="sm" 
-                    className="gold-gradient professional-glow text-slate-900 hover:opacity-90"
+                  <button 
+                    className="px-4 py-2 text-sm rounded-lg font-semibold transition-all hover:opacity-90"
+                    style={{
+                      background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #f59e0b 100%)',
+                      color: '#1f2937',
+                      boxShadow: '0 2px 10px rgba(251, 191, 36, 0.3)'
+                    }}
                   >
                     Admin
-                  </Button>
+                  </button>
                 </Link>
               </div>
             )}

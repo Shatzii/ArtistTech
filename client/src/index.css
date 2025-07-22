@@ -1,8 +1,8 @@
+@import './styles/reset.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import './styles/reset.css';
 
 /* ARTIST TECH GOLD THEME - FORCE CACHE REFRESH v2.0 */
 @layer base {

@@ -166,7 +166,7 @@ export default function Landing() {
                 <div className="space-y-2">
                   {feature.stats.map((stat, idx) => (
                     <div key={idx} className="flex items-center text-xs text-slate-600">
-                      <div className="w-1 h-1 bg-yellow-400 rounded-full mr-2"></div>
+                      <div className="w-1 h-1 rounded-full mr-2" style={{backgroundColor: '#fbbf24'}}></div>
                       {stat}
                     </div>
                   ))}
