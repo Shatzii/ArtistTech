@@ -279,11 +279,14 @@ export default function UltimateMusicStudio() {
                       {tracks.map((track) => (
                         <div key={track.id} className="flex items-center space-x-4 p-3 bg-gray-700 rounded-lg">
                           <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-                            {instruments.find(i => i.id === track.instrument)?.icon && (
-                              <span className="text-white">
-                                {instruments.find(i => i.id === track.instrument)?.icon}
-                              </span>
-                            )}
+                            {(() => {
+                              const instrument = instruments.find(i => i.id === track.instrument);
+                              if (instrument?.icon) {
+                                const IconComponent = instrument.icon;
+                                return <IconComponent className="w-5 h-5 text-white" />;
+                              }
+                              return <Music className="w-5 h-5 text-white" />;
+                            })()}
                           </div>
                           <div className="flex-1">
                             <div className="text-white font-medium">{track.name}</div>
