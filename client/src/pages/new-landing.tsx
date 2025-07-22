@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { Link } from 'wouter';
 import { 
   TrendingUp, Users, Zap, DollarSign, Music, Video, 
-  Play, ArrowRight, Star, Crown, Globe, Sparkles
+  Play, ArrowRight, Star, Crown, Globe, Sparkles,
+  Cpu, Bot, CircuitBoard, Database, Layers, MonitorSpeaker,
+  Waves, Brain, Rocket, Shield
 } from 'lucide-react';
 
 export default function NewLanding() {
@@ -12,38 +14,38 @@ export default function NewLanding() {
     {
       id: 'connect',
       title: 'CONNECT',
-      subtitle: 'Global Artist Network',
-      description: 'Join 50,000+ artists worldwide',
-      icon: Users,
-      color: 'from-blue-500 to-blue-600',
-      stats: ['50K+ Active Artists', 'Real-time Chat', 'Global Reach']
+      subtitle: 'Neural Network Community',
+      description: 'AI-powered artist discovery & matching',
+      icon: CircuitBoard,
+      color: 'from-cyan-500 to-blue-600',
+      stats: ['50K+ Active Artists', 'AI Matching', 'Quantum Network']
     },
     {
       id: 'create',
       title: 'CREATE',
-      subtitle: '15 AI Studios',
-      description: 'Professional tools that exceed industry standards',
-      icon: Video,
-      color: 'from-purple-500 to-purple-600',
-      stats: ['Music Production', 'Video Editing', 'AI Generation']
+      subtitle: '19 AI Engines',
+      description: 'Self-hosted AI for professional content',
+      icon: Bot,
+      color: 'from-purple-500 to-violet-600',
+      stats: ['Neural Audio Synthesis', 'AI Video Generation', 'Voice Cloning']
     },
     {
       id: 'collab',
       title: 'COLLAB',
-      subtitle: 'Real-time Collaboration',
-      description: 'Work together with artists globally',
-      icon: Globe,
-      color: 'from-green-500 to-green-600',
-      stats: ['Live Editing', 'Voice Chat', 'File Sharing']
+      subtitle: 'Quantum Collaboration',
+      description: 'Real-time multi-dimensional editing',
+      icon: Layers,
+      color: 'from-emerald-500 to-teal-600',
+      stats: ['Live Sync', 'AI Assistance', 'Holographic Interface']
     },
     {
       id: 'cash',
       title: 'CASH OUT',
-      subtitle: 'Revolutionary Pay-to-View',
+      subtitle: 'Blockchain Rewards',
       description: '10x higher payouts than Spotify',
-      icon: DollarSign,
-      color: 'from-yellow-500 to-yellow-600',
-      stats: ['$50+ per 1K plays', 'ArtistCoin Rewards', 'Direct Fan Funding']
+      icon: Database,
+      color: 'from-amber-500 to-orange-600',
+      stats: ['$50+ per 1K plays', 'ArtistCoin Mining', 'Smart Contracts']
     }
   ];
 
@@ -55,16 +57,34 @@ export default function NewLanding() {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-              <img 
-                src="/artist-tech-logo.png" 
-                alt="Artist Tech" 
-                className="h-10 w-10 object-contain"
-              />
+              <div className="relative">
+                <img 
+                  src="/artist-tech-logo-new.jpeg" 
+                  alt="Artist Tech" 
+                  className="h-12 w-12 object-contain relative z-10 rounded-lg"
+                  onError={(e) => {
+                    // Try fallback logo formats
+                    const fallbacks = ['/artist-tech-logo.jpeg', '/artist-tech-logo.png'];
+                    const currentSrc = e.currentTarget.src;
+                    const nextFallback = fallbacks.find(f => !currentSrc.includes(f));
+                    if (nextFallback) {
+                      e.currentTarget.src = nextFallback;
+                    } else {
+                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.nextElementSibling.style.display = 'flex';
+                    }
+                  }}
+                />
+                {/* Fallback Logo */}
+                <div className="hidden h-12 w-12 rounded-lg real-gold-button items-center justify-center">
+                  <Cpu className="w-6 h-6 text-slate-900" />
+                </div>
+              </div>
               <div className="flex flex-col">
-                <span className="text-xl font-bold" style={{background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>
+                <span className="text-xl font-bold metallic-text">
                   ARTIST
                 </span>
-                <span className="text-sm font-medium text-slate-400 -mt-1">TECH</span>
+                <span className="text-sm font-medium text-cyan-400 -mt-1">TECH</span>
               </div>
             </Link>
 
