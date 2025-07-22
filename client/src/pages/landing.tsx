@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'wouter';
 import ProfessionalHeader from '../components/ProfessionalHeader';
 import ProfessionalStudioGrid from '../components/ProfessionalStudioGrid';
+import GoldButton from '../components/GoldButton';
 import { 
   TrendingUp, Users, Zap, DollarSign, Music, Video, 
   Instagram, Twitter, Youtube, Play, ArrowRight, Star,
@@ -190,12 +191,9 @@ export default function Landing() {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-lg mx-auto">
             <Link href="/user-login">
-              <button 
-                className="w-full sm:w-auto px-12 py-5 rounded-lg font-bold text-xl hover:opacity-90 transition-all professional-glow" 
-                style={{background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #f59e0b 100%)', color: '#1f2937'}}
-              >
+              <GoldButton className="w-full sm:w-auto">
                 Start Creating
-              </button>
+              </GoldButton>
             </Link>
             <Link href="/social-media-hub">
               <button className="w-full sm:w-auto bg-slate-700 border border-slate-500 px-12 py-5 rounded-lg font-medium text-xl hover:bg-slate-600 transition-all">

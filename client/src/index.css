@@ -2,7 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Professional Artist Tech Theme - Based on Official Logo */
+@import './styles/reset.css';
+
+/* ARTIST TECH GOLD THEME - FORCE CACHE REFRESH v2.0 */
 @layer base {
   :root {
     /* Professional Artist Tech Brand Colors - Blue, White, Gold */
