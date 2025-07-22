@@ -118,7 +118,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ success: true });
   });
 
-  // Demo authentication middleware - validates base64 encoded tokens
+  // Optional authentication middleware - validates tokens but allows anonymous access
+  const optionalAuth = (req: any, res: any, next: any) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+      // Allow anonymous access with default user
+      req.user = {
+        id: 'anonymous',
+        email: 'anonymous@artisttech.com',
+        role: 'user',
+        name: 'Anonymous User'
+      };
+      return next();
+    }
+
+    try {
+      // Decode the base64 token
+      const decoded = JSON.parse(Buffer.from(token, 'base64').toString('utf-8'));
+      
+      // Check if token is expired
+      if (decoded.exp && Date.now() > decoded.exp) {
+        // Use anonymous user if token expired
+        req.user = {
+          id: 'anonymous',
+          email: 'anonymous@artisttech.com',
+          role: 'user',
+          name: 'Anonymous User'
+        };
+      } else {
+        // Attach authenticated user info to request
+        req.user = decoded;
+      }
+      next();
+    } catch (error) {
+      // Use anonymous user if token invalid
+      req.user = {
+        id: 'anonymous',
+        email: 'anonymous@artisttech.com',
+        role: 'user',
+        name: 'Anonymous User'
+      };
+      next();
+    }
+  };
+
+  // Strict authentication middleware for admin-only features
   const authenticateToken = (req: any, res: any, next: any) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -144,8 +190,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   };
 
-  app.get('/api/auth/me', authenticateToken, (req: any, res) => {
+  app.get('/api/auth/me', optionalAuth, (req: any, res) => {
     res.json({ user: req.user });
+  });
+
+  // Public user endpoint that always returns a user (anonymous or authenticated)
+  app.get('/api/auth/user', optionalAuth, (req: any, res) => {
+    res.json(req.user);
   });
 
   // Demo type for requests with user info
@@ -226,8 +277,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  // User profile route
-  app.get("/api/auth/user", authenticateToken, async (req: AuthRequest, res) => {
+  // User profile route (extended info for authenticated users)
+  app.get("/api/auth/profile", authenticateToken, async (req: AuthRequest, res) => {
     try {
       const user = req.user;
       if (!user) {

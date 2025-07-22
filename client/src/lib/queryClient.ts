@@ -32,10 +32,11 @@ export async function apiRequest(
     credentials: "include",
   });
 
-  // Handle authentication errors
+  // Handle authentication errors gracefully - don't redirect for anonymous access
   if (res.status === 401 || res.status === 403) {
     localStorage.removeItem("auth_token");
-    if (!window.location.pathname.includes('/auth')) {
+    // Only redirect on auth routes, allow anonymous access elsewhere
+    if (window.location.pathname.includes('/admin') || window.location.pathname.includes('/profile')) {
       window.location.href = "/auth";
     }
   }
@@ -50,7 +51,16 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
+    const headers: Record<string, string> = {};
+    
+    // Add authentication token if available
+    const token = localStorage.getItem("auth_token");
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     const res = await fetch(queryKey[0] as string, {
+      headers,
       credentials: "include",
     });
 
@@ -65,7 +75,7 @@ export const getQueryFn: <T>(options: {
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      queryFn: getQueryFn({ on401: "throw" }),
+      queryFn: getQueryFn({ on401: "returnNull" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
       staleTime: Infinity,
