@@ -33,32 +33,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAuth = async () => {
     try {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        setIsLoading(false);
-        return;
-      }
-
-      const response = await fetch('/api/auth/me', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const token = localStorage.getItem('authToken') || localStorage.getItem('auth_token');
+      
+      // Always provide user data (anonymous if no token)
+      const response = await fetch('/api/auth/user', {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });
       
       if (response.ok) {
-        const data = await response.json();
+        const userData = await response.json();
         setUser({
-          ...data.user,
-          isAuthenticated: true
+          id: userData.id || 'anonymous',
+          email: userData.email || 'anonymous@artisttech.com',
+          username: userData.username || userData.email?.split('@')[0] || 'anonymous',
+          role: userData.role || 'user',
+          isAuthenticated: userData.id !== 'anonymous'
         });
       } else {
-        localStorage.removeItem('authToken');
-        setUser(null);
+        // Set anonymous user if request fails
+        setUser({
+          id: 'anonymous',
+          email: 'anonymous@artisttech.com',
+          username: 'anonymous',
+          role: 'user',
+          isAuthenticated: false
+        });
       }
     } catch (error) {
       console.error('Auth check failed:', error);
-      localStorage.removeItem('authToken');
-      setUser(null);
+      // Set anonymous user on error
+      setUser({
+        id: 'anonymous',
+        email: 'anonymous@artisttech.com',
+        username: 'anonymous',
+        role: 'user',
+        isAuthenticated: false
+      });
     } finally {
       setIsLoading(false);
     }
@@ -80,6 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       if (data.success && data.user) {
         localStorage.setItem('authToken', data.token);
+        localStorage.setItem('auth_token', data.token); // Also store with the key used by queryClient
         setUser({
           ...data.user,
           isAuthenticated: true
@@ -98,7 +109,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     localStorage.removeItem('authToken');
-    setUser(null);
+    localStorage.removeItem('auth_token');
+    // Set anonymous user instead of null
+    setUser({
+      id: 'anonymous',
+      email: 'anonymous@artisttech.com',
+      username: 'anonymous',
+      role: 'user',
+      isAuthenticated: false
+    });
   };
 
   useEffect(() => {
@@ -108,7 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = {
     user,
     isLoading,
-    isAuthenticated: !!user?.isAuthenticated,
+    isAuthenticated: user?.isAuthenticated || false,
     login,
     logout,
     checkAuth
