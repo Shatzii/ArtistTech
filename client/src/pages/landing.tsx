@@ -154,7 +154,7 @@ export default function Landing() {
                 onMouseEnter={() => setHoveredFeature(feature.id)}
                 onMouseLeave={() => setHoveredFeature(null)}
               >
-                <div className={`w-16 h-16 rounded-lg bg-gradient-to-br ${feature.color} flex items-center justify-center mb-6`}>
+                <div className={`w-16 h-16 rounded-lg bg-gradient-to-br ${feature.color} flex items-center justify-center mb-6`} style={feature.color.includes('yellow') ? {background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)'} : undefined}>
                   <feature.icon className="w-8 h-8 text-white" />
                 </div>
                 
@@ -165,7 +165,7 @@ export default function Landing() {
                 <div className="space-y-2">
                   {feature.stats.map((stat, idx) => (
                     <div key={idx} className="flex items-center text-xs text-slate-600">
-                      <div className="w-1 h-1 bg-cyan-400 rounded-full mr-2"></div>
+                      <div className="w-1 h-1 bg-yellow-400 rounded-full mr-2"></div>
                       {stat}
                     </div>
                   ))}
@@ -190,7 +190,10 @@ export default function Landing() {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-lg mx-auto">
             <Link href="/user-login">
-              <button className="w-full sm:w-auto artist-gradient px-12 py-5 rounded-lg font-bold text-xl hover:opacity-90 transition-all professional-glow">
+              <button 
+                className="w-full sm:w-auto px-12 py-5 rounded-lg font-bold text-xl hover:opacity-90 transition-all professional-glow" 
+                style={{background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #f59e0b 100%)', color: '#1f2937'}}
+              >
                 Start Creating
               </button>
             </Link>
