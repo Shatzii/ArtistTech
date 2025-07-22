@@ -1,0 +1,228 @@
+import { useState } from 'react';
+import { Link } from 'wouter';
+import { 
+  TrendingUp, Users, Zap, DollarSign, Music, Video, 
+  Play, ArrowRight, Star, Crown, Globe, Sparkles
+} from 'lucide-react';
+
+export default function NewLanding() {
+  const [hoveredFeature, setHoveredFeature] = useState<string | null>(null);
+
+  const coreFeatures = [
+    {
+      id: 'connect',
+      title: 'CONNECT',
+      subtitle: 'Global Artist Network',
+      description: 'Join 50,000+ artists worldwide',
+      icon: Users,
+      color: 'from-blue-500 to-blue-600',
+      stats: ['50K+ Active Artists', 'Real-time Chat', 'Global Reach']
+    },
+    {
+      id: 'create',
+      title: 'CREATE',
+      subtitle: '15 AI Studios',
+      description: 'Professional tools that exceed industry standards',
+      icon: Video,
+      color: 'from-purple-500 to-purple-600',
+      stats: ['Music Production', 'Video Editing', 'AI Generation']
+    },
+    {
+      id: 'collab',
+      title: 'COLLAB',
+      subtitle: 'Real-time Collaboration',
+      description: 'Work together with artists globally',
+      icon: Globe,
+      color: 'from-green-500 to-green-600',
+      stats: ['Live Editing', 'Voice Chat', 'File Sharing']
+    },
+    {
+      id: 'cash',
+      title: 'CASH OUT',
+      subtitle: 'Revolutionary Pay-to-View',
+      description: '10x higher payouts than Spotify',
+      icon: DollarSign,
+      color: 'from-yellow-500 to-yellow-600',
+      stats: ['$50+ per 1K plays', 'ArtistCoin Rewards', 'Direct Fan Funding']
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-slate-900 text-white">
+      {/* PROFESSIONAL HEADER */}
+      <header className="sticky top-0 z-50 border-b border-white/10" style={{background: 'rgba(15, 23, 42, 0.9)', backdropFilter: 'blur(10px)'}}>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+              <img 
+                src="/artist-tech-logo.png" 
+                alt="Artist Tech" 
+                className="h-10 w-10 object-contain"
+              />
+              <div className="flex flex-col">
+                <span className="text-xl font-bold" style={{background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>
+                  ARTIST
+                </span>
+                <span className="text-sm font-medium text-slate-400 -mt-1">TECH</span>
+              </div>
+            </Link>
+
+            {/* Auth Buttons */}
+            <div className="flex items-center space-x-2">
+              <Link href="/user-login">
+                <button className="px-4 py-2 text-sm border border-slate-600 text-slate-300 hover:bg-slate-800 rounded-lg transition-all">
+                  Login
+                </button>
+              </Link>
+              <Link href="/admin-login">
+                <button 
+                  className="px-4 py-2 text-sm rounded-lg font-semibold transition-all hover:opacity-90"
+                  style={{
+                    background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #f59e0b 100%)',
+                    color: '#1f2937',
+                    boxShadow: '0 2px 10px rgba(251, 191, 36, 0.3)'
+                  }}
+                >
+                  Admin
+                </button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* HERO SECTION */}
+      <div className="relative py-20 bg-gradient-to-br from-slate-900 via-blue-900/50 to-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-6xl md:text-7xl font-bold mb-8 leading-tight">
+              <span style={{background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>
+                FIRST PLATFORM
+              </span>
+              <br />
+              <span className="text-white">TO PAY YOU FOR</span>
+              <br />
+              <span className="text-blue-400">VIEWING CONTENT</span>
+            </h1>
+            
+            <p className="text-xl text-slate-300 mb-12 leading-relaxed max-w-3xl mx-auto">
+              Revolutionary "pay-to-view" model + 19 professional AI studios. 
+              <span className="block mt-2 text-slate-400">Earn ArtistCoins while consuming content • 10x higher creator payouts</span>
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-md mx-auto">
+              <Link href="/user-login">
+                <button 
+                  className="w-full sm:w-auto px-12 py-5 rounded-lg font-bold text-xl transition-all hover:opacity-90"
+                  style={{
+                    background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #f59e0b 100%)',
+                    color: '#1f2937',
+                    boxShadow: '0 4px 20px rgba(251, 191, 36, 0.3)'
+                  }}
+                >
+                  Start Creating
+                </button>
+              </Link>
+              <Link href="/social-media-hub">
+                <button className="w-full sm:w-auto bg-slate-800 border border-slate-600 px-8 py-4 rounded-lg font-medium text-lg hover:bg-slate-700 transition-all">
+                  Try Social Hub
+                </button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* CORE FEATURES */}
+      <div className="py-20 bg-gradient-to-br from-slate-800 to-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <span style={{background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>
+                Connect • Create • Collab • Cash Out
+              </span>
+            </h2>
+            <p className="text-xl text-slate-400 max-w-3xl mx-auto">
+              The complete creative ecosystem for artists, producers, and content creators.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {coreFeatures.map((feature) => (
+              <div 
+                key={feature.id}
+                className="p-6 rounded-xl transition-all duration-300 cursor-pointer hover:scale-105"
+                style={{
+                  background: 'linear-gradient(145deg, rgba(51, 65, 85, 0.3) 0%, rgba(30, 41, 59, 0.8) 100%)',
+                  border: '1px solid rgba(148, 163, 184, 0.1)',
+                  backdropFilter: 'blur(10px)'
+                }}
+                onMouseEnter={() => setHoveredFeature(feature.id)}
+                onMouseLeave={() => setHoveredFeature(null)}
+              >
+                <div 
+                  className={`w-16 h-16 rounded-lg bg-gradient-to-br ${feature.color} flex items-center justify-center mb-6`}
+                  style={feature.id === 'cash' ? {background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)'} : undefined}
+                >
+                  <feature.icon className="w-8 h-8 text-white" />
+                </div>
+                
+                <h3 className="text-2xl font-bold text-white mb-3">{feature.title}</h3>
+                <p className="text-slate-400 text-sm mb-4">{feature.subtitle}</p>
+                <p className="text-slate-500 text-xs leading-relaxed mb-4">{feature.description}</p>
+                
+                <div className="space-y-2">
+                  {feature.stats.map((stat, idx) => (
+                    <div key={idx} className="flex items-center text-xs text-slate-600">
+                      <div 
+                        className="w-1 h-1 rounded-full mr-2" 
+                        style={{backgroundColor: '#fbbf24'}}
+                      ></div>
+                      {stat}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* FINAL CTA */}
+      <div className="py-20 bg-gradient-to-br from-slate-800 to-blue-900">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-5xl font-bold mb-8">
+            <span style={{background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>
+              Ready to Go Professional?
+            </span>
+          </h2>
+          <p className="text-xl text-slate-300 mb-12 leading-relaxed">
+            Join thousands of creators earning more with our revolutionary platform.
+            <span className="block mt-2 text-slate-400">No subscriptions • Full ownership • Enterprise features</span>
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-lg mx-auto">
+            <Link href="/user-login">
+              <button 
+                className="w-full sm:w-auto px-12 py-5 rounded-lg font-bold text-xl transition-all hover:opacity-90"
+                style={{
+                  background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #f59e0b 100%)',
+                  color: '#1f2937',
+                  boxShadow: '0 4px 20px rgba(251, 191, 36, 0.3)'
+                }}
+              >
+                Start Creating
+              </button>
+            </Link>
+            <Link href="/social-media-hub">
+              <button className="w-full sm:w-auto bg-slate-800 border border-slate-600 px-8 py-4 rounded-lg font-medium text-lg hover:bg-slate-700 transition-all">
+                Explore Platform
+              </button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
