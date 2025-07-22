@@ -39,7 +39,7 @@ export default function Landing() {
       subtitle: '15 AI-Powered Studios',
       description: 'Professional tools that exceed industry standards. Music, video, art, podcasts - everything in one platform.',
       icon: Sparkles,
-      color: 'from-purple-500 to-pink-500',
+      color: 'from-yellow-500 to-yellow-600',
       stats: ['15 AI Engines', 'Professional Quality', 'Zero Learning Curve'],
       platforms: ['Beats Premiere Pro', 'Surpasses Logic Pro']
     },
@@ -49,7 +49,7 @@ export default function Landing() {
       subtitle: 'Real-time Multi-user',
       description: 'Work together in real-time from anywhere. Share profits automatically. Build hits together.',
       icon: Zap,
-      color: 'from-orange-500 to-red-500',
+      color: 'from-blue-600 to-blue-700',
       stats: ['Live Collaboration', 'Auto Revenue Split', 'Version Control'],
       platforms: ['Better than Google Docs', 'Replaces Zoom Studio']
     },
@@ -59,7 +59,7 @@ export default function Landing() {
       subtitle: '13 Revenue Streams',
       description: 'Earn 10x more than Spotify. Direct fan funding, NFTs, sync licensing, live performances, and more.',
       icon: DollarSign,
-      color: 'from-green-500 to-emerald-500',
+      color: 'from-yellow-400 to-yellow-500',
       stats: ['$50+ per 1K plays', 'Direct Fan Funding', 'Instant Payouts'],
       platforms: ['10x Spotify Payout', 'Beats OnlyFans Model']
     }

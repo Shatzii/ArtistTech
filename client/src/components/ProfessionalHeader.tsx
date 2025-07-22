@@ -64,7 +64,7 @@ export default function ProfessionalHeader() {
                 <Link href="/admin-login">
                   <Button 
                     size="sm" 
-                    className="artist-gradient professional-glow text-white hover:opacity-90"
+                    className="gold-gradient professional-glow text-slate-900 hover:opacity-90"
                   >
                     Admin
                   </Button>

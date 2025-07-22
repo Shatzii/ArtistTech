@@ -5,12 +5,14 @@
 /* Professional Artist Tech Theme - Based on Official Logo */
 @layer base {
   :root {
-    /* Professional Artist Tech Brand Colors - Extracted from Logo */
+    /* Professional Artist Tech Brand Colors - Blue, White, Gold */
     --artist-primary: 216 100% 50%;        /* Rich Blue from logo */
-    --artist-secondary: 240 20% 85%;       /* Metallic Silver */
+    --artist-secondary: 45 95% 55%;        /* Gold accent */
     --artist-accent: 215 80% 65%;          /* Lighter Blue */
     --artist-gradient-start: 216 100% 50%; /* Deep Blue */
     --artist-gradient-end: 200 95% 60%;    /* Cyan Blue */
+    --artist-gold: 45 95% 55%;             /* Professional Gold */
+    --artist-gold-light: 48 100% 65%;      /* Light Gold */
     
     /* Professional Dark Mode - Sleek Tech Aesthetic */
     --background: 222 15% 8%;               /* Deep Professional Dark */
@@ -23,8 +25,8 @@
     /* Professional UI Elements */
     --primary: 216 100% 50%;                /* Artist Tech Blue */
     --primary-foreground: 210 10% 98%;     /* White on Blue */
-    --secondary: 240 20% 20%;               /* Dark Silver */
-    --secondary-foreground: 240 20% 95%;   /* Light Silver */
+    --secondary: 45 95% 55%;                /* Gold */
+    --secondary-foreground: 220 15% 10%;   /* Dark Text on Gold */
     --muted: 220 15% 15%;                   /* Muted Background */
     --muted-foreground: 220 10% 65%;       /* Muted Text */
     --accent: 215 80% 65%;                  /* Accent Blue */
@@ -41,10 +43,10 @@
     
     /* Professional Chart Colors */
     --chart-1: 216 100% 50%;                /* Artist Blue */
-    --chart-2: 240 20% 70%;                 /* Silver */
-    --chart-3: 200 95% 60%;                 /* Cyan */
-    --chart-4: 260 100% 70%;                /* Purple Accent */
-    --chart-5: 340 75% 65%;                 /* Pink Accent */
+    --chart-2: 45 95% 55%;                  /* Gold */
+    --chart-3: 200 95% 60%;                 /* Cyan Blue */
+    --chart-4: 48 100% 65%;                 /* Light Gold */
+    --chart-5: 0 0% 100%;                   /* White */
     
     /* Professional Radius */
     --radius: 0.5rem;
@@ -62,12 +64,17 @@
     background: linear-gradient(135deg, hsl(var(--artist-gradient-start)) 0%, hsl(var(--artist-gradient-end)) 100%);
   }
   
-  /* Professional Metallic Text Effect */
+  /* Professional Gold Text Effect */
   .metallic-text {
-    background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 50%, #e2e8f0 100%);
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #fbbf24 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+  
+  /* Gold Gradient Class */
+  .gold-gradient {
+    background: linear-gradient(135deg, hsl(var(--artist-gold)) 0%, hsl(var(--artist-gold-light)) 100%);
   }
   
   /* Professional Glow Effects */

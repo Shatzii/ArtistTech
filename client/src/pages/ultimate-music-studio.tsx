@@ -215,7 +215,7 @@ export default function UltimateMusicStudio() {
                 <Music className="w-5 h-5 text-white" />
               </div>
               <h1 className="text-2xl font-bold metallic-text">Music Studio</h1>
-              <Badge className="artist-gradient text-white professional-glow">
+              <Badge className="gold-gradient text-slate-900 professional-glow">
                 Professional
               </Badge>
             </div>
@@ -233,7 +233,7 @@ export default function UltimateMusicStudio() {
             <Button
               onClick={toggleCollaboration}
               variant={collaborationMode ? "default" : "outline"}
-              className={collaborationMode ? "artist-gradient professional-glow" : "bg-slate-700 border-slate-600 hover:bg-slate-600"}
+              className={collaborationMode ? "gold-gradient text-slate-900 professional-glow" : "bg-slate-700 border-slate-600 hover:bg-slate-600"}
             >
               <Users className="w-4 h-4 mr-2" />
               {collaborationMode ? "Exit Collab" : "Collaborate"}
@@ -242,7 +242,7 @@ export default function UltimateMusicStudio() {
               <Save className="w-4 h-4 mr-2" />
               Save
             </Button>
-            <Button onClick={handleExportProject} className="artist-gradient professional-glow">
+            <Button onClick={handleExportProject} className="gold-gradient text-slate-900 professional-glow">
               <Download className="w-4 h-4 mr-2" />
               Export
             </Button>
