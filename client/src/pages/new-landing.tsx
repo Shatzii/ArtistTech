@@ -92,41 +92,85 @@ export default function NewLanding() {
         </div>
       </header>
 
-      {/* HERO SECTION */}
-      <div className="relative py-20 bg-gradient-to-br from-slate-900 via-blue-900/50 to-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      {/* HERO SECTION - CUTTING EDGE */}
+      <div className="relative py-20 overflow-hidden">
+        {/* Dynamic Background */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-950/80 to-slate-800"></div>
+          {/* Tech Grid Pattern */}
+          <div className="absolute inset-0 opacity-20" 
+               style={{
+                 backgroundImage: `radial-gradient(circle at 2px 2px, rgba(0, 212, 255, 0.3) 1px, transparent 0)`,
+                 backgroundSize: '50px 50px'
+               }}>
+          </div>
+          {/* Dynamic Tech Elements */}
+          <div className="absolute top-20 left-20 w-3 h-3 bg-cyan-400 rounded-full tech-pulse"></div>
+          <div className="absolute top-60 right-20 w-2 h-2 bg-yellow-400 rounded-full animate-ping"></div>
+          <div className="absolute bottom-40 left-32 w-4 h-4 border border-cyan-400 rotate-45 animate-spin" style={{animationDuration: '8s'}}></div>
+          <div className="absolute top-1/3 right-1/4 w-1 h-12 bg-gradient-to-b from-cyan-400 to-transparent animate-pulse"></div>
+          <div className="absolute bottom-1/3 left-1/3 w-12 h-1 bg-gradient-to-r from-yellow-400 to-transparent animate-pulse"></div>
+          
+          {/* Floating Circuit Lines */}
+          <div className="absolute top-1/2 left-10 w-16 h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-pulse"></div>
+          <div className="absolute top-1/4 right-16 w-0.5 h-16 bg-gradient-to-b from-transparent via-yellow-400 to-transparent animate-pulse" style={{animationDelay: '1s'}}></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-6xl md:text-7xl font-bold mb-8 leading-tight">
-              <span style={{background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>
+            {/* Tech Badge - Enhanced */}
+            <div className="inline-flex items-center px-6 py-3 mb-8 rounded-full holographic float-animation">
+              <div className="w-2 h-2 bg-cyan-400 rounded-full mr-3 animate-pulse"></div>
+              <span className="text-cyan-400 text-sm font-bold tracking-wider">CUTTING-EDGE TECHNOLOGY</span>
+              <div className="w-2 h-2 bg-yellow-400 rounded-full ml-3 animate-ping" style={{animationDelay: '0.5s'}}></div>
+            </div>
+            
+            <h1 className="text-6xl md:text-8xl font-bold mb-8 leading-tight">
+              <span className="metallic-text block">
                 FIRST PLATFORM
               </span>
-              <br />
-              <span className="text-white">TO PAY YOU FOR</span>
-              <br />
-              <span className="text-blue-400">VIEWING CONTENT</span>
+              <span className="text-white block">TO PAY YOU FOR</span>
+              <span className="text-transparent bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text block">
+                VIEWING CONTENT
+              </span>
             </h1>
             
             <p className="text-xl text-slate-300 mb-12 leading-relaxed max-w-3xl mx-auto">
-              Revolutionary "pay-to-view" model + 19 professional AI studios. 
-              <span className="block mt-2 text-slate-400">Earn ArtistCoins while consuming content • 10x higher creator payouts</span>
+              Revolutionary "pay-to-view" model powered by <span className="text-cyan-400 font-semibold">19 AI engines</span>. 
+              <span className="block mt-2 text-slate-400">
+                Earn ArtistCoins while consuming content • 
+                <span className="metallic-text font-bold"> 10x higher payouts</span>
+              </span>
             </p>
+            
+            {/* Tech Stats - Enhanced */}
+            <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto mb-16">
+              <div className="holographic p-6 rounded-xl float-animation" style={{animationDelay: '0s'}}>
+                <div className="text-3xl font-bold metallic-text mb-1">19</div>
+                <div className="text-sm text-cyan-400 font-medium">AI Engines</div>
+                <div className="w-full h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent mt-2 animate-pulse"></div>
+              </div>
+              <div className="holographic p-6 rounded-xl float-animation" style={{animationDelay: '0.3s'}}>
+                <div className="text-3xl font-bold metallic-text mb-1">$50+</div>
+                <div className="text-sm text-yellow-400 font-medium">Per 1K Plays</div>
+                <div className="w-full h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent mt-2 animate-pulse"></div>
+              </div>
+              <div className="holographic p-6 rounded-xl float-animation" style={{animationDelay: '0.6s'}}>
+                <div className="text-3xl font-bold text-cyan-400 mb-1">100%</div>
+                <div className="text-sm text-slate-300 font-medium">Self-Hosted</div>
+                <div className="w-full h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent mt-2 animate-pulse"></div>
+              </div>
+            </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-md mx-auto">
               <Link href="/user-login">
-                <button 
-                  className="w-full sm:w-auto px-12 py-5 rounded-lg font-bold text-xl transition-all hover:opacity-90"
-                  style={{
-                    background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #f59e0b 100%)',
-                    color: '#1f2937',
-                    boxShadow: '0 4px 20px rgba(251, 191, 36, 0.3)'
-                  }}
-                >
+                <button className="real-gold-button w-full sm:w-auto px-12 py-5 rounded-xl font-bold text-xl transition-all">
                   Start Creating
                 </button>
               </Link>
               <Link href="/social-media-hub">
-                <button className="w-full sm:w-auto bg-slate-800 border border-slate-600 px-8 py-4 rounded-lg font-medium text-lg hover:bg-slate-700 transition-all">
-                  Try Social Hub
+                <button className="w-full sm:w-auto bg-slate-800/50 border border-cyan-400/50 px-8 py-4 rounded-xl font-medium text-lg hover:bg-slate-700/70 transition-all tech-border">
+                  Explore Platform
                 </button>
               </Link>
             </div>
@@ -149,40 +193,56 @@ export default function NewLanding() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {coreFeatures.map((feature) => (
+            {coreFeatures.map((feature, index) => (
               <div 
                 key={feature.id}
-                className="p-6 rounded-xl transition-all duration-300 cursor-pointer hover:scale-105"
+                className={`cutting-edge-panel p-6 rounded-xl transition-all duration-500 cursor-pointer hover:scale-105 ${
+                  hoveredFeature === feature.id ? 'tech-border' : ''
+                }`}
                 style={{
-                  background: 'linear-gradient(145deg, rgba(51, 65, 85, 0.3) 0%, rgba(30, 41, 59, 0.8) 100%)',
-                  border: '1px solid rgba(148, 163, 184, 0.1)',
-                  backdropFilter: 'blur(10px)'
+                  animationDelay: `${index * 0.2}s`
                 }}
                 onMouseEnter={() => setHoveredFeature(feature.id)}
                 onMouseLeave={() => setHoveredFeature(null)}
               >
-                <div 
-                  className={`w-16 h-16 rounded-lg bg-gradient-to-br ${feature.color} flex items-center justify-center mb-6`}
-                  style={feature.id === 'cash' ? {background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)'} : undefined}
-                >
-                  <feature.icon className="w-8 h-8 text-white" />
+                {/* Icon with Tech Effect */}
+                <div className="relative mb-6">
+                  <div 
+                    className={`w-16 h-16 rounded-lg bg-gradient-to-br ${feature.color} flex items-center justify-center relative overflow-hidden`}
+                    style={feature.id === 'cash' ? {
+                      background: 'linear-gradient(135deg, var(--gold-dark) 0%, var(--gold-base) 50%, var(--gold-shine) 100%)'
+                    } : undefined}
+                  >
+                    <feature.icon className="w-8 h-8 text-white relative z-10" />
+                    {/* Shine Effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-pulse"></div>
+                  </div>
+                  {/* Floating Tech Indicator */}
+                  {feature.id === 'cash' && (
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+                  )}
                 </div>
                 
-                <h3 className="text-2xl font-bold text-white mb-3">{feature.title}</h3>
-                <p className="text-slate-400 text-sm mb-4">{feature.subtitle}</p>
-                <p className="text-slate-500 text-xs leading-relaxed mb-4">{feature.description}</p>
+                <h3 className={`text-2xl font-bold mb-3 ${
+                  feature.id === 'cash' ? 'metallic-text' : 'text-white'
+                }`}>
+                  {feature.title}
+                </h3>
+                <p className="text-cyan-400 text-sm mb-4 font-medium">{feature.subtitle}</p>
+                <p className="text-slate-400 text-xs leading-relaxed mb-4">{feature.description}</p>
                 
                 <div className="space-y-2">
                   {feature.stats.map((stat, idx) => (
-                    <div key={idx} className="flex items-center text-xs text-slate-600">
-                      <div 
-                        className="w-1 h-1 rounded-full mr-2" 
-                        style={{backgroundColor: '#fbbf24'}}
-                      ></div>
+                    <div key={idx} className="flex items-center text-xs text-slate-500">
+                      <div className="w-2 h-2 rounded-full mr-3 real-gold-button" style={{padding: '1px'}}></div>
                       {stat}
                     </div>
                   ))}
                 </div>
+                
+                {/* Enhanced Tech Corner Accent */}
+                <div className="absolute top-2 right-2 w-6 h-6 border-t border-r border-cyan-400/50 tech-pulse"></div>
+                <div className="absolute bottom-2 left-2 w-6 h-6 border-b border-l border-yellow-400/30 tech-pulse" style={{animationDelay: '1s'}}></div>
               </div>
             ))}
           </div>
