@@ -39,16 +39,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      // For demo purposes, use demo credentials
-      const demoUser = {
-        id: '1',
-        email: 'user@artisttech.com',
-        username: 'demo_user',
-        role: 'user' as const,
-        isAuthenticated: true
-      };
+      const response = await fetch('/api/auth/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       
-      setUser(demoUser);
+      if (response.ok) {
+        const data = await response.json();
+        setUser({
+          ...data.user,
+          isAuthenticated: true
+        });
+      } else {
+        localStorage.removeItem('authToken');
+        setUser(null);
+      }
     } catch (error) {
       console.error('Auth check failed:', error);
       localStorage.removeItem('authToken');
@@ -62,20 +68,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       setIsLoading(true);
       
-      // Demo authentication
-      if ((email === 'user@artisttech.com' && password === 'demo123') || 
-          (email === 'admin@artisttech.com' && password === 'admin2024!')) {
-        
-        const userData = {
-          id: email === 'admin@artisttech.com' ? '2' : '1',
-          email,
-          username: email === 'admin@artisttech.com' ? 'admin' : 'demo_user',
-          role: email === 'admin@artisttech.com' ? 'admin' as const : 'user' as const,
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success && data.user) {
+        localStorage.setItem('authToken', data.token);
+        setUser({
+          ...data.user,
           isAuthenticated: true
-        };
-        
-        localStorage.setItem('authToken', 'demo-token-' + Date.now());
-        setUser(userData);
+        });
         return true;
       }
       

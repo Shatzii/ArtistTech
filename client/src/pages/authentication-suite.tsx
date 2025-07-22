@@ -29,22 +29,37 @@ export default function AuthenticationSuite() {
     setIsLoading(true);
     
     try {
-      // Demo authentication logic
-      if ((credentials.email === 'user@artisttech.com' && credentials.password === 'demo123') || 
-          (credentials.email === 'admin@artisttech.com' && credentials.password === 'admin2024!')) {
+      console.log('Attempting login with:', credentials);
+      
+      // Call backend API
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: credentials.email,
+          password: credentials.password
+        })
+      });
+      
+      const data = await response.json();
+      console.log('Login response:', data);
+      
+      if (data.success && data.user && data.token) {
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('userRole', data.user.role);
+        localStorage.setItem('userEmail', data.user.email);
         
-        localStorage.setItem('authToken', 'demo-token-' + Date.now());
-        localStorage.setItem('userRole', userType);
-        localStorage.setItem('userEmail', credentials.email);
-        
-        // Navigate to main app
-        navigate('/');
+        // Navigate to appropriate page
+        const redirectTo = userType === 'admin' ? '/admin' : '/social-media-hub';
+        navigate(redirectTo);
       } else {
         alert('Invalid credentials. Please use the demo accounts provided.');
       }
     } catch (error) {
       console.error('Login failed:', error);
-      alert('Login failed. Please try again.');
+      alert('Login failed. Please check your connection and try again.');
     } finally {
       setIsLoading(false);
     }
