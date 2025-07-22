@@ -338,7 +338,7 @@ export class CollaborativeEngine {
     };
   }
 
-  private handleConnection(ws: WebSocket, req: any) {
+  private handleConnectionV2(ws: WebSocket, req: any) {
     console.log('New collaborative connection established');
     
     ws.on('message', (data: Buffer) => {
@@ -360,7 +360,7 @@ export class CollaborativeEngine {
     });
   }
 
-  private async handleMessage(ws: WebSocket, message: any) {
+  private async handleMessageV2(ws: WebSocket, message: any) {
     const { type, sessionId, userId } = message;
 
     try {
