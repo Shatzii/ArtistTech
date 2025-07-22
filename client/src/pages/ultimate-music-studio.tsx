@@ -14,6 +14,8 @@ import {
   Users, Video, Share, Crown, Star, TrendingUp
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import VoiceControlPanel from "@/components/VoiceControlPanel";
+import { useVoiceControl } from "@/hooks/useVoiceControl";
 
 export default function UltimateMusicStudio() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -25,7 +27,14 @@ export default function UltimateMusicStudio() {
   const [selectedInstrument, setSelectedInstrument] = useState("piano");
   const [currentPattern, setCurrentPattern] = useState(0);
   const [collaborationMode, setCollaborationMode] = useState(false);
+  const [voiceControlEnabled, setVoiceControlEnabled] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Initialize voice control
+  const voiceControl = useVoiceControl((event) => {
+    console.log('Voice command received:', event);
+    handleVoiceCommand(event.command, event.transcript);
+  });
 
   const { data: projectData } = useQuery({
     queryKey: ["/api/studio/music/projects"],
@@ -134,6 +143,65 @@ export default function UltimateMusicStudio() {
 
   const toggleCollaboration = () => {
     setCollaborationMode(!collaborationMode);
+  };
+
+  // Voice command handling
+  const handleVoiceCommand = (command: string, transcript: string) => {
+    console.log(`Executing voice command: ${command} (${transcript})`);
+    
+    switch (command) {
+      case 'playback_play':
+        setIsPlaying(true);
+        break;
+      case 'playback_pause':
+        setIsPlaying(false);
+        break;
+      case 'playback_record':
+        setIsRecording(!isRecording);
+        break;
+      case 'mixer_volume_increase':
+        setVolume([Math.min(100, volume[0] + 10)]);
+        break;
+      case 'mixer_volume_decrease':
+        setVolume([Math.max(0, volume[0] - 10)]);
+        break;
+      case 'mixer_mute':
+        setVolume([0]);
+        break;
+      case 'transport_bpm_increase':
+        setBpm(Math.min(200, bpm + 5));
+        break;
+      case 'transport_bpm_decrease':
+        setBpm(Math.max(60, bpm - 5));
+        break;
+      case 'transport_set_bpm':
+        const bpmMatch = transcript.match(/(\d+)/);
+        if (bpmMatch) {
+          setBpm(parseInt(bpmMatch[1]));
+        }
+        break;
+      case 'instrument_select':
+        const instrumentMatch = transcript.toLowerCase();
+        if (instrumentMatch.includes('piano')) setSelectedInstrument('piano');
+        else if (instrumentMatch.includes('drums')) setSelectedInstrument('drums');
+        else if (instrumentMatch.includes('bass')) setSelectedInstrument('bass');
+        else if (instrumentMatch.includes('synth')) setSelectedInstrument('synthesizer');
+        break;
+      case 'studio_navigate':
+        if (transcript.toLowerCase().includes('mixer')) setActiveTab('mix');
+        else if (transcript.toLowerCase().includes('instruments')) setActiveTab('instruments');
+        else if (transcript.toLowerCase().includes('effects')) setActiveTab('effects');
+        else if (transcript.toLowerCase().includes('ai')) setActiveTab('ai');
+        break;
+      case 'project_save':
+        handleSaveProject();
+        break;
+      case 'project_export':
+        handleExportProject();
+        break;
+      default:
+        console.log(`Voice command not handled: ${command}`);
+    }
   };
 
   return (
@@ -518,6 +586,12 @@ export default function UltimateMusicStudio() {
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {/* Voice Control Panel */}
+            <VoiceControlPanel 
+              onVoiceCommand={handleVoiceCommand}
+              isEnabled={voiceControlEnabled}
+            />
+
             {/* Collaboration Panel */}
             {collaborationMode && (
               <Card className="bg-gray-800 border-gray-700">
@@ -567,9 +641,12 @@ export default function UltimateMusicStudio() {
                   <Video className="w-4 h-4 mr-2" />
                   Create Video
                 </Button>
-                <Button className="w-full bg-yellow-600 hover:bg-yellow-700">
-                  <Crown className="w-4 h-4 mr-2" />
-                  Upgrade to Pro
+                <Button 
+                  className="w-full bg-yellow-600 hover:bg-yellow-700"
+                  onClick={() => setVoiceControlEnabled(!voiceControlEnabled)}
+                >
+                  <Mic className="w-4 h-4 mr-2" />
+                  {voiceControlEnabled ? "Disable Voice" : "Enable Voice"}
                 </Button>
               </CardContent>
             </Card>

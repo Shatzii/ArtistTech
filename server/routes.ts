@@ -35,6 +35,7 @@ import { artistCollaborationEngine } from "./artist-collaboration-engine";
 import { premiumPodcastEngine } from "./premium-podcast-engine";
 import { professionalVideoEngine } from "./professional-video-engine";
 import { artistCoinEngine } from "./artistcoin-engine";
+import voiceControlEngine from "./voice-control-engine";
 import aiCareerRoutes from "./routes/ai-career";
 import artistcoinRoutes from "./routes/artistcoin";
 import genreRemixerRoutes from "./routes/genre-remixer";
@@ -7372,6 +7373,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api/ai-career', aiCareerRoutes);
   app.use('/api/artistcoin', artistcoinRoutes);
   app.use('/api/genre-remixer', genreRemixerRoutes);
+
+  // Voice Control API Routes
+  app.get('/api/voice/commands', async (req, res) => {
+    try {
+      const commands = await voiceControlEngine.getVoiceCommands();
+      res.json(commands);
+    } catch (error: any) {
+      res.status(500).json({ error: 'Failed to get voice commands', message: error.message });
+    }
+  });
+
+  app.get('/api/voice/sessions', async (req, res) => {
+    try {
+      const sessions = await voiceControlEngine.getActiveSessions();
+      res.json(sessions);
+    } catch (error: any) {
+      res.status(500).json({ error: 'Failed to get voice sessions', message: error.message });
+    }
+  });
   app.use('/api/collaboration', collaborationRoutes);
 
   return httpServer;
