@@ -5,6 +5,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import ComprehensiveLanding from "./pages/comprehensive-landing";
 import AuthenticationSuite from "./pages/authentication-suite";
 import OneClickSocialGenerator from "./pages/one-click-social-generator";
+import SocialMediaStrategyCoach from "./pages/social-media-strategy-coach";
 import NotFound from "./pages/not-found";
 
 // Core Studios
@@ -66,6 +67,7 @@ function App() {
       
       {/* One-Click Social Media Generator */}
       <Route path="/one-click-social-generator" component={OneClickSocialGenerator} />
+      <Route path="/social-media-strategy-coach" component={SocialMediaStrategyCoach} />
       <Route path="/social-generator" component={OneClickSocialGenerator} />
       <Route path="/content-generator" component={OneClickSocialGenerator} />
       

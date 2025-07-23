@@ -41,6 +41,7 @@ import artistcoinRoutes from "./routes/artistcoin";
 import genreRemixerRoutes from "./routes/genre-remixer";
 import collaborationRoutes from "./routes/collaboration";
 import { setupOneClickSocialGenerator } from "./one-click-social-generator";
+import { setupSocialMediaStrategyCoach } from "./social-media-strategy-coach";
 import { registerSocialHeatmapRoutes } from "./routes/social-heatmap";
 import { insertProjectSchema, insertAudioFileSchema, insertVideoFileSchema } from "../shared/schema";
 import { registerHighImpactRoutes } from "./routes/high-impact-features";
@@ -7458,6 +7459,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Setup One-Click Social Media Generator
   setupOneClickSocialGenerator(app);
+  
+  // Setup Social Media Strategy Coaching Bot
+  setupSocialMediaStrategyCoach(app);
 
   // Platform Stats API for Real-time Dashboard
   app.get('/api/platform/stats', (req, res) => {
