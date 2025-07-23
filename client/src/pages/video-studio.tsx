@@ -14,7 +14,7 @@ import {
   Scissors, RotateCw, Maximize, Eye, Zap, Crown, 
   FileVideo, Clock, MonitorPlay, Wand2, Stars
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function VideoStudio() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -36,6 +36,23 @@ export default function VideoStudio() {
   const { data: assetsData } = useQuery({
     queryKey: ["/api/studio/video/assets"],
     enabled: true
+  });
+
+  const queryClient = useQueryClient();
+
+  // API mutations for full video functionality
+  const renderMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/studio/video/render', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/studio/video/projects"] });
+    }
   });
 
   const videoClips = [
@@ -122,12 +139,35 @@ export default function VideoStudio() {
     setSelectedClip(clipId);
   };
 
-  const handleExport = () => {
-    console.log("Exporting video project");
+  const handleExport = async (format: string = '4k') => {
+    try {
+      const response = await renderMutation.mutateAsync({
+        projectId: projectTitle,
+        quality: format,
+        format: 'mp4'
+      });
+      console.log("Video export started:", response);
+    } catch (error) {
+      console.error("Error exporting video:", error);
+    }
   };
 
-  const handleAIProcess = (featureId: string) => {
-    console.log("Processing AI feature:", featureId);
+  const handleAIProcess = async (featureId: string) => {
+    try {
+      const response = await fetch('/api/studio/video/ai-process', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          feature: featureId,
+          clipId: selectedClip,
+          projectId: projectTitle
+        })
+      });
+      const result = await response.json();
+      console.log("AI processing started:", result);
+    } catch (error) {
+      console.error("Error processing AI feature:", error);
+    }
   };
 
   // Format time for display

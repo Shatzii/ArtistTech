@@ -13,7 +13,6 @@ import {
   Zap, Crown, Star, Share, Settings, Eye
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
 
 export default function VisualStudio() {
   const [activeTab, setActiveTab] = useState("canvas");
@@ -32,6 +31,28 @@ export default function VisualStudio() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [history, setHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+
+  const queryClient = useQueryClient();
+
+  // API queries and mutations for full functionality
+  const { data: visualProjects } = useQuery({
+    queryKey: ["/api/studio/visual/projects"],
+    enabled: true
+  });
+
+  const enhanceMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/studio/visual/ai-enhance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/studio/visual/projects"] });
+    }
+  });
 
   const tools = [
     { id: "brush", name: "Brush", icon: Brush, color: "bg-blue-600" },
@@ -103,13 +124,47 @@ export default function VisualStudio() {
     ));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (canvasRef.current) {
       const dataURL = canvasRef.current.toDataURL();
+      
+      // Save to backend
+      try {
+        const response = await fetch('/api/studio/visual/projects', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: projectTitle,
+            canvas: `${canvasRef.current.width}x${canvasRef.current.height}`,
+            layers: layers.length,
+            data: dataURL
+          })
+        });
+        const result = await response.json();
+        console.log("Project saved:", result);
+        queryClient.invalidateQueries({ queryKey: ["/api/studio/visual/projects"] });
+      } catch (error) {
+        console.error("Error saving project:", error);
+      }
+      
+      // Download locally
       const link = document.createElement('a');
       link.download = `${projectTitle}.png`;
       link.href = dataURL;
       link.click();
+    }
+  };
+
+  const handleAIEnhance = async (featureId: string) => {
+    try {
+      const response = await enhanceMutation.mutateAsync({
+        imageId: projectTitle,
+        enhancement: featureId,
+        intensity: 75
+      });
+      console.log("AI enhancement started:", response);
+    } catch (error) {
+      console.error("Error enhancing image:", error);
     }
   };
 
@@ -372,11 +427,12 @@ export default function VisualStudio() {
                             </Badge>
                           </div>
                           <Button
-                            onClick={() => handleAIProcess(feature.id)}
+                            onClick={() => handleAIEnhance(feature.id)}
+                            disabled={enhanceMutation.isPending}
                             className="w-full bg-purple-600 hover:bg-purple-700"
                           >
                             <Wand2 className="w-4 h-4 mr-2" />
-                            Process
+                            {enhanceMutation.isPending ? 'Processing...' : 'Process'}
                           </Button>
                         </div>
                       ))}
