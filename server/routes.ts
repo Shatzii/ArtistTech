@@ -41,6 +41,7 @@ import artistcoinRoutes from "./routes/artistcoin";
 import genreRemixerRoutes from "./routes/genre-remixer";
 import collaborationRoutes from "./routes/collaboration";
 import { setupOneClickSocialGenerator } from "./one-click-social-generator";
+import { registerSocialHeatmapRoutes } from "./routes/social-heatmap";
 import { insertProjectSchema, insertAudioFileSchema, insertVideoFileSchema } from "../shared/schema";
 import multer from "multer";
 import path from "path";
@@ -7534,6 +7535,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(404).json({ error: 'Engine not found' });
     }
   });
+
+  // Register social media heatmap routes
+  registerSocialHeatmapRoutes(app);
 
   return httpServer;
 }

@@ -15,6 +15,7 @@ import CollaborativeStudio from "./pages/collaborative-studio";
 import DJStudio from "./pages/dj-studio";
 import PodcastStudio from "./pages/podcast-studio";
 import SocialMediaStudio from "./pages/social-media-studio";
+import SocialMediaHeatmap from "./pages/social-media-heatmap";
 import CryptoStudio from "./pages/crypto-studio";
 import VRStudio from "./pages/vr-studio";
 import NFTMarketplace from "./pages/nft-marketplace";
@@ -74,6 +75,7 @@ function App() {
       <Route path="/dj-studio" component={DJStudio} />
       <Route path="/podcast-studio" component={PodcastStudio} />
       <Route path="/social-media-studio" component={SocialMediaStudio} />
+      <Route path="/social-media-heatmap" component={SocialMediaHeatmap} />
       <Route path="/crypto-studio" component={CryptoStudio} />
       <Route path="/artistcoin" component={CryptoStudio} />
       <Route path="/vr-studio" component={VRStudio} />

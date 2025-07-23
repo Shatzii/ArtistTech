@@ -266,6 +266,12 @@ export default function SocialMediaHub() {
                     <BarChart3 className="w-4 h-4 mr-2" />
                     Analytics
                   </Button>
+                  <Link href="/social-media-heatmap">
+                    <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
+                      <TrendingUp className="w-4 h-4 mr-2" />
+                      Heatmap
+                    </Button>
+                  </Link>
                   <Button 
                     className="w-full bg-blue-600 hover:bg-blue-700"
                     onClick={() => setActiveTab('platforms')}
