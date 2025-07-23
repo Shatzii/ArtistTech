@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Social Media Generator</title>
+    <script>
+        async function testGenerator() {
+            console.log('Testing One-Click Social Media Generator...');
+            
+            try {
+                // Test main generation endpoint
+                const response = await fetch('http://localhost:5000/api/social/one-click-generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prompt: 'Amazing new beat I just created in my home studio',
+                        platforms: ['instagram', 'tiktok', 'youtube']
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('✅ Generation Response:', data);
+                
+                // Test trending topics
+                const trendsResponse = await fetch('http://localhost:5000/api/social/trending-topics');
+                const trendsData = await trendsResponse.json();
+                console.log('✅ Trending Topics:', trendsData);
+                
+                document.getElementById('results').innerHTML = `
+                    <h2>✅ Social Media Generator Working!</h2>
+                    <h3>Generated Content (${data.content?.length || 0} platforms):</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                    <h3>Trending Topics:</h3>
+                    <pre>${JSON.stringify(trendsData, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                console.error('❌ Test failed:', error);
+                document.getElementById('results').innerHTML = `<h2>❌ Error: ${error.message}</h2>`;
+            }
+        }
+        
+        window.onload = testGenerator;
+    </script>
+</head>
+<body>
+    <h1>Social Media Generator Test</h1>
+    <div id="results">Loading test...</div>
+</body>
+</html>

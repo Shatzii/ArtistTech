@@ -52,21 +52,30 @@ export default function OneClickSocialGenerator() {
 
   const generateContentMutation = useMutation({
     mutationFn: async (data: { prompt: string; platforms: string[] }) => {
-      const response = await apiRequest('/api/social/one-click-generate', 'POST', data);
-      return response;
+      console.log('Starting content generation:', data);
+      try {
+        const response = await apiRequest('/api/social/one-click-generate', 'POST', data);
+        console.log('API Response:', response);
+        return response;
+      } catch (error) {
+        console.error('API Error:', error);
+        throw error;
+      }
     },
     onSuccess: (data: any) => {
-      setGeneratedContent(data.content);
+      console.log('Generation successful, setting content:', data.content);
+      setGeneratedContent(data.content || []);
       setGenerationProgress(100);
       toast({
         title: "Content Generated Successfully!",
-        description: `Created content for ${data.content.length} platforms`,
+        description: `Created content for ${data.content?.length || 0} platforms`,
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      console.error('Generation failed:', error);
       toast({
         title: "Generation Failed",
-        description: "Failed to generate content. Please try again.",
+        description: error.message || "Failed to generate content. Please try again.",
         variant: "destructive",
       });
       setGenerationProgress(0);
