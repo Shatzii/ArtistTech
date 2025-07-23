@@ -2,7 +2,7 @@ import { Switch, Route } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { AuthProvider } from "./contexts/AuthContext";
-import NewLanding from "./pages/new-landing";
+import ComprehensiveLanding from "./pages/comprehensive-landing";
 import AuthenticationSuite from "./pages/authentication-suite";
 import NotFound from "./pages/not-found";
 
@@ -42,32 +42,7 @@ function App() {
   return (
     <Switch>
       {/* Landing Page */}
-      <Route path="/" component={() => (
-        <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-6xl font-bold mb-4">ARTIST TECH</h1>
-            <p className="text-2xl mb-8">AI-Powered Music Production Platform</p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-              <a href="/music-studio" className="bg-blue-600 p-4 rounded-lg hover:bg-blue-700">
-                <h3 className="font-bold">Music Studio</h3>
-                <p className="text-sm">19 AI Engines</p>
-              </a>
-              <a href="/dj-studio" className="bg-purple-600 p-4 rounded-lg hover:bg-purple-700">
-                <h3 className="font-bold">DJ Studio</h3>
-                <p className="text-sm">Professional Mixing</p>
-              </a>
-              <a href="/video-studio" className="bg-green-600 p-4 rounded-lg hover:bg-green-700">
-                <h3 className="font-bold">Video Studio</h3>
-                <p className="text-sm">AI Video Creation</p>
-              </a>
-              <a href="/social-media-hub" className="bg-orange-600 p-4 rounded-lg hover:bg-orange-700">
-                <h3 className="font-bold">Social Media</h3>
-                <p className="text-sm">Pay-to-View Platform</p>
-              </a>
-            </div>
-          </div>
-        </div>
-      )} />
+      <Route path="/" component={ComprehensiveLanding} />
       
       {/* Authentication */}
       <Route path="/login" component={AuthenticationSuite} />
