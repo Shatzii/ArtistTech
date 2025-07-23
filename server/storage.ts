@@ -58,6 +58,9 @@ export interface IStorage {
   createVideoFile(videoFile: InsertVideoFile): Promise<VideoFile>;
   deleteVideoFile(id: number): Promise<boolean>;
 
+  // Student method (for backwards compatibility with routes.ts)
+  getStudent(id: number): Promise<User | undefined>;
+  
   // Note: Educational features removed - tables not defined in schema
 
   // CMS Settings
@@ -130,6 +133,11 @@ export class DatabaseStorage implements IStorage {
   async deleteUser(id: number): Promise<boolean> {
     const result = await db.delete(users).where(eq(users.id, id));
     return (result.rowCount ?? 0) > 0;
+  }
+
+  // Student method implementation (returns user for backwards compatibility)
+  async getStudent(id: number): Promise<User | undefined> {
+    return this.getUser(id);
   }
 
   // Projects

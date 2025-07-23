@@ -1,6 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
-import { Zap, TrendingUp, Eye, Heart, ShoppingCart, Star, Filter, Search } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { 
+  Zap, TrendingUp, Eye, Heart, ShoppingCart, Star, Filter, Search,
+  Ethereum, Bitcoin, DollarSign, Users, Crown, Sparkles
+} from 'lucide-react';
 
 export default function NFTMarketplace() {
   const [activeFilter, setActiveFilter] = useState('all');

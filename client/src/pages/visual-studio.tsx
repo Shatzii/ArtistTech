@@ -12,6 +12,8 @@ import {
   Circle, Square, Triangle, Type, Pipette, 
   Zap, Crown, Star, Share, Settings, Eye
 } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function VisualStudio() {
   const [activeTab, setActiveTab] = useState("canvas");

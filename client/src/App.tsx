@@ -30,7 +30,9 @@ import AdminControlCenter from "./pages/admin-control-center";
 import AICareerManager from "./pages/ai-career-manager";
 import AICareerDashboard from "./pages/ai-career-dashboard";
 import GenreRemixer from "./pages/genre-remixer";
+import GenreRemixerStudio from "./pages/genre-remixer-studio";
 import ArtistCollaboration from "./pages/artist-collaboration";
+import ArtistCollaborationStudio from "./pages/artist-collaboration-studio";
 import SocialMediaHub from "./pages/social-media-hub";
 import CollaborativeDemo from "./pages/collaborative-demo";
 import CreativeStudiosHub from "./pages/creative-studios-hub";
@@ -38,6 +40,12 @@ import MonetizationHub from "./pages/monetization-hub";
 import ProfessionalToolsSuite from "./pages/professional-tools-suite";
 import AnalyticsBusinessSuite from "./pages/analytics-business-suite";
 import UltimateSocialSuite from "./pages/ultimate-social-suite";
+import AdvancedVideoEditor from "./pages/advanced-video-editor";
+import ProfessionalInstrumentsStudio from "./pages/professional-instruments-studio";
+import MIDIControllerStudio from "./pages/midi-controller-studio";
+import AnalyticsDashboard from "./pages/analytics-dashboard";
+import NFTMarketplaceStudio from "./pages/nft-marketplace-studio";
+import EnterpriseManagementStudio from "./pages/enterprise-management-studio";
 
 function App() {
   return (
@@ -85,7 +93,9 @@ function App() {
       <Route path="/ai-career-manager" component={AICareerManager} />
       <Route path="/ai-career-dashboard" component={AICareerDashboard} />
       <Route path="/genre-remixer" component={GenreRemixer} />
+      <Route path="/genre-remixer-studio" component={GenreRemixerStudio} />
       <Route path="/artist-collaboration" component={ArtistCollaboration} />
+      <Route path="/artist-collaboration-studio" component={ArtistCollaborationStudio} />
       
       {/* Social & Hub Pages */}
       <Route path="/social-media-hub" component={SocialMediaHub} />
@@ -96,6 +106,12 @@ function App() {
       <Route path="/professional-tools-suite" component={ProfessionalToolsSuite} />
       <Route path="/analytics-business-suite" component={AnalyticsBusinessSuite} />
       <Route path="/ultimate-social-suite" component={UltimateSocialSuite} />
+      <Route path="/advanced-video-editor" component={AdvancedVideoEditor} />
+      <Route path="/professional-instruments-studio" component={ProfessionalInstrumentsStudio} />
+      <Route path="/midi-controller-studio" component={MIDIControllerStudio} />
+      <Route path="/analytics-dashboard" component={AnalyticsDashboard} />
+      <Route path="/nft-marketplace-studio" component={NFTMarketplaceStudio} />
+      <Route path="/enterprise-management-studio" component={EnterpriseManagementStudio} />
       
       {/* 404 Page */}
       <Route component={NotFound} />

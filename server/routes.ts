@@ -406,15 +406,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: 1, // Demo user ID
         filename: req.file.filename,
         originalName: req.file.originalname,
-        mimeType: req.file.mimetype,
-        size: req.file.size,
-        path: req.file.path
+        filePath: req.file.path,
+        fileSize: req.file.size,
+        mimeType: req.file.mimetype
       };
 
       const audioFile = await storage.createAudioFile(audioFileData);
       
       // Trigger audio analysis in background
-      neuralAudioEngine.analyzeAudioFile(audioFile.id).catch(console.error);
+      neuralAudioEngine.analyzeAudioFile(audioFile.filePath).catch(console.error);
       
       res.json(audioFile);
     } catch (error: any) {
@@ -434,7 +434,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/audio/analyze", async (req, res) => {
     try {
       const { trackId } = req.body;
-      const analysis = await neuralAudioEngine.analyzeAudioFile(trackId);
+      const track = await storage.getAudioFile(trackId);
+      if (!track) {
+        return res.status(404).json({ error: "Track not found" });
+      }
+      const analysis = await neuralAudioEngine.analyzeAudioFile(track.filePath);
       res.json(analysis);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -444,7 +448,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/audio/waveform/:trackId", async (req, res) => {
     try {
       const { trackId } = req.params;
-      const waveform = await neuralAudioEngine.generateWaveform(trackId);
+      const track = await storage.getAudioFile(parseInt(req.params.trackId));
+      if (!track) {
+        return res.status(404).json({ error: "Track not found" });
+      }
+      const waveform = await neuralAudioEngine.generateWaveform(track.filePath);
       res.json({ waveform });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
