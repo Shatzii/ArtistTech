@@ -38,9 +38,9 @@ export class VoiceControlEngine {
   }
 
   private setupVoiceServer() {
-    this.voiceWSS = new WebSocketServer({ port: 8188, path: '/voice' });
+    this.voiceWSS = new WebSocketServer({ port: 8189, path: '/voice' });
     
-    console.log("Voice control WebSocket server started on port 8188");
+    console.log("Voice control WebSocket server started on port 8189");
     
     this.voiceWSS.on('connection', (ws: WebSocket) => {
       const sessionId = this.generateSessionId();
