@@ -43,6 +43,7 @@ import collaborationRoutes from "./routes/collaboration";
 import { setupOneClickSocialGenerator } from "./one-click-social-generator";
 import { registerSocialHeatmapRoutes } from "./routes/social-heatmap";
 import { insertProjectSchema, insertAudioFileSchema, insertVideoFileSchema } from "../shared/schema";
+import { registerHighImpactRoutes } from "./routes/high-impact-features";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -7903,6 +7904,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     ];
     res.json({ studios, total_users: 5931, system_load: 64 });
   });
+
+  // High-Impact Features Routes
+  registerHighImpactRoutes(app);
 
   return httpServer;
 }

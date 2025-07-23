@@ -47,6 +47,9 @@ import MIDIControllerStudio from "./pages/midi-controller-studio";
 import AnalyticsDashboard from "./pages/analytics-dashboard";
 import NFTMarketplaceStudio from "./pages/nft-marketplace-studio";
 import EnterpriseManagementStudio from "./pages/enterprise-management-studio";
+import AIMusicVideoGenerator from "./pages/ai-music-video-generator";
+import ViralChallengeCreator from "./pages/viral-challenge-creator";
+import RealArtistOnboarding from "./pages/real-artist-onboarding";
 
 function App() {
   return (
@@ -114,6 +117,11 @@ function App() {
       <Route path="/analytics-dashboard" component={AnalyticsDashboard} />
       <Route path="/nft-marketplace-studio" component={NFTMarketplaceStudio} />
       <Route path="/enterprise-management-studio" component={EnterpriseManagementStudio} />
+      
+      {/* High-Impact Features */}
+      <Route path="/ai-music-video-generator" component={AIMusicVideoGenerator} />
+      <Route path="/viral-challenge-creator" component={ViralChallengeCreator} />
+      <Route path="/real-artist-onboarding" component={RealArtistOnboarding} />
       
       {/* 404 Page */}
       <Route component={NotFound} />
