@@ -153,7 +153,7 @@ export class AIMarketingEngine {
 
   private setupMarketingServer() {
     if (this.marketingWSS) return; // Prevent duplicate server creation
-    this.marketingWSS = new WebSocketServer({ port: 8188, path: '/marketing' });
+    this.marketingWSS = new WebSocketServer({ port: 8190, path: '/marketing' });
     
     this.marketingWSS.on('connection', (ws: WebSocket) => {
       ws.on('message', (data: Buffer) => {
@@ -166,7 +166,7 @@ export class AIMarketingEngine {
       });
     });
 
-    console.log("AI marketing server started on port 8188");
+    console.log("AI marketing server started on port 8190");
   }
 
   private async loadContentTemplates() {
