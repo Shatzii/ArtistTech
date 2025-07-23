@@ -226,8 +226,14 @@ export default function ComprehensiveLanding() {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                <Link href="/music-studio">
+                <Link href="/one-click-social-generator">
                   <button className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black px-8 py-4 rounded-lg font-bold text-lg hover:shadow-lg hover:shadow-yellow-500/25 transition-all">
+                    <Wand2 className="inline mr-2 w-5 h-5" />
+                    AI Content Generator
+                  </button>
+                </Link>
+                <Link href="/music-studio">
+                  <button className="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:shadow-lg hover:shadow-purple-500/25 transition-all">
                     Start Creating <ArrowRight className="inline ml-2 w-5 h-5" />
                   </button>
                 </Link>

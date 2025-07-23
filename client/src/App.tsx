@@ -4,6 +4,7 @@ import { queryClient } from "./lib/queryClient";
 import { AuthProvider } from "./contexts/AuthContext";
 import ComprehensiveLanding from "./pages/comprehensive-landing";
 import AuthenticationSuite from "./pages/authentication-suite";
+import OneClickSocialGenerator from "./pages/one-click-social-generator";
 import NotFound from "./pages/not-found";
 
 // Core Studios
@@ -50,6 +51,11 @@ function App() {
       <Route path="/user-login" component={AuthenticationSuite} />
       <Route path="/auth" component={AuthenticationSuite} />
       <Route path="/authentication-suite" component={AuthenticationSuite} />
+      
+      {/* One-Click Social Media Generator */}
+      <Route path="/one-click-social-generator" component={OneClickSocialGenerator} />
+      <Route path="/social-generator" component={OneClickSocialGenerator} />
+      <Route path="/content-generator" component={OneClickSocialGenerator} />
       
       {/* Core Studios */}
       <Route path="/music-studio" component={UltimateMusicStudio} />

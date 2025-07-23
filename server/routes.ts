@@ -40,6 +40,7 @@ import aiCareerRoutes from "./routes/ai-career";
 import artistcoinRoutes from "./routes/artistcoin";
 import genreRemixerRoutes from "./routes/genre-remixer";
 import collaborationRoutes from "./routes/collaboration";
+import { setupOneClickSocialGenerator } from "./one-click-social-generator";
 import { insertProjectSchema, insertAudioFileSchema, insertVideoFileSchema } from "../shared/schema";
 import multer from "multer";
 import path from "path";
@@ -7444,6 +7445,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   app.use('/api/collaboration', collaborationRoutes);
+
+  // Setup One-Click Social Media Generator
+  setupOneClickSocialGenerator(app);
 
   // Platform Stats API for Real-time Dashboard
   app.get('/api/platform/stats', (req, res) => {
