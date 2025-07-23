@@ -6,6 +6,7 @@ import ComprehensiveLanding from "./pages/comprehensive-landing";
 import AuthenticationSuite from "./pages/authentication-suite";
 import OneClickSocialGenerator from "./pages/one-click-social-generator";
 import SocialMediaStrategyCoach from "./pages/social-media-strategy-coach";
+import SiteNavigation from "./components/SiteNavigation";
 import NotFound from "./pages/not-found";
 
 // Core Studios
@@ -54,9 +55,11 @@ import RealArtistOnboarding from "./pages/real-artist-onboarding";
 
 function App() {
   return (
-    <Switch>
-      {/* Landing Page */}
-      <Route path="/" component={ComprehensiveLanding} />
+    <>
+      <SiteNavigation />
+      <Switch>
+        {/* Landing Page */}
+        <Route path="/" component={ComprehensiveLanding} />
       
       {/* Authentication */}
       <Route path="/login" component={AuthenticationSuite} />
@@ -128,6 +131,7 @@ function App() {
       {/* 404 Page */}
       <Route component={NotFound} />
     </Switch>
+    </>
   );
 }
 
