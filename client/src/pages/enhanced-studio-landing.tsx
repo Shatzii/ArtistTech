@@ -21,6 +21,7 @@ import ProfessionalPiano from "@/components/ui/professional-piano";
 export default function EnhancedStudioLanding() {
   const [activeDemo, setActiveDemo] = useState('music');
   const [hoveredStudio, setHoveredStudio] = useState<string | null>(null);
+  const [selectedStudio, setSelectedStudio] = useState<string | null>(null);
   const [earnings, setEarnings] = useState(342.50);
   const [userCount, setUserCount] = useState(14486);
 
@@ -41,9 +42,19 @@ export default function EnhancedStudioLanding() {
       description: 'Professional DAW with AI-powered composition, real-time collaboration, and industry-standard mixing',
       icon: Music,
       color: 'from-blue-500 to-purple-600',
-      features: ['16-track mixing', 'VST integration', 'AI composition', 'Real-time collab'],
+      features: [
+        '16-track professional mixing console',
+        'VST plugin integration (Serum, Pro-Q 3, Massive)',
+        'AI composition and chord progression generation',
+        'Real-time multi-user collaboration',
+        'Professional transport controls with precise BPM',
+        'Advanced waveform visualization and editing',
+        'Professional piano with multi-octave support',
+        'Infinite canvas for creative arrangement'
+      ],
       route: '/ultimate-music-studio',
-      preview: 'Enhanced Canvas + Professional Transport'
+      preview: 'Enhanced Canvas + Professional Transport',
+      stats: { tracks: '16+', plugins: '50+', users: '12.3K' }
     },
     {
       id: 'dj',
@@ -51,9 +62,19 @@ export default function EnhancedStudioLanding() {
       description: 'Pioneer CDJ-3000 integration, harmonic mixing, live voting, and crowd analytics',
       icon: Disc,
       color: 'from-orange-500 to-red-600',
-      features: ['Harmonic mixing', 'Live voting', 'CDJ integration', 'Crowd analytics'],
+      features: [
+        'Professional dual-deck mixing interface',
+        'Pioneer CDJ-3000 and DJM-900NXS2 integration',
+        'AI-powered harmonic mixing and key matching',
+        'Live audience voting and track requests',
+        'Real-time crowd energy analytics',
+        'Advanced stem separation and remixing',
+        'Live streaming to multiple platforms',
+        'Professional crossfader and EQ controls'
+      ],
       route: '/unified-dj-studio',
-      preview: 'Advanced Mixer + Live Performance'
+      preview: 'Advanced Mixer + Live Performance',
+      stats: { decks: '2', listeners: '3.2K', events: '847' }
     },
     {
       id: 'video',
@@ -325,100 +346,168 @@ export default function EnhancedStudioLanding() {
             </div>
           </div>
 
-          {/* Live Studio Demo Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-            {/* Studio Selector */}
-            <div className="space-y-4">
-              <h3 className="text-2xl font-bold mb-6">Choose Your Studio</h3>
-              <div className="grid grid-cols-1 gap-3">
-                {studioFeatures.slice(0, 6).map((studio) => (
-                  <Card 
-                    key={studio.id}
-                    className={`cursor-pointer transition-all duration-300 ${
-                      activeDemo === studio.id 
-                        ? 'bg-gradient-to-r ' + studio.color + ' border-transparent' 
-                        : 'bg-gray-800 border-gray-600 hover:border-gray-500'
-                    }`}
-                    onClick={() => setActiveDemo(studio.id)}
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-center space-x-3">
-                        <studio.icon className="w-6 h-6" />
-                        <div className="flex-1">
-                          <div className="font-semibold">{studio.name}</div>
-                          <div className="text-sm opacity-80">{studio.preview}</div>
+          {/* Compact Studio Grid with Expandable Features */}
+          <div className="mb-16">
+            <h3 className="text-3xl font-bold text-center mb-8">Professional Studio Interfaces</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
+              {studioFeatures.map((studio) => (
+                <Card 
+                  key={studio.id}
+                  className="cursor-pointer transition-all duration-300 hover:scale-105 bg-gray-800 border-gray-600 hover:border-gray-500 group"
+                  onClick={() => setSelectedStudio(selectedStudio === studio.id ? null : studio.id)}
+                >
+                  <CardContent className="p-4">
+                    {/* Studio Interface Preview */}
+                    <div className={`w-full h-20 rounded-lg bg-gradient-to-r ${studio.color} mb-3 flex items-center justify-center relative overflow-hidden`}>
+                      <studio.icon className="w-8 h-8 text-white/80" />
+                      {/* Mini interface preview */}
+                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                        <div className="grid grid-cols-3 gap-1 opacity-60">
+                          <div className="w-2 h-1 bg-white/50 rounded"></div>
+                          <div className="w-2 h-1 bg-white/70 rounded"></div>
+                          <div className="w-2 h-1 bg-white/50 rounded"></div>
+                          <div className="w-2 h-1 bg-white/30 rounded"></div>
+                          <div className="w-2 h-1 bg-white/80 rounded"></div>
+                          <div className="w-2 h-1 bg-white/40 rounded"></div>
                         </div>
-                        <ArrowRight className="w-4 h-4" />
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                      {/* Click indicator */}
+                      <div className="absolute top-1 right-1">
+                        <div className="w-4 h-4 bg-white/20 rounded-full flex items-center justify-center">
+                          <div className="w-2 h-2 bg-white/60 rounded-full"></div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="text-center">
+                      <h4 className="font-bold text-sm mb-1">{studio.name}</h4>
+                      {studio.stats && (
+                        <div className="flex justify-between text-xs text-gray-400">
+                          {Object.entries(studio.stats).map(([key, value]) => (
+                            <span key={key}>{value}</span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
 
-            {/* Live Studio Preview */}
-            <div className="space-y-4">
-              <h3 className="text-2xl font-bold mb-6">Live Studio Preview</h3>
-              <Card className="bg-gray-800 border-gray-600">
+            {/* Expandable Feature Panel */}
+            {selectedStudio && (
+              <Card className="bg-gray-800 border-gray-600 animate-in slide-in-from-top duration-300">
                 <CardContent className="p-6">
-                  {renderStudioPreview()}
+                  {(() => {
+                    const studio = studioFeatures.find(s => s.id === selectedStudio);
+                    if (!studio) return null;
+                    
+                    return (
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Studio Details */}
+                        <div>
+                          <div className="flex items-center space-x-3 mb-4">
+                            <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${studio.color} flex items-center justify-center`}>
+                              <studio.icon className="w-6 h-6 text-white" />
+                            </div>
+                            <div>
+                              <h3 className="text-2xl font-bold">{studio.name}</h3>
+                              <p className="text-gray-400">{studio.description}</p>
+                            </div>
+                          </div>
+                          
+                          <div className="space-y-3">
+                            <h4 className="font-semibold text-lg">Professional Features</h4>
+                            <div className="grid grid-cols-1 gap-2">
+                              {studio.features.map((feature, index) => (
+                                <div key={index} className="flex items-center space-x-3 p-2 bg-gray-700/50 rounded">
+                                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                                  <span className="text-sm">{feature}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          <div className="mt-6">
+                            <Button asChild size="lg" className={`w-full bg-gradient-to-r ${studio.color}`}>
+                              <Link href={studio.route}>
+                                Open {studio.name}
+                                <ArrowRight className="w-5 h-5 ml-2" />
+                              </Link>
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        {/* Live Studio Preview */}
+                        <div>
+                          <h4 className="font-semibold text-lg mb-4">Live Interface Preview</h4>
+                          <div className="bg-gray-900 rounded-lg p-4">
+                            {selectedStudio === 'music' && renderStudioPreview()}
+                            {selectedStudio === 'dj' && (
+                              <div className="space-y-4">
+                                {renderStudioPreview()}
+                              </div>
+                            )}
+                            {selectedStudio === 'social' && renderStudioPreview()}
+                            {!['music', 'dj', 'social'].includes(selectedStudio) && (
+                              <div className="text-center py-8">
+                                <div className={`w-16 h-16 rounded-lg bg-gradient-to-r ${studio.color} flex items-center justify-center mx-auto mb-4`}>
+                                  <studio.icon className="w-8 h-8 text-white" />
+                                </div>
+                                <p className="text-gray-400">Interactive preview coming soon</p>
+                                <Button asChild className="mt-4">
+                                  <Link href={studio.route}>Try Now</Link>
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </CardContent>
               </Card>
-              
-              <div className="text-center">
-                <Button asChild size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600">
-                  <Link href={studioFeatures.find(s => s.id === activeDemo)?.route || '/ultimate-music-studio'}>
-                    Open {studioFeatures.find(s => s.id === activeDemo)?.name || 'Studio'}
-                  </Link>
-                </Button>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </section>
 
-      {/* Complete Studio Grid */}
-      <section className="py-16 bg-gray-900/50">
+      {/* Quick Access Studio Grid */}
+      <section className="py-12 bg-gray-900/30">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">All Professional Studios</h2>
-            <p className="text-xl text-gray-300">Industry-leading tools that exceed professional standards</p>
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-2">Quick Studio Access</h2>
+            <p className="text-gray-300">Jump directly into any professional studio</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
             {studioFeatures.map((studio) => (
               <Card 
                 key={studio.id}
-                className="bg-gray-800 border-gray-600 hover:border-gray-500 transition-all duration-300 group cursor-pointer"
+                className="bg-gray-800 border-gray-600 hover:border-gray-500 transition-all duration-300 group cursor-pointer hover:scale-105"
                 onMouseEnter={() => setHoveredStudio(studio.id)}
                 onMouseLeave={() => setHoveredStudio(null)}
               >
-                <CardContent className="p-6">
-                  <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${studio.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                    <studio.icon className="w-6 h-6 text-white" />
-                  </div>
-                  
-                  <h3 className="text-lg font-bold mb-2">{studio.name}</h3>
-                  <p className="text-sm text-gray-400 mb-4">{studio.description}</p>
-                  
-                  <div className="space-y-2 mb-4">
-                    {studio.features.map((feature, index) => (
-                      <div key={index} className="flex items-center space-x-2">
-                        <div className="w-1 h-1 bg-blue-400 rounded-full"></div>
-                        <span className="text-xs text-gray-300">{feature}</span>
+                <CardContent className="p-4 text-center">
+                  <Link href={studio.route} className="block">
+                    <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${studio.color} flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform`}>
+                      <studio.icon className="w-6 h-6 text-white" />
+                    </div>
+                    
+                    <h3 className="text-sm font-bold mb-1">{studio.name.replace('Ultimate ', '').replace('Professional ', '')}</h3>
+                    {studio.stats && (
+                      <div className="text-xs text-gray-400">
+                        {Object.values(studio.stats)[0]}
                       </div>
-                    ))}
-                  </div>
-                  
-                  <Button asChild className="w-full" variant={hoveredStudio === studio.id ? "default" : "outline"}>
-                    <Link href={studio.route}>
-                      Open Studio
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Link>
-                  </Button>
+                    )}
+                  </Link>
                 </CardContent>
               </Card>
             ))}
+          </div>
+          
+          <div className="text-center mt-8">
+            <p className="text-sm text-gray-400 mb-4">Click any studio interface above to see detailed features</p>
           </div>
         </div>
       </section>
