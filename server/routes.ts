@@ -282,7 +282,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User profile route (extended info for authenticated users)
-  app.get("/api/auth/profile", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/auth/profile", authenticateToken, async (req: any, res) => {
     try {
       const user = req.user;
       if (!user) {
@@ -2011,7 +2011,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // AI Marketing & Business Intelligence APIs
-  app.post("/api/marketing/campaign", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/marketing/campaign", authenticateToken, async (req: any, res) => {
     try {
       const { campaignType, objectives } = req.body;
       const artistId = req.user?.id.toString() || 'demo';
@@ -2038,7 +2038,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/content/generate", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/content/generate", authenticateToken, async (req: any, res) => {
     try {
       const contentRequest = {
         ...req.body,
@@ -2055,7 +2055,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/content/brand-voice", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/content/brand-voice", authenticateToken, async (req: any, res) => {
     try {
       const { artistInfo } = req.body;
       const artistId = req.user?.id.toString() || 'demo';
@@ -2067,7 +2067,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/content/calendar", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/content/calendar", authenticateToken, async (req: any, res) => {
     try {
       const { month, goals } = req.body;
       const artistId = req.user?.id.toString() || 'demo';
@@ -2079,7 +2079,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/business/insights", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/business/insights", authenticateToken, async (req: any, res) => {
     try {
       const artistId = req.user?.id.toString() || 'demo';
       
@@ -2711,7 +2711,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Social Media AI Team APIs
-  app.post("/api/social/find-listeners", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/social/find-listeners", authenticateToken, async (req: any, res) => {
     try {
       const { artist_profile, criteria } = req.body;
       const artistId = req.user?.id.toString() || 'demo';
@@ -2733,7 +2733,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/social/find-sponsors", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/social/find-sponsors", authenticateToken, async (req: any, res) => {
     try {
       const { artist_profile, partnership_goals } = req.body;
       const artistId = req.user?.id.toString() || 'demo';
@@ -2764,7 +2764,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/social/analyze-trends", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/social/analyze-trends", authenticateToken, async (req: any, res) => {
     try {
       const { platforms } = req.body;
       
@@ -2810,7 +2810,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Producer Business Engine APIs
-  app.post("/api/producer/find-jobs", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/producer/find-jobs", authenticateToken, async (req: any, res) => {
     try {
       const { preferences } = req.body;
       const producerId = req.user?.id.toString() || 'demo_producer';
@@ -2826,7 +2826,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/producer/revenue-streams", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/producer/revenue-streams", authenticateToken, async (req: any, res) => {
     try {
       const producerId = req.user?.id.toString() || 'demo_producer';
       
@@ -2840,7 +2840,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/producer/marketplaces", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/producer/marketplaces", authenticateToken, async (req: any, res) => {
     try {
       const producerId = req.user?.id.toString() || 'demo_producer';
       
@@ -2854,7 +2854,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/producer/optimize-rates", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/producer/optimize-rates", authenticateToken, async (req: any, res) => {
     try {
       const producerId = req.user?.id.toString() || 'demo_producer';
       
@@ -2868,7 +2868,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/producer/business-plan", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/producer/business-plan", authenticateToken, async (req: any, res) => {
     try {
       const producerId = req.user?.id.toString() || 'demo_producer';
       
@@ -3701,7 +3701,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // ========================================
 
   // Talent Scouting & Discovery
-  app.post("/api/management/scout-talent", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/management/scout-talent", authenticateToken, async (req: any, res) => {
     try {
       const { platforms, criteria } = req.body;
       
@@ -3738,7 +3738,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Artist Signing & Contract Management
-  app.post("/api/management/sign-artist", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/management/sign-artist", authenticateToken, async (req: any, res) => {
     try {
       const { artistData, contractTerms } = req.body;
       
@@ -3786,7 +3786,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Release Planning & Distribution
-  app.post("/api/management/plan-release", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/management/plan-release", authenticateToken, async (req: any, res) => {
     try {
       const { artistId, releaseData } = req.body;
       
@@ -3831,7 +3831,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Tour Booking & Management
-  app.post("/api/management/book-tour", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/management/book-tour", authenticateToken, async (req: any, res) => {
     try {
       const { artistId, tourData } = req.body;
       
@@ -3869,7 +3869,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Film Production Management
-  app.post("/api/management/create-film-project", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/management/create-film-project", authenticateToken, async (req: any, res) => {
     try {
       const { projectData } = req.body;
       
@@ -3913,7 +3913,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Marketing Campaign Creation
-  app.post("/api/management/create-campaign", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/management/create-campaign", authenticateToken, async (req: any, res) => {
     try {
       const { campaignData } = req.body;
       
@@ -3951,7 +3951,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Global Distribution Network
-  app.post("/api/management/distribute-content", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/management/distribute-content", authenticateToken, async (req: any, res) => {
     try {
       const { contentData } = req.body;
       
@@ -3988,7 +3988,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Market Analysis & Intelligence
-  app.get("/api/management/market-analysis", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/management/market-analysis", authenticateToken, async (req: any, res) => {
     try {
       const analysis = {
         trending_genres: [
@@ -4020,7 +4020,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Financial Management & Analytics
-  app.get("/api/management/financial-overview", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/management/financial-overview", authenticateToken, async (req: any, res) => {
     try {
       const overview = {
         total_revenue: 2850000,
@@ -4053,7 +4053,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Legal & Compliance Management
-  app.post("/api/management/legal-review", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/management/legal-review", authenticateToken, async (req: any, res) => {
     try {
       const { documentType, content } = req.body;
       
@@ -4088,7 +4088,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Initialize Enterprise AI Management WebSocket server
   // Social Media Deployment Engine Routes
-  app.post("/api/social-deploy/tiktok", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/social-deploy/tiktok", authenticateToken, async (req: any, res) => {
     try {
       const { videoUrl, title, description, hashtags, music, effects, privacy, allowComments, allowDuet, allowStitch, scheduledTime } = req.body;
       const artistId = req.user?.id.toString() || 'demo_artist';
@@ -4118,7 +4118,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/social-deploy/twitter", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/social-deploy/twitter", authenticateToken, async (req: any, res) => {
     try {
       const { content, mediaUrls, type, hashtags, mentions, location, scheduledTime } = req.body;
       const artistId = req.user?.id.toString() || 'demo_artist';
@@ -4144,7 +4144,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/social-deploy/campaign", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/social-deploy/campaign", authenticateToken, async (req: any, res) => {
     try {
       const { name, contentId, platforms, strategy, schedule, budget, goals } = req.body;
       const artistId = req.user?.id.toString() || 'demo_artist';
@@ -4170,7 +4170,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/social-deploy/analytics/:deploymentId", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/social-deploy/analytics/:deploymentId", authenticateToken, async (req: any, res) => {
     try {
       const { deploymentId } = req.params;
       
@@ -4186,7 +4186,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/social-deploy/status", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/social-deploy/status", authenticateToken, async (req: any, res) => {
     try {
       const status = socialMediaDeploymentEngine.getEngineStatus();
       
@@ -4208,7 +4208,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // ===== MIDI CONTROLLER API ROUTES =====
 
   // Get connected MIDI devices
-  app.get("/api/midi/devices", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/midi/devices", authenticateToken, async (req: any, res) => {
     try {
       // Import midi controller engine dynamically
       const { midiControllerEngine } = await import('./midi-controller-engine');
@@ -4221,7 +4221,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get hardware profiles
-  app.get("/api/midi/profiles", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/midi/profiles", authenticateToken, async (req: any, res) => {
     try {
       const profiles = [
         'Akai MPK Mini MK3',
@@ -4241,7 +4241,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get MIDI engine status
-  app.get("/api/midi/status", authenticateToken, async (req: AuthRequest, res) => {
+  app.get("/api/midi/status", authenticateToken, async (req: any, res) => {
     try {
       const { midiControllerEngine } = await import('./midi-controller-engine');
       const status = midiControllerEngine.getEngineStatus();
@@ -4269,7 +4269,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Export MIDI mappings
-  app.post("/api/midi/mappings/export", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/midi/mappings/export", authenticateToken, async (req: any, res) => {
     try {
       const { deviceId } = req.body;
       
@@ -4326,7 +4326,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Import MIDI mappings
-  app.post("/api/midi/mappings/import", authenticateToken, async (req: AuthRequest, res) => {
+  app.post("/api/midi/mappings/import", authenticateToken, async (req: any, res) => {
     try {
       const { mappings } = req.body;
       

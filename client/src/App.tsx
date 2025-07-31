@@ -14,10 +14,9 @@ import UltimateMusicStudio from "./pages/ultimate-music-studio";
 import VideoStudio from "./pages/video-studio";
 import VisualStudio from "./pages/visual-studio";
 import CollaborativeStudio from "./pages/collaborative-studio";
-import DJStudio from "./pages/dj-studio";
+import UnifiedDJStudio from "./pages/unified-dj-studio";
 import PodcastStudio from "./pages/podcast-studio";
-import SocialMediaStudio from "./pages/social-media-studio";
-import SocialMediaHeatmap from "./pages/social-media-heatmap";
+import UnifiedSocialMediaHub from "./pages/unified-social-media-hub";
 import CryptoStudio from "./pages/crypto-studio";
 import VRStudio from "./pages/vr-studio";
 import NFTMarketplace from "./pages/nft-marketplace";
@@ -74,16 +73,26 @@ function App() {
       <Route path="/social-generator" component={OneClickSocialGenerator} />
       <Route path="/content-generator" component={OneClickSocialGenerator} />
       
-      {/* Core Studios */}
+      {/* Core Studios - Unified */}
       <Route path="/music-studio" component={UltimateMusicStudio} />
       <Route path="/ultimate-music-studio" component={UltimateMusicStudio} />
       <Route path="/video-studio" component={VideoStudio} />
       <Route path="/visual-studio" component={VisualStudio} />
       <Route path="/collaborative-studio" component={CollaborativeStudio} />
-      <Route path="/dj-studio" component={DJStudio} />
+      
+      {/* Unified DJ Studio - All DJ routes point here */}
+      <Route path="/dj-studio" component={UnifiedDJStudio} />
+      <Route path="/ultimate-dj-studio" component={UnifiedDJStudio} />
+      <Route path="/dj" component={UnifiedDJStudio} />
+      
       <Route path="/podcast-studio" component={PodcastStudio} />
-      <Route path="/social-media-studio" component={SocialMediaStudio} />
-      <Route path="/social-media-heatmap" component={SocialMediaHeatmap} />
+      
+      {/* Unified Social Media Hub - All social routes point here */}
+      <Route path="/social-media-studio" component={UnifiedSocialMediaHub} />
+      <Route path="/social-media-hub" component={UnifiedSocialMediaHub} />
+      <Route path="/social-media-heatmap" component={UnifiedSocialMediaHub} />
+      <Route path="/social" component={UnifiedSocialMediaHub} />
+      
       <Route path="/crypto-studio" component={CryptoStudio} />
       <Route path="/artistcoin" component={CryptoStudio} />
       <Route path="/vr-studio" component={VRStudio} />
@@ -91,10 +100,7 @@ function App() {
       
       {/* Management Suites */}
       <Route path="/career-management" component={CareerManagement} />
-      <Route path="/ultimate-dj-suite" component={UltimateDJSuite} />
-      <Route path="/dj" component={UltimateDJSuite} />
-      <Route path="/ultimate-dj-studio" component={UltimateDJSuite} />
-      <Route path="/social-media-management" component={SocialMediaManagement} />
+      <Route path="/social-media-management" component={UnifiedSocialMediaHub} />
       <Route path="/education-management" component={EducationManagement} />
       <Route path="/admin-control-center" component={AdminControlCenter} />
       <Route path="/admin" component={AdminControlCenter} />
@@ -107,15 +113,13 @@ function App() {
       <Route path="/artist-collaboration" component={ArtistCollaboration} />
       <Route path="/artist-collaboration-studio" component={ArtistCollaborationStudio} />
       
-      {/* Social & Hub Pages */}
-      <Route path="/social-media-hub" component={SocialMediaHub} />
-      <Route path="/social" component={SocialMediaHub} />
+      {/* Hub Pages & Tools */}
       <Route path="/collaborative-demo" component={CollaborativeDemo} />
       <Route path="/creative-studios-hub" component={CreativeStudiosHub} />
       <Route path="/monetization-hub" component={MonetizationHub} />
       <Route path="/professional-tools-suite" component={ProfessionalToolsSuite} />
       <Route path="/analytics-business-suite" component={AnalyticsBusinessSuite} />
-      <Route path="/ultimate-social-suite" component={UltimateSocialSuite} />
+      <Route path="/ultimate-social-suite" component={UnifiedSocialMediaHub} />
       <Route path="/advanced-video-editor" component={AdvancedVideoEditor} />
       <Route path="/professional-instruments-studio" component={ProfessionalInstrumentsStudio} />
       <Route path="/midi-controller-studio" component={MIDIControllerStudio} />

@@ -94,3 +94,6 @@ externalPort = 8080
 [[ports]]
 localPort = 8103
 externalPort = 9000
+
+[agent]
+integrations = ["javascript_database==1.0.0", "perplexity_v0==1.0.0", "javascript_log_in_with_replit==1.0.0", "javascript_openai==1.0.0", "javascript_anthropic==1.0.0"]
