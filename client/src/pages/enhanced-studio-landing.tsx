@@ -260,9 +260,9 @@ export default function EnhancedStudioLanding() {
                 </div>
               </div>
               <div className="space-y-2">
-                <div className="text-xs">Total Views: <span className="text-blue-400">128,497</span></div>
-                <div className="text-xs">Engagement: <span className="text-green-400">94.2%</span></div>
-                <div className="text-xs">Earnings Today: <span className="text-yellow-400">${earnings.toFixed(2)}</span></div>
+                <div className="text-xs">Total Views: <span className="text-cyan-400 drop-shadow-sm" style={{ textShadow: '0 0 10px rgba(6, 182, 212, 0.5)' }}>128,497</span></div>
+                <div className="text-xs">Engagement: <span className="text-cyan-300 drop-shadow-sm" style={{ textShadow: '0 0 10px rgba(103, 232, 249, 0.5)' }}>94.2%</span></div>
+                <div className="text-xs">Earnings Today: <span className="text-blue-400 drop-shadow-sm" style={{ textShadow: '0 0 10px rgba(59, 130, 246, 0.5)' }}>${earnings.toFixed(2)}</span></div>
               </div>
             </div>
             <div className="bg-gray-800 rounded p-3">
@@ -481,18 +481,23 @@ export default function EnhancedStudioLanding() {
       </section>
 
       {/* Quick Access Studio Grid */}
-      <section className="py-12 bg-gray-900/30">
+      <section className="py-12 bg-gray-900/50 relative">
+        {/* Neon background effects for this section */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-1/4 left-1/3 w-72 h-72 bg-cyan-400/10 rounded-full blur-3xl animate-pulse delay-300" />
+          <div className="absolute bottom-1/4 right-1/3 w-64 h-64 bg-blue-500/15 rounded-full blur-3xl animate-pulse delay-700" />
+        </div>
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-2">Quick Studio Access</h2>
-            <p className="text-gray-300">Jump directly into any professional studio</p>
+            <h2 className="text-3xl font-bold mb-2 text-cyan-300 drop-shadow-lg" style={{ textShadow: '0 0 20px rgba(103, 232, 249, 0.4)' }}>Quick Studio Access</h2>
+            <p className="text-cyan-200">Jump directly into any professional studio</p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
             {studioFeatures.map((studio) => (
               <Card 
                 key={studio.id}
-                className="bg-gray-800 border-gray-600 hover:border-gray-500 transition-all duration-300 group cursor-pointer hover:scale-105"
+                className="bg-gray-800/80 border-gray-600 hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-400/20 transition-all duration-300 group cursor-pointer hover:scale-105 backdrop-blur-sm"
                 onMouseEnter={() => setHoveredStudio(studio.id)}
                 onMouseLeave={() => setHoveredStudio(null)}
               >
@@ -524,16 +529,16 @@ export default function EnhancedStudioLanding() {
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">Why Artists Choose Us</h2>
-            <p className="text-xl text-gray-300">The platform that's replacing TikTok, Spotify, and YouTube</p>
+            <h2 className="text-4xl font-bold mb-4 text-cyan-300 drop-shadow-2xl" style={{ textShadow: '0 0 30px rgba(103, 232, 249, 0.5)' }}>Why Artists Choose Us</h2>
+            <p className="text-xl text-cyan-200">The platform that's replacing TikTok, Spotify, and YouTube</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="bg-gradient-to-br from-green-900/50 to-green-800/50 border-green-700">
+            <Card className="bg-gradient-to-br from-cyan-900/50 to-cyan-800/50 border-cyan-500/30 shadow-lg shadow-cyan-500/20 backdrop-blur-sm">
               <CardContent className="p-8 text-center">
-                <DollarSign className="w-12 h-12 text-green-400 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold mb-2">10x Better Payouts</h3>
-                <p className="text-green-200 mb-4">$50+ per 1,000 plays vs Spotify's $3</p>
+                <DollarSign className="w-12 h-12 text-cyan-400 mx-auto mb-4 drop-shadow-lg" style={{ textShadow: '0 0 15px rgba(6, 182, 212, 0.6)' }} />
+                <h3 className="text-2xl font-bold mb-2 text-cyan-300 drop-shadow-lg" style={{ textShadow: '0 0 20px rgba(103, 232, 249, 0.4)' }}>10x Better Payouts</h3>
+                <p className="text-cyan-200 mb-4">$50+ per 1,000 plays vs Spotify's $3</p>
                 <div className="space-y-2 text-sm">
                   <div>✓ Direct fan funding</div>
                   <div>✓ NFT marketplace</div>
@@ -543,10 +548,10 @@ export default function EnhancedStudioLanding() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-blue-900/50 to-blue-800/50 border-blue-700">
+            <Card className="bg-gradient-to-br from-blue-900/50 to-cyan-800/50 border-blue-500/30 shadow-lg shadow-blue-500/20 backdrop-blur-sm">
               <CardContent className="p-8 text-center">
-                <Zap className="w-12 h-12 text-blue-400 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold mb-2">Real-time Collaboration</h3>
+                <Zap className="w-12 h-12 text-blue-400 mx-auto mb-4 drop-shadow-lg" style={{ textShadow: '0 0 15px rgba(59, 130, 246, 0.6)' }} />
+                <h3 className="text-2xl font-bold mb-2 text-blue-300 drop-shadow-lg" style={{ textShadow: '0 0 20px rgba(147, 197, 253, 0.4)' }}>Real-time Collaboration</h3>
                 <p className="text-blue-200 mb-4">Work together from anywhere, instantly</p>
                 <div className="space-y-2 text-sm">
                   <div>✓ Live multi-user editing</div>
@@ -557,11 +562,11 @@ export default function EnhancedStudioLanding() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-purple-900/50 to-purple-800/50 border-purple-700">
+            <Card className="bg-gradient-to-br from-cyan-900/50 to-blue-900/50 border-cyan-500/30 shadow-lg shadow-cyan-500/20 backdrop-blur-sm">
               <CardContent className="p-8 text-center">
-                <Brain className="w-12 h-12 text-purple-400 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold mb-2">19 AI Engines</h3>
-                <p className="text-purple-200 mb-4">Self-hosted AI that learns from you</p>
+                <Brain className="w-12 h-12 text-cyan-300 mx-auto mb-4 drop-shadow-lg" style={{ textShadow: '0 0 15px rgba(103, 232, 249, 0.6)' }} />
+                <h3 className="text-2xl font-bold mb-2 text-cyan-400 drop-shadow-lg" style={{ textShadow: '0 0 20px rgba(6, 182, 212, 0.4)' }}>19 AI Engines</h3>
+                <p className="text-cyan-200 mb-4">Self-hosted AI that learns from you</p>
                 <div className="space-y-2 text-sm">
                   <div>✓ AI composition & mastering</div>
                   <div>✓ Viral content prediction</div>
@@ -575,22 +580,28 @@ export default function EnhancedStudioLanding() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-r from-blue-900 to-purple-900">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-4">Ready to Transform Your Creative Career?</h2>
-          <p className="text-xl text-gray-200 mb-8">
+      <section className="py-16 bg-gradient-to-r from-cyan-900 via-blue-900 to-cyan-800 relative overflow-hidden">
+        {/* Final neon glow effects */}
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-400/15 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-500" />
+        </div>
+        
+        <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
+          <h2 className="text-4xl font-bold mb-4 text-cyan-300 drop-shadow-2xl" style={{ textShadow: '0 0 30px rgba(103, 232, 249, 0.5)' }}>Ready to Transform Your Creative Career?</h2>
+          <p className="text-xl text-cyan-100 mb-8 drop-shadow-lg">
             Join thousands of artists already earning 10x more and creating better content
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="bg-white text-black hover:bg-gray-100">
+            <Button asChild size="lg" className="bg-gradient-to-r from-cyan-400 to-blue-500 text-white hover:from-cyan-300 hover:to-blue-400 shadow-lg shadow-cyan-400/30 font-semibold">
               <Link href="/ultimate-music-studio">
                 Start Creating Now
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Link>
             </Button>
             
-            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-black">
+            <Button asChild size="lg" variant="outline" className="border-cyan-400/60 text-cyan-300 hover:bg-cyan-400/20 hover:border-cyan-300 backdrop-blur-sm shadow-lg shadow-cyan-400/20">
               <Link href="/unified-social-media-hub">
                 Explore Social Hub
                 <Globe className="w-5 h-5 ml-2" />
@@ -598,7 +609,7 @@ export default function EnhancedStudioLanding() {
             </Button>
           </div>
           
-          <p className="text-sm text-gray-300 mt-6">
+          <p className="text-sm text-cyan-200 mt-6 drop-shadow-sm">
             No credit card required • Professional tools • Start earning immediately
           </p>
         </div>
