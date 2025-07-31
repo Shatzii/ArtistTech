@@ -2039,6 +2039,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI Content Creator Status endpoint (no auth required)
+  app.get("/api/content/status", async (req, res) => {
+    try {
+      const status = aiContentCreator.getCreatorStatus();
+      res.json({
+        status: 'active',
+        aiEngine: 'operational',
+        ...status,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Test AI Content Generator (no auth required for testing)
+  app.post("/api/content/test-generate", async (req, res) => {
+    try {
+      const { type = 'social_post', platform = 'instagram', topic = 'new music release' } = req.body;
+      
+      const testRequest: any = {
+        type,
+        platform,
+        style: 'engaging',
+        tone: 'excited',
+        length: 'medium',
+        keywords: [topic, 'music', 'artist'],
+        targetAudience: 'music fans',
+        callToAction: 'Listen now!',
+        context: {
+          artistId: 'demo',
+          topic: topic
+        }
+      };
+      
+      const content = await aiContentCreator.generateContent(testRequest);
+      res.json(content);
+    } catch (error: any) {
+      console.error('Content generation test error:', error);
+      res.status(500).json({ 
+        error: 'Content generation failed', 
+        message: error.message,
+        fallback: {
+          content: `Exciting ${topic} coming soon! 🎵 Stay tuned for amazing music updates.`,
+          hashtags: ['#music', '#newrelease', '#artist'],
+          platform: platform
+        }
+      });
+    }
+  });
+
   app.post("/api/content/generate", authenticateToken, async (req: any, res) => {
     try {
       const contentRequest = {

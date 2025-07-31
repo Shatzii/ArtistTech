@@ -54,6 +54,7 @@ import EnterpriseManagementStudio from "./pages/enterprise-management-studio";
 import AIMusicVideoGenerator from "./pages/ai-music-video-generator";
 import ViralChallengeCreator from "./pages/viral-challenge-creator";
 import RealArtistOnboarding from "./pages/real-artist-onboarding";
+import AIContentCreatorDemo from "./pages/AIContentCreatorDemo";
 
 function App() {
   return (
@@ -138,6 +139,11 @@ function App() {
       <Route path="/ai-music-video-generator" component={AIMusicVideoGenerator} />
       <Route path="/viral-challenge-creator" component={ViralChallengeCreator} />
       <Route path="/real-artist-onboarding" component={RealArtistOnboarding} />
+      
+      {/* AI Content Creator Demo */}
+      <Route path="/ai-content-creator" component={AIContentCreatorDemo} />
+      <Route path="/content-creator" component={AIContentCreatorDemo} />
+      <Route path="/ai-content" component={AIContentCreatorDemo} />
       
       {/* 404 Page */}
       <Route component={NotFound} />
