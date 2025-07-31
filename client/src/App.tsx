@@ -2,7 +2,7 @@ import { Switch, Route } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { AuthProvider } from "./contexts/AuthContext";
-import ComprehensiveLanding from "./pages/comprehensive-landing";
+
 import EnhancedStudioLanding from "./pages/enhanced-studio-landing";
 import AuthenticationSuite from "./pages/authentication-suite";
 import OneClickSocialGenerator from "./pages/one-click-social-generator";
@@ -65,7 +65,6 @@ function App() {
       <Switch>
         {/* Landing Page */}
         <Route path="/" component={EnhancedStudioLanding} />
-        <Route path="/comprehensive-landing" component={ComprehensiveLanding} />
       
       {/* Authentication */}
       <Route path="/login" component={AuthenticationSuite} />
