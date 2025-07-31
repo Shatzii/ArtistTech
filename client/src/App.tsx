@@ -12,6 +12,8 @@ import NotFound from "./pages/not-found";
 
 // Core Studios
 import UltimateMusicStudio from "./pages/ultimate-music-studio";
+import CuttingEdgeMusicStudio from "./pages/cutting-edge-music-studio";
+import CuttingEdgeDJStudio from "./pages/cutting-edge-dj-studio";
 import VideoStudio from "./pages/video-studio";
 import VisualStudio from "./pages/visual-studio";
 import CollaborativeStudio from "./pages/collaborative-studio";
@@ -76,16 +78,19 @@ function App() {
       <Route path="/content-generator" component={OneClickSocialGenerator} />
       
       {/* Core Studios - Unified */}
-      <Route path="/music-studio" component={UltimateMusicStudio} />
-      <Route path="/ultimate-music-studio" component={UltimateMusicStudio} />
+      <Route path="/music-studio" component={CuttingEdgeMusicStudio} />
+      <Route path="/ultimate-music-studio" component={CuttingEdgeMusicStudio} />
+      <Route path="/cutting-edge-music-studio" component={CuttingEdgeMusicStudio} />
       <Route path="/video-studio" component={VideoStudio} />
       <Route path="/visual-studio" component={VisualStudio} />
       <Route path="/collaborative-studio" component={CollaborativeStudio} />
       
       {/* Unified DJ Studio - All DJ routes point here */}
-      <Route path="/dj-studio" component={UnifiedDJStudio} />
-      <Route path="/ultimate-dj-studio" component={UnifiedDJStudio} />
-      <Route path="/dj" component={UnifiedDJStudio} />
+      <Route path="/dj-studio" component={CuttingEdgeDJStudio} />
+      <Route path="/ultimate-dj-studio" component={CuttingEdgeDJStudio} />
+      <Route path="/cutting-edge-dj-studio" component={CuttingEdgeDJStudio} />
+      <Route path="/unified-dj-studio" component={CuttingEdgeDJStudio} />
+      <Route path="/dj" component={CuttingEdgeDJStudio} />
       
       <Route path="/podcast-studio" component={PodcastStudio} />
       

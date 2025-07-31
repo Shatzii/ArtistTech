@@ -52,7 +52,7 @@ export default function EnhancedStudioLanding() {
         'Professional piano with multi-octave support',
         'Infinite canvas for creative arrangement'
       ],
-      route: '/ultimate-music-studio',
+      route: '/cutting-edge-music-studio',
       preview: 'Enhanced Canvas + Professional Transport',
       stats: { tracks: '16+', plugins: '50+', users: '12.3K' }
     },
@@ -72,7 +72,7 @@ export default function EnhancedStudioLanding() {
         'Live streaming to multiple platforms',
         'Professional crossfader and EQ controls'
       ],
-      route: '/unified-dj-studio',
+      route: '/cutting-edge-dj-studio',
       preview: 'Advanced Mixer + Live Performance',
       stats: { decks: '2', listeners: '3.2K', events: '847' }
     },
