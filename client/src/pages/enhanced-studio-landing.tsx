@@ -10,6 +10,7 @@ import {
   Instagram, Twitter, Youtube, Twitch, Monitor, Smartphone,
   Headphones, Sliders, Layers, AudioWaveform, Piano, Wand2
 } from 'lucide-react';
+import { useEnhancedStudioActions } from '@/hooks/useStudioAPI';
 
 // Import actual studio components for live previews
 import EnhancedCanvas from "@/components/ui/enhanced-canvas";
@@ -24,6 +25,9 @@ export default function EnhancedStudioLanding() {
   const [selectedStudio, setSelectedStudio] = useState<string | null>(null);
   const [earnings, setEarnings] = useState(342.50);
   const [userCount, setUserCount] = useState(14486);
+  
+  // Full-stack studio API integration
+  const studioActions = useEnhancedStudioActions();
 
   // Live counter animations
   useEffect(() => {
@@ -229,7 +233,14 @@ export default function EnhancedStudioLanding() {
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
                   </div>
                   <div className="flex space-x-1 mt-2">
-                    <Button size="sm" className="h-6 text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-sm shadow-cyan-400/30">PLAY</Button>
+                    <Button 
+                      size="sm" 
+                      className="h-6 text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-sm shadow-cyan-400/30"
+                      onClick={() => studioActions.music.transport.play.mutate({ projectId: 'demo_project' })}
+                      disabled={studioActions.music.transport.play.isPending}
+                    >
+                      {studioActions.music.transport.play.isPending ? 'STARTING...' : 'PLAY'}
+                    </Button>
                     <Button size="sm" variant="outline" className="h-6 text-xs border-cyan-400/50 text-cyan-300 hover:bg-cyan-400/20">CUE</Button>
                   </div>
                 </div>
@@ -245,7 +256,14 @@ export default function EnhancedStudioLanding() {
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse delay-300"></div>
                   </div>
                   <div className="flex space-x-1 mt-2">
-                    <Button size="sm" className="h-6 text-xs bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-400 hover:to-cyan-500 shadow-sm shadow-blue-400/30">PLAY</Button>
+                    <Button 
+                      size="sm" 
+                      className="h-6 text-xs bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-400 hover:to-cyan-500 shadow-sm shadow-blue-400/30"
+                      onClick={() => studioActions.dj.loadTrack.mutate({ deckId: 'B', trackId: 'neural_trap_track' })}
+                      disabled={studioActions.dj.loadTrack.isPending}
+                    >
+                      {studioActions.dj.loadTrack.isPending ? 'LOADING...' : 'PLAY'}
+                    </Button>
                     <Button size="sm" variant="outline" className="h-6 text-xs border-blue-400/50 text-blue-300 hover:bg-blue-400/20">CUE</Button>
                   </div>
                 </div>

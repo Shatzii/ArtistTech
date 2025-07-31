@@ -45,6 +45,7 @@ import { setupSocialMediaStrategyCoach } from "./social-media-strategy-coach";
 import { registerSocialHeatmapRoutes } from "./routes/social-heatmap";
 import { insertProjectSchema, insertAudioFileSchema, insertVideoFileSchema } from "../shared/schema";
 import { registerHighImpactRoutes } from "./routes/high-impact-features";
+import { registerStudioAPI } from "./studio-api";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -7911,6 +7912,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // High-Impact Features Routes
   registerHighImpactRoutes(app);
+
+  // Register comprehensive studio API for full functionality
+  registerStudioAPI(app);
 
   return httpServer;
 }
