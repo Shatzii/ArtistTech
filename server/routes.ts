@@ -2065,7 +2065,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         style: 'engaging',
         tone: 'excited',
         length: 'medium',
-        keywords: [topic, 'music', 'artist'],
+        keywords: [req.body.topic || 'music', 'music', 'artist'],
         targetAudience: 'music fans',
         callToAction: 'Listen now!',
         context: {
@@ -2082,7 +2082,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         error: 'Content generation failed', 
         message: error.message,
         fallback: {
-          content: `Exciting ${topic} coming soon! 🎵 Stay tuned for amazing music updates.`,
+          content: `Exciting ${req.body.topic || 'music'} coming soon! 🎵 Stay tuned for amazing music updates.`,
           hashtags: ['#music', '#newrelease', '#artist'],
           platform: platform
         }
@@ -7739,17 +7739,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post('/api/studio/dj/mix', (req, res) => {
-    const { deckA, deckB, crossfader, effects = [] } = req.body;
-    res.json({ 
-      mixId: `mix_${Date.now()}`,
-      status: 'mixing',
-      bpmSync: Math.abs(deckA.bpm - deckB.bpm) < 2,
-      harmonic: deckA.key === deckB.key,
-      crossfader,
-      effects,
-      quality: 96,
-      timestamp: new Date().toISOString()
-    });
+    try {
+      const body = req.body || {};
+      const { deckA, deckB, track1, track2, crossfader = 0, effects = [] } = body;
+      
+      // Handle both deckA/deckB format and track1/track2 format with safe defaults
+      const deck1 = deckA || { bpm: 128, key: "G minor", name: track1 || "Track 1" };
+      const deck2 = deckB || { bpm: 130, key: "A minor", name: track2 || "Track 2" };
+      
+      // Ensure bpm and key exist with defaults
+      const safeDeck1 = { bpm: 128, key: "G minor", ...deck1 };
+      const safeDeck2 = { bpm: 130, key: "A minor", ...deck2 };
+      
+      res.json({ 
+        mixId: `mix_${Date.now()}`,
+        status: 'mixing',
+        bpmSync: Math.abs(safeDeck1.bpm - safeDeck2.bpm) < 2,
+        harmonic: safeDeck1.key === safeDeck2.key,
+        crossfader,
+        effects,
+        quality: 96,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({ 
+        error: 'DJ mix processing failed',
+        message: error.message 
+      });
+    }
   });
 
   // Collaborative Studio APIs
