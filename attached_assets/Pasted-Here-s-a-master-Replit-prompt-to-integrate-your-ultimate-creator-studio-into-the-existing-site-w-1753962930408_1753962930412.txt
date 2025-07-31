@@ -1,0 +1,177 @@
+Here’s a **master Replit prompt** to integrate your ultimate creator studio into the existing site with full-stack implementation. This prompt is optimized for Replit’s AI/auto-complete features and includes clear technical specs:
+
+---
+
+### 🚀 **Replit Master Prompt: Ultimate Creator Studio Integration**
+**Project Name:** `creator-studio-pro`  
+**Template:** `Vite + React (TypeScript), Express, PostgreSQL`  
+**Goal:** Merge the new artist-focused UI/UX with existing architecture while adding AI tools, real-time collaboration, and pro hardware support.
+
+```markdown
+# FULL-STACK INTEGRATION PLAN
+
+## 🌐 FRONTEND (Vite/React)
+1. **Upgrade UI Toolkit**  
+   ```bash
+   npm install @radix-ui/themes @shadcn/ui framer-motion react-aria
+   ```
+   - Replace Material-UI with Radix + shadcn for better performance
+   - Add drag-and-drop with `@dnd-kit/core`
+
+2. **Canvas Engine**  
+   ```bash
+   npm install pixi.js @react-pixi/fiber
+   ```
+   - Implement infinite canvas in `src/components/Canvas.tsx`:
+   ```tsx
+   import { Stage } from '@react-pixi/fiber'
+   const CreatorCanvas = () => (
+     <Stage options={{ antialias: true, autoDensity: true }}>
+       {/* Add layers here */}
+     </Stage>
+   )
+   ```
+
+3. **AI Tools Widget**  
+   ```bash
+   npm install @tensorflow/tfjs-core @tensorflow-models/body-pix
+   ```
+   - Add AI brush component at `src/ai/AIBrush.tsx`
+
+## 🔌 BACKEND (Express/TS)
+1. **Real-Time Sync**  
+   ```bash
+   npm install socket.io yjs y-websocket
+   ```
+   - Upgrade `server.ts`:
+   ```ts
+   import { Server } from 'socket.io'
+   const io = new Server(server, { 
+     cors: { origin: process.env.FRONTEND_URL }
+   })
+   ```
+
+2. **Hardware MIDI**  
+   ```bash
+   npm install webmidi easymidi
+   ```
+   - Add MIDI router at `server/midiRouter.ts`
+
+3. **AI Microservices**  
+   ```dockerfile
+   # In replit.nix
+   deps = [ tensorflow nodePackages.wasm-pack ]
+   ```
+
+## 🛠️ REPLIT-SPECIFIC SETUP
+1. **Configure Ports**  
+   ```json
+   // .replit
+   run = "npm run dev"
+   ports = "3000:HTTP, 8081-8112:AI_ENGINES"
+   ```
+
+2. **Enable WebHID**  
+   ```json
+   // vite.config.ts
+   server: {
+     https: true // Required for WebHID
+   }
+   ```
+
+## 🧩 CRITICAL COMPONENTS
+1. **Shared State System**  
+   ```ts
+   // libs/studioState.ts
+   export const useStudioStore = create<StudioState>()(
+     persist(zustandState, { name: 'studio' })
+   )
+   ```
+
+2. **Audio Worklet**  
+   ```javascript
+   // public/audio-processor.js
+   class AudioProcessor extends AudioWorkletProcessor {
+     process(inputs) {
+       // WASM audio processing here
+     }
+   }
+   ```
+
+## 🔥 TESTING COMMANDS
+```bash
+# Run full stack
+npm run dev
+
+# Test MIDI
+node --experimental-websockets server/midiTest.js
+
+# Benchmark AI
+curl http://localhost:8081/benchmark
+```
+
+## 📌 NEXT STEPS
+1. [ ] Connect WebSocket to canvas
+2. [ ] Implement first AI tool (style transfer)
+3. [ ] Add Pioneer CDJ-3000 preset
+4. [ ] Deploy test instance on Replit
+```
+
+---
+
+### 💡 **Key Replit Optimizations**
+1. **Pre-configured Nix Packages**  
+   - TensorFlow, WebGPU, and audio tools pre-installed
+
+2. **Port Management**  
+   - Dedicated ports for each AI engine (8081-8112)
+
+3. **One-Click Deployment**  
+   - `.replit` file configured for instant previews
+
+---
+
+### 🛠️ **Troubleshooting Addendum**
+```markdown
+## 🐞 COMMON ISSUES (Replit-Specific)
+1. **WebHID Permission Errors**
+   Fix: Add to vite.config.ts:
+   ```ts
+   server: {
+     headers: {
+       "Origin-Agent-Cluster": "?0"
+     }
+   }
+   ```
+
+2. **WASM Loading Slow**
+   Fix: Add to index.html:
+   ```html
+   <link rel="preload" as="fetch" href="/path/to/wasm" crossorigin>
+   ```
+
+3. **MIDI Device Not Detected**
+   Fix: Run in browser console:
+   ```js
+   navigator.requestMIDIAccess({ sysex: true })
+   ```
+```
+
+---
+
+### 🎚️ **Hardware Integration Cheatsheet**
+| Device | Connection Method | Sample Code Location |
+|--------|-------------------|----------------------|
+| Pioneer CDJ-3000 | WebMIDI over USB | `server/midiRouter.ts` |
+| Wacom Tablet | Pointer Events API | `src/input/Stylus.tsx` |
+| Ableton Push 2 | WebHID + Sysex | `libs/ableton.ts` |
+
+---
+
+This prompt gives Replit everything needed to:
+1. Set up the full-stack environment  
+2. Integrate with existing architecture  
+3. Add pro creator features  
+4. Handle Replit-specific quirks  
+
+Want me to add any specific component details? (e.g., exact TensorFlow.js model configs or CDJ-3000 MIDI mapping)
