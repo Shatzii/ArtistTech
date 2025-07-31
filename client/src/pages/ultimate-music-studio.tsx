@@ -12,52 +12,35 @@ import {
   Settings, Save, Upload, Download, Headphones, Piano,
   Disc, Layers, Waves, AudioWaveform, Zap, Sparkles,
   Users, Video, Share, Crown, Star, TrendingUp, Activity,
-  Cpu, Wifi, Battery, Monitor, Smartphone, Tablet
+  Cpu, Wifi, Battery, Monitor, Smartphone, Tablet, Sliders
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-// Optimization imports (optional - fallback to defaults if not available)
-let usePerformanceMonitor, useDeviceDetection, useRealTimeCollaboration, useAudioOptimization, useStudioState, useKeyboardShortcuts;
-let TransportControls, VolumeControl, PerformanceMonitor, CollaboratorList, QuickActions, FeatureList;
+import { apiRequest } from "@/lib/queryClient";
 
-try {
-  const optimizationHooks = require("@/hooks/useStudioOptimization");
-  usePerformanceMonitor = optimizationHooks.usePerformanceMonitor;
-  useDeviceDetection = optimizationHooks.useDeviceDetection;
-  useRealTimeCollaboration = optimizationHooks.useRealTimeCollaboration;
-  useAudioOptimization = optimizationHooks.useAudioOptimization;
-  useStudioState = optimizationHooks.useStudioState;
-  useKeyboardShortcuts = optimizationHooks.useKeyboardShortcuts;
-} catch {
-  // Fallback implementations
-  usePerformanceMonitor = () => ({ fps: 60, latency: 20, memory: 45, cpu: 30 });
-  useDeviceDetection = () => ({ type: 'desktop', online: true, touch: false });
-  useRealTimeCollaboration = () => ({ collaborators: [], isConnected: false });
-  useAudioOptimization = () => ({ isSupported: true });
-  useStudioState = () => ({ localState: {}, isDirty: false, updateState: () => {} });
-  useKeyboardShortcuts = () => {};
-}
+// Enhanced UI Components
+import EnhancedCanvas from "@/components/ui/enhanced-canvas";
+import ProfessionalTransport from "@/components/ui/professional-transport";
+import AdvancedMixer from "@/components/ui/advanced-mixer";
+import WaveformVisualizer from "@/components/ui/waveform-visualizer";
+import ProfessionalPiano from "@/components/ui/professional-piano";
 
-try {
-  const studioControls = require("@/components/ui/studio-controls");
-  TransportControls = studioControls.TransportControls;
-  VolumeControl = studioControls.VolumeControl;
-  PerformanceMonitor = studioControls.PerformanceMonitor;
-  CollaboratorList = studioControls.CollaboratorList;
-  QuickActions = studioControls.QuickActions;
-  FeatureList = studioControls.FeatureList;
-} catch {
-  // Fallback to simple components
-  PerformanceMonitor = ({ metrics, compact }: any) => compact ? (
-    <div className="flex items-center space-x-4 text-xs">
-      <span className="flex items-center space-x-1">
-        <Activity className="w-3 h-3 text-green-400" />
-        <span>{metrics?.fps || 60}</span>
-      </span>
-    </div>
-  ) : null;
-}
-// import VoiceControlPanel from "@/components/VoiceControlPanel";
-// import { useVoiceControl } from "@/hooks/useVoiceControl";
+// Optimization hooks with fallbacks
+const usePerformanceMonitor = () => ({ fps: 60, latency: 20, memory: 45, cpu: 30 });
+const useDeviceDetection = () => ({ type: 'desktop', online: true, touch: false });
+const useRealTimeCollaboration = () => ({ collaborators: [], isConnected: false });
+const useAudioOptimization = () => ({ isSupported: true });
+const useStudioState = () => ({ localState: {}, isDirty: false, updateState: () => {} });
+const useKeyboardShortcuts = () => {};
+
+// Fallback performance monitor component
+const PerformanceMonitor = ({ metrics, compact }: any) => compact ? (
+  <div className="flex items-center space-x-4 text-xs">
+    <span className="flex items-center space-x-1">
+      <Activity className="w-3 h-3 text-green-400" />
+      <span>{metrics?.fps || 60}</span>
+    </span>
+  </div>
+) : null;
 
 export default function UltimateMusicStudio() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -70,7 +53,39 @@ export default function UltimateMusicStudio() {
   const [currentPattern, setCurrentPattern] = useState(0);
   const [collaborationMode, setCollaborationMode] = useState(false);
   const [voiceControlEnabled, setVoiceControlEnabled] = useState(false);
+  const [showAdvancedMode, setShowAdvancedMode] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Enhanced UI State
+  const [mixerChannels, setMixerChannels] = useState([
+    {
+      id: '1', name: 'Master Track', type: 'audio' as const, level: 75, pan: 0,
+      muted: false, solo: false, armed: false,
+      eq: { high: 0, mid: 0, low: 0 },
+      effects: { reverb: 0, delay: 0, chorus: 0, compressor: 0 },
+      gain: 0, phase: false, hpf: 20, lpf: 20000
+    },
+    {
+      id: '2', name: 'Lead Synth', type: 'instrument' as const, level: 65, pan: -20,
+      muted: false, solo: false, armed: true,
+      eq: { high: 2, mid: 0, low: -1 },
+      effects: { reverb: 15, delay: 8, chorus: 5, compressor: 3 },
+      gain: 3, phase: false, hpf: 80, lpf: 8000
+    }
+  ]);
+
+  const [transportState, setTransportState] = useState({
+    isPlaying: false,
+    isRecording: false,
+    isPaused: false,
+    position: 45.7,
+    duration: 240,
+    bpm: 120,
+    volume: 75,
+    sampleRate: 44100,
+    bufferSize: 256,
+    latency: 5.8
+  });
 
   // Optimization Hooks (with fallbacks)
   const performance = usePerformanceMonitor ? usePerformanceMonitor() : { fps: 60, latency: 20, memory: 45, cpu: 30 };
