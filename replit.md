@@ -779,7 +779,14 @@ Artist Tech is the WORLD'S FIRST platform that pays users to view AND create con
 ### Repository Structure
 - **README.md**: Comprehensive platform overview with features and setup instructions
 - **TECHNICAL_SPECIFICATIONS.md**: Detailed technical architecture and API documentation
+- **DEPLOYMENT_GUIDE.md**: Complete deployment instructions for Replit, Docker, and manual setup
 - **Complete Documentation**: Production-ready codebase with full feature implementation
+
+### User Preference: Platform Enhancement Strategy
+- **Status**: Current Artist Tech platform is production-ready and superior to proposed "Creatrix" migration
+- **Decision**: Enhance existing React/TypeScript/PostgreSQL stack rather than rewrite
+- **Rationale**: Our 19 self-hosted AI engines, professional hardware integration, and full-stack implementation already exceed proposed features
+- **Focus**: Continue improving existing studios and adding new capabilities to established architecture
 
 ## Changelog
 

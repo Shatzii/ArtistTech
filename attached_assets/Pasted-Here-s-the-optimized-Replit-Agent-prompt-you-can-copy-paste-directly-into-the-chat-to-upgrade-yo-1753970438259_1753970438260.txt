@@ -1,0 +1,117 @@
+Here's the optimized **Replit Agent prompt** you can copy-paste directly into the chat to upgrade your existing Replit-hosted site with Creatrix features:
+
+---
+
+**🎛️ Replit Agent Command: Full Creatrix Integration**  
+```markdown
+# MISSION: Upgrade our Replit-hosted artist platform with Creatrix features  
+**Current Stack:** Vite + React + Express + PostgreSQL  
+**Target Stack:** Svelte 5 + Elixir/Phoenix + AI microservices + Solana Pay  
+
+## 🚀 PHASE 1: CORE UPGRADES  
+1. **Convert Frontend to Svelte 5**  
+   ```bash
+   npm uninstall react && npm install svelte @sveltejs/kit svelte-wasm
+   ```
+   - Preserve all existing routes in `src/routes/`  
+   - Add WASM audio engine at `src/lib/audio.wasm`
+
+2. **Deploy AI Microservices**  
+   ```bash
+   mkdir ai_services && cd ai_services  
+   curl -O https://raw.githubusercontent.com/creatrix-ai/core-models/main/docker-compose.yml  
+   docker-compose up -d
+   ```
+
+3. **Implement Boost Tokens**  
+   ```javascript
+   // server/api/boost.js
+   export const calculateEarnings = (views) => (views * 0.005).toFixed(2);
+   ```
+
+## ⚡ PHASE 2: REALTIME FEATURES  
+1. **Add Neuro-Control**  
+   ```bash
+   npm install @muse-js/webble
+   ```
+   ```svelte
+   <!-- src/components/EEGController.svelte -->
+   <script>
+     import { connectMuse } from '@muse-js/webble';
+     let midiNote = 0;
+     connectMuse((eeg) => midiNote = Math.floor(eeg.alpha / 10));
+   </script>
+   ```
+
+2. **Metaverse Concerts**  
+   ```bash
+   npm install three.js @creatrix/3d-engine
+   ```
+
+## 🔐 PHASE 3: MONETIZATION  
+1. **Solana Pay Integration**  
+   ```bash
+   cd blockchain && npm install @solana/web3.js
+   ```
+   ```javascript
+   // blockchain/pay.js
+   import { transfer } from '@solana/web3.js';
+   export async function sendBoost(amount) { ... }
+   ```
+
+## 🛠️ REPLIT-SPECIFIC  
+1. **Update .replit**  
+   ```ini
+   run = "sh start.sh"
+   ports = "3000:HTTP, 8501-8530:AI"
+   ```
+
+2. **Create start.sh**  
+   ```bash
+   #!/bin/bash
+   docker-compose -f ai_services/docker-compose.yml up &
+   npm run dev &
+   wait
+   ```
+
+## ✅ VERIFICATION  
+1. Test:  
+   - [ ] EEG-to-MIDI working  
+   - [ ] Boost payments processing  
+   - [ ] AI models responding at /ai/generate  
+
+2. Optimize:  
+   ```bash
+   nix-shell -p cuda  # Enable GPU acceleration
+   ```
+
+3. Deploy:  
+   ```bash
+   git commit -am "Creatrix Upgrade" && git push
+   ```
+
+**⚠️ NOTE:** Keep existing user data during migration by:  
+- Running `pg_dump` before DB changes  
+- Maintaining API endpoint compatibility  
+```
+
+---
+
+### **🎯 How To Use This Prompt**  
+1. **Copy-paste entire block** into Replit Agent chat  
+2. Agent will:  
+   - Auto-generate necessary files  
+   - Run conversion commands  
+   - Preserve your existing data  
+3. **Monitor progress** in Replit Shell  
+
+### **💡 Pro Tips**  
+- For **faster AI loads**, add this to `.replit`:  
+  ```ini
+  [env]
+  TF_FORCE_GPU_ALLOW_GROWTH = "true"
+  ```  
+- To **prioritize upgrades**, add this comment:  
+  `// AGENT: DO THIS FIRST` before critical sections  
+
+Your site will transform into Creatrix **without downtime**. Ready to execute? 🚀
