@@ -167,7 +167,11 @@ export default function EnhancedStudioLanding() {
       case 'music':
         return (
           <div className="space-y-4">
-            <div className="bg-gray-900 rounded-lg p-4">
+            <div className="bg-gradient-to-r from-gray-900/90 to-gray-800/90 rounded-xl p-4 border border-cyan-500/30 shadow-lg shadow-cyan-500/20 backdrop-blur-sm">
+              <div className="mb-3 text-xs text-cyan-400 font-semibold tracking-wide uppercase flex items-center">
+                <div className="w-2 h-2 bg-cyan-400 rounded-full mr-2 animate-pulse"></div>
+                ⚡ TRANSPORT CONTROLS
+              </div>
               <ProfessionalTransport
                 state={transportState}
                 onPlay={() => setTransportState(prev => ({ ...prev, isPlaying: true }))}
@@ -180,7 +184,11 @@ export default function EnhancedStudioLanding() {
                 compact={true}
               />
             </div>
-            <div className="bg-gray-900 rounded-lg p-2">
+            <div className="bg-gradient-to-r from-gray-900/90 to-gray-800/90 rounded-xl p-3 border border-blue-500/30 shadow-lg shadow-blue-500/20 backdrop-blur-sm">
+              <div className="mb-3 text-xs text-blue-400 font-semibold tracking-wide uppercase flex items-center">
+                <div className="w-2 h-2 bg-blue-400 rounded-full mr-2 animate-pulse"></div>
+                📊 WAVEFORM ANALYSIS
+              </div>
               <WaveformVisualizer
                 width={600}
                 height={80}
@@ -190,7 +198,11 @@ export default function EnhancedStudioLanding() {
                 showControls={false}
               />
             </div>
-            <div className="bg-gray-900 rounded-lg p-2">
+            <div className="bg-gradient-to-r from-gray-900/90 to-gray-800/90 rounded-xl p-3 border border-cyan-400/30 shadow-lg shadow-cyan-400/20 backdrop-blur-sm">
+              <div className="mb-3 text-xs text-cyan-300 font-semibold tracking-wide uppercase flex items-center">
+                <div className="w-2 h-2 bg-cyan-300 rounded-full mr-2 animate-pulse"></div>
+                🎛️ AI MIXING CONSOLE
+              </div>
               <AdvancedMixer
                 channels={mixerChannels}
                 masterVolume={transportState.volume}
@@ -204,35 +216,45 @@ export default function EnhancedStudioLanding() {
 
       case 'dj':
         return (
-          <div className="bg-gray-900 rounded-lg p-4 space-y-4">
+          <div className="bg-gradient-to-br from-gray-900/95 to-gray-800/95 rounded-xl p-4 space-y-4 border border-cyan-500/20 shadow-2xl shadow-cyan-500/10 backdrop-blur-md">
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-800 rounded p-3">
-                <h4 className="text-sm font-bold mb-2">DECK A</h4>
+              <div className="bg-gradient-to-br from-gray-800/90 to-gray-700/90 rounded-lg p-3 border border-cyan-400/30 shadow-lg shadow-cyan-400/20 backdrop-blur-sm">
+                <h4 className="text-sm font-bold mb-2 text-cyan-400 flex items-center">
+                  <div className="w-2 h-2 bg-cyan-400 rounded-full mr-2 animate-pulse"></div>
+                  DECK A
+                </h4>
                 <div className="space-y-2">
-                  <div className="text-xs">Epic Future Bass - 128 BPM</div>
-                  <div className="h-2 bg-gradient-to-r from-cyan-400 to-blue-500 rounded w-3/4 shadow-sm shadow-cyan-400/50"></div>
-                  <div className="flex space-x-1">
-                    <Button size="sm" className="h-6 text-xs">PLAY</Button>
-                    <Button size="sm" variant="outline" className="h-6 text-xs">CUE</Button>
+                  <div className="text-xs text-cyan-200 mb-1">Epic Future Bass - 128 BPM</div>
+                  <div className="h-3 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full w-3/4 shadow-lg shadow-cyan-400/50 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
+                  </div>
+                  <div className="flex space-x-1 mt-2">
+                    <Button size="sm" className="h-6 text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-sm shadow-cyan-400/30">PLAY</Button>
+                    <Button size="sm" variant="outline" className="h-6 text-xs border-cyan-400/50 text-cyan-300 hover:bg-cyan-400/20">CUE</Button>
                   </div>
                 </div>
               </div>
-              <div className="bg-gray-800 rounded p-3">
-                <h4 className="text-sm font-bold mb-2">DECK B</h4>
+              <div className="bg-gradient-to-br from-gray-800/90 to-gray-700/90 rounded-lg p-3 border border-blue-500/30 shadow-lg shadow-blue-500/20 backdrop-blur-sm">
+                <h4 className="text-sm font-bold mb-2 text-blue-400 flex items-center">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full mr-2 animate-pulse"></div>
+                  DECK B
+                </h4>
                 <div className="space-y-2">
-                  <div className="text-xs">Neural Trap - 140 BPM</div>
-                  <div className="h-2 bg-gradient-to-r from-blue-500 to-cyan-400 rounded w-1/2 shadow-sm shadow-blue-400/50"></div>
-                  <div className="flex space-x-1">
-                    <Button size="sm" className="h-6 text-xs">PLAY</Button>
-                    <Button size="sm" variant="outline" className="h-6 text-xs">CUE</Button>
+                  <div className="text-xs text-blue-200 mb-1">Neural Trap - 140 BPM</div>
+                  <div className="h-3 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full w-1/2 shadow-lg shadow-blue-400/50 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse delay-300"></div>
+                  </div>
+                  <div className="flex space-x-1 mt-2">
+                    <Button size="sm" className="h-6 text-xs bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-400 hover:to-cyan-500 shadow-sm shadow-blue-400/30">PLAY</Button>
+                    <Button size="sm" variant="outline" className="h-6 text-xs border-blue-400/50 text-blue-300 hover:bg-blue-400/20">CUE</Button>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="text-center">
-              <div className="text-xs mb-1">CROSSFADER</div>
-              <div className="h-2 bg-gray-600 rounded relative">
-                <div className="absolute top-0 left-1/2 w-4 h-2 bg-white rounded transform -translate-x-1/2"></div>
+            <div className="text-center bg-gradient-to-r from-gray-800/50 to-gray-700/50 rounded-lg p-3 border border-cyan-300/20 backdrop-blur-sm">
+              <div className="text-xs mb-2 text-cyan-300 font-semibold tracking-wide uppercase">⚡ CROSSFADER</div>
+              <div className="h-3 bg-gradient-to-r from-cyan-600/30 via-gray-600 to-blue-600/30 rounded-full relative shadow-inner">
+                <div className="absolute top-0 left-1/2 w-6 h-3 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full transform -translate-x-1/2 shadow-lg shadow-cyan-400/50"></div>
               </div>
             </div>
             <div className="grid grid-cols-3 gap-2 text-xs">
@@ -245,18 +267,18 @@ export default function EnhancedStudioLanding() {
 
       case 'social':
         return (
-          <div className="bg-gray-900 rounded-lg p-4 space-y-4">
+          <div className="bg-gradient-to-br from-gray-900/95 to-gray-800/95 rounded-xl p-4 space-y-4 border border-cyan-500/20 shadow-2xl shadow-cyan-500/10 backdrop-blur-md">
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <Instagram className="w-4 h-4 text-pink-500" />
-                  <span className="text-sm">Instagram</span>
-                  <Badge variant="outline" className="text-xs">45.2K</Badge>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2 p-2 bg-gradient-to-r from-pink-900/30 to-purple-900/30 rounded-lg border border-pink-500/20 backdrop-blur-sm">
+                  <Instagram className="w-4 h-4 text-pink-400 drop-shadow-lg" style={{ filter: 'drop-shadow(0 0 8px rgba(236, 72, 153, 0.6))' }} />
+                  <span className="text-sm text-pink-200">Instagram</span>
+                  <Badge variant="outline" className="text-xs border-pink-400/50 text-pink-300">45.2K</Badge>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Youtube className="w-4 h-4 text-red-500" />
-                  <span className="text-sm">YouTube</span>
-                  <Badge variant="outline" className="text-xs">23.8K</Badge>
+                <div className="flex items-center space-x-2 p-2 bg-gradient-to-r from-red-900/30 to-orange-900/30 rounded-lg border border-red-500/20 backdrop-blur-sm">
+                  <Youtube className="w-4 h-4 text-red-400 drop-shadow-lg" style={{ filter: 'drop-shadow(0 0 8px rgba(239, 68, 68, 0.6))' }} />
+                  <span className="text-sm text-red-200">YouTube</span>
+                  <Badge variant="outline" className="text-xs border-red-400/50 text-red-300">23.8K</Badge>
                 </div>
               </div>
               <div className="space-y-2">
@@ -265,13 +287,25 @@ export default function EnhancedStudioLanding() {
                 <div className="text-xs">Earnings Today: <span className="text-blue-400 drop-shadow-sm" style={{ textShadow: '0 0 10px rgba(59, 130, 246, 0.5)' }}>${earnings.toFixed(2)}</span></div>
               </div>
             </div>
-            <div className="bg-gray-800 rounded p-3">
-              <div className="text-sm font-bold mb-2">Pay-to-View Model</div>
-              <div className="text-xs mb-2">Revolutionary system paying users to consume content</div>
+            <div className="bg-gradient-to-br from-cyan-900/40 to-blue-900/40 rounded-lg p-4 border border-cyan-400/30 shadow-lg shadow-cyan-400/20 backdrop-blur-sm">
+              <div className="text-sm font-bold mb-2 text-cyan-300 flex items-center">
+                <div className="w-2 h-2 bg-cyan-400 rounded-full mr-2 animate-pulse"></div>
+                💰 Pay-to-View Model
+              </div>
+              <div className="text-xs mb-3 text-cyan-200">Revolutionary system paying users to consume content</div>
               <div className="grid grid-cols-3 gap-2 text-xs">
-                <div>1 AC/min viewing</div>
-                <div>5 AC per like</div>
-                <div>10 AC per share</div>
+                <div className="bg-cyan-500/20 rounded p-2 text-center">
+                  <div className="text-cyan-300 font-semibold">1 AC/min</div>
+                  <div className="text-cyan-200">viewing</div>
+                </div>
+                <div className="bg-blue-500/20 rounded p-2 text-center">
+                  <div className="text-blue-300 font-semibold">5 AC</div>
+                  <div className="text-blue-200">per like</div>
+                </div>
+                <div className="bg-cyan-500/20 rounded p-2 text-center">
+                  <div className="text-cyan-300 font-semibold">10 AC</div>
+                  <div className="text-cyan-200">per share</div>
+                </div>
               </div>
             </div>
           </div>
@@ -279,9 +313,17 @@ export default function EnhancedStudioLanding() {
 
       default:
         return (
-          <div className="bg-gray-900 rounded-lg p-4 text-center">
-            <div className="text-lg font-bold mb-2">Live Studio Demo</div>
-            <div className="text-sm text-gray-400">Select a studio to see it in action</div>
+          <div className="bg-gradient-to-br from-gray-900/95 to-gray-800/95 rounded-xl p-6 text-center border border-cyan-500/20 shadow-2xl shadow-cyan-500/10 backdrop-blur-md">
+            <div className="text-lg font-bold mb-3 text-cyan-300 flex items-center justify-center">
+              <div className="w-3 h-3 bg-cyan-400 rounded-full mr-3 animate-pulse"></div>
+              🚀 Live Studio Demo
+            </div>
+            <div className="text-sm text-cyan-200 mb-4">Select a studio to see it in action</div>
+            <div className="flex justify-center space-x-2">
+              <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+              <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-200"></div>
+              <div className="w-2 h-2 bg-cyan-300 rounded-full animate-pulse delay-400"></div>
+            </div>
           </div>
         );
     }
