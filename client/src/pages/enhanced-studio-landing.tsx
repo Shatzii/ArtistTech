@@ -210,7 +210,7 @@ export default function EnhancedStudioLanding() {
                 <h4 className="text-sm font-bold mb-2">DECK A</h4>
                 <div className="space-y-2">
                   <div className="text-xs">Epic Future Bass - 128 BPM</div>
-                  <div className="h-2 bg-blue-600 rounded w-3/4"></div>
+                  <div className="h-2 bg-gradient-to-r from-cyan-400 to-blue-500 rounded w-3/4 shadow-sm shadow-cyan-400/50"></div>
                   <div className="flex space-x-1">
                     <Button size="sm" className="h-6 text-xs">PLAY</Button>
                     <Button size="sm" variant="outline" className="h-6 text-xs">CUE</Button>
@@ -221,7 +221,7 @@ export default function EnhancedStudioLanding() {
                 <h4 className="text-sm font-bold mb-2">DECK B</h4>
                 <div className="space-y-2">
                   <div className="text-xs">Neural Trap - 140 BPM</div>
-                  <div className="h-2 bg-red-600 rounded w-1/2"></div>
+                  <div className="h-2 bg-gradient-to-r from-blue-500 to-cyan-400 rounded w-1/2 shadow-sm shadow-blue-400/50"></div>
                   <div className="flex space-x-1">
                     <Button size="sm" className="h-6 text-xs">PLAY</Button>
                     <Button size="sm" variant="outline" className="h-6 text-xs">CUE</Button>
@@ -236,9 +236,9 @@ export default function EnhancedStudioLanding() {
               </div>
             </div>
             <div className="grid grid-cols-3 gap-2 text-xs">
-              <div>Live Listeners: <span className="text-green-400">1,247</span></div>
-              <div>Earnings: <span className="text-yellow-400">${earnings.toFixed(2)}</span></div>
-              <div>Energy: <span className="text-red-400">92%</span></div>
+              <div>Live Listeners: <span className="text-cyan-300 drop-shadow-sm" style={{ textShadow: '0 0 10px rgba(103, 232, 249, 0.5)' }}>1,247</span></div>
+              <div>Earnings: <span className="text-cyan-400 drop-shadow-sm" style={{ textShadow: '0 0 10px rgba(6, 182, 212, 0.5)' }}>${earnings.toFixed(2)}</span></div>
+              <div>Energy: <span className="text-blue-400 drop-shadow-sm" style={{ textShadow: '0 0 10px rgba(59, 130, 246, 0.5)' }}>92%</span></div>
             </div>
           </div>
         );
@@ -288,12 +288,19 @@ export default function EnhancedStudioLanding() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 text-white">
-      {/* Enhanced Header */}
-      <header className="fixed top-0 w-full z-50 bg-gray-900/80 backdrop-blur-sm border-b border-gray-700">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black text-white relative overflow-hidden">
+      {/* Electric Blue Neon Background Effects */}
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 left-1/6 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-blue-500/25 rounded-full blur-3xl animate-pulse delay-1000" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-300/15 rounded-full blur-2xl animate-pulse delay-500" />
+        <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-cyan-500/5 via-blue-600/10 to-transparent" />
+      </div>
+      {/* Enhanced Header with Neon Accent */}
+      <header className="fixed top-0 w-full z-50 bg-gray-900/90 backdrop-blur-md border-b border-cyan-500/30 shadow-lg shadow-cyan-500/10">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center shadow-lg shadow-cyan-400/30">
               <Music className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -305,9 +312,9 @@ export default function EnhancedStudioLanding() {
           <div className="flex items-center space-x-4">
             <div className="text-sm">
               <span className="text-gray-400">Active Users:</span> 
-              <span className="text-green-400 font-mono">{userCount.toLocaleString()}</span>
+              <span className="text-cyan-400 font-mono drop-shadow-lg" style={{ textShadow: '0 0 15px rgba(6, 182, 212, 0.6)' }}>{userCount.toLocaleString()}</span>
             </div>
-            <Button asChild>
+            <Button asChild className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-lg shadow-cyan-500/30 text-white font-semibold">
               <Link href="/ultimate-music-studio">Enter Studios</Link>
             </Button>
           </div>
@@ -318,7 +325,8 @@ export default function EnhancedStudioLanding() {
       <section className="pt-24 pb-12">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-500 to-cyan-400 bg-clip-text text-transparent">
+            <h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-cyan-300 via-blue-400 to-cyan-500 bg-clip-text text-transparent drop-shadow-2xl"
+                style={{ textShadow: '0 0 30px rgba(6, 182, 212, 0.5)' }}>
               Professional Creative Studios
             </h1>
             <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
@@ -328,19 +336,19 @@ export default function EnhancedStudioLanding() {
             
             <div className="flex items-center justify-center space-x-8 mb-8">
               <div className="text-center">
-                <div className="text-3xl font-bold text-green-400">${earnings.toFixed(2)}</div>
+                <div className="text-3xl font-bold text-cyan-400 drop-shadow-lg" style={{ textShadow: '0 0 20px rgba(6, 182, 212, 0.6)' }}>${earnings.toFixed(2)}</div>
                 <div className="text-sm text-gray-400">Live Earnings</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-400">{userCount.toLocaleString()}</div>
+                <div className="text-3xl font-bold text-blue-400 drop-shadow-lg" style={{ textShadow: '0 0 20px rgba(59, 130, 246, 0.6)' }}>{userCount.toLocaleString()}</div>
                 <div className="text-sm text-gray-400">Active Users</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-purple-400">15</div>
+                <div className="text-3xl font-bold text-cyan-300 drop-shadow-lg" style={{ textShadow: '0 0 20px rgba(103, 232, 249, 0.6)' }}>15</div>
                 <div className="text-sm text-gray-400">AI Studios</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-yellow-400">10x</div>
+                <div className="text-3xl font-bold text-blue-300 drop-shadow-lg" style={{ textShadow: '0 0 20px rgba(147, 197, 253, 0.6)' }}>10x</div>
                 <div className="text-sm text-gray-400">Better Payouts</div>
               </div>
             </div>
@@ -353,7 +361,7 @@ export default function EnhancedStudioLanding() {
               {studioFeatures.map((studio) => (
                 <Card 
                   key={studio.id}
-                  className="cursor-pointer transition-all duration-300 hover:scale-105 bg-gray-800 border-gray-600 hover:border-gray-500 group"
+                  className="cursor-pointer transition-all duration-300 hover:scale-105 bg-gray-800/80 border-gray-600 hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-400/20 group backdrop-blur-sm"
                   onClick={() => setSelectedStudio(selectedStudio === studio.id ? null : studio.id)}
                 >
                   <CardContent className="p-4">
@@ -396,7 +404,7 @@ export default function EnhancedStudioLanding() {
 
             {/* Expandable Feature Panel */}
             {selectedStudio && (
-              <Card className="bg-gray-800 border-gray-600 animate-in slide-in-from-top duration-300">
+              <Card className="bg-gray-800/90 border-cyan-500/30 shadow-2xl shadow-cyan-500/20 animate-in slide-in-from-top duration-300 backdrop-blur-md">
                 <CardContent className="p-6">
                   {(() => {
                     const studio = studioFeatures.find(s => s.id === selectedStudio);
@@ -421,7 +429,7 @@ export default function EnhancedStudioLanding() {
                             <div className="grid grid-cols-1 gap-2">
                               {studio.features.map((feature, index) => (
                                 <div key={index} className="flex items-center space-x-3 p-2 bg-gray-700/50 rounded">
-                                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                                  <div className="w-2 h-2 bg-cyan-400 rounded-full shadow-sm shadow-cyan-400"></div>
                                   <span className="text-sm">{feature}</span>
                                 </div>
                               ))}
