@@ -55,6 +55,8 @@ import AIMusicVideoGenerator from "./pages/ai-music-video-generator";
 import ViralChallengeCreator from "./pages/viral-challenge-creator";
 import RealArtistOnboarding from "./pages/real-artist-onboarding";
 import AIContentCreatorDemo from "./pages/AIContentCreatorDemo";
+import MainNavigationHub from "./components/navigation/MainNavigationHub";
+import SubscriptionManager from "./components/pricing/SubscriptionManager";
 
 function App() {
   return (
@@ -144,6 +146,14 @@ function App() {
       <Route path="/ai-content-creator" component={AIContentCreatorDemo} />
       <Route path="/content-creator" component={AIContentCreatorDemo} />
       <Route path="/ai-content" component={AIContentCreatorDemo} />
+      
+      {/* Navigation and Pricing */}
+      <Route path="/studios" component={MainNavigationHub} />
+      <Route path="/hub" component={MainNavigationHub} />
+      <Route path="/navigation" component={MainNavigationHub} />
+      <Route path="/pricing" component={SubscriptionManager} />
+      <Route path="/subscription" component={SubscriptionManager} />
+      <Route path="/plans" component={SubscriptionManager} />
       
       {/* 404 Page */}
       <Route component={NotFound} />

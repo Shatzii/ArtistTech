@@ -262,6 +262,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Subscription Management APIs
+  app.get('/api/subscription/current', (req, res) => {
+    // Demo subscription data
+    res.json({
+      tier: 'creator',
+      isYearly: false,
+      expiresAt: new Date('2025-12-31').toISOString(),
+      features: ['Music Studio', 'Video Studio', 'Social Media Hub']
+    });
+  });
+
+  app.post('/api/subscription/upgrade', (req, res) => {
+    const { tierId, isYearly } = req.body;
+    res.json({
+      success: true,
+      subscriptionId: `sub_${Date.now()}`,
+      tierId,
+      isYearly,
+      message: 'Subscription upgraded successfully'
+    });
+  });
+
+  app.post('/api/purchase/one-time', (req, res) => {
+    const { itemId } = req.body;
+    res.json({
+      success: true,
+      purchaseId: `purchase_${Date.now()}`,
+      itemId,
+      message: 'Purchase completed successfully'
+    });
+  });
+
   // Test endpoint for frontend-backend connectivity
   app.get('/api/test-connectivity', (req, res) => {
     res.json({
