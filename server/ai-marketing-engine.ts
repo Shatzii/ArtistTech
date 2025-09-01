@@ -153,20 +153,60 @@ export class AIMarketingEngine {
 
   private setupMarketingServer() {
     if (this.marketingWSS) return; // Prevent duplicate server creation
-    this.marketingWSS = new WebSocketServer({ port: 8190, path: '/marketing' });
     
-    this.marketingWSS.on('connection', (ws: WebSocket) => {
-      ws.on('message', (data: Buffer) => {
-        try {
-          const message = JSON.parse(data.toString());
-          this.handleMarketingMessage(ws, message);
-        } catch (error) {
-          console.error('Marketing WebSocket error:', error);
+    try {
+      this.marketingWSS = new WebSocketServer({ port: 8190, path: '/marketing' });
+      
+      this.marketingWSS.on('connection', (ws: WebSocket) => {
+        ws.on('message', (data: Buffer) => {
+          try {
+            const message = JSON.parse(data.toString());
+            this.handleMarketingMessage(ws, message);
+          } catch (error) {
+            console.error('Marketing WebSocket error:', error);
+          }
+        });
+      });
+
+      this.marketingWSS.on('error', (error: any) => {
+        if (error.code === 'EADDRINUSE') {
+          console.warn(`AI marketing server port 8190 in use, trying port 8191`);
+          this.setupMarketingServerFallback();
+        } else {
+          console.error('Marketing server error:', error);
         }
       });
-    });
 
-    console.log("AI marketing server started on port 8190");
+      console.log("AI marketing server started on port 8190");
+    } catch (error: any) {
+      if (error.code === 'EADDRINUSE') {
+        console.warn(`AI marketing server port 8190 in use, trying port 8191`);
+        this.setupMarketingServerFallback();
+      } else {
+        console.error('Failed to start marketing server:', error);
+      }
+    }
+  }
+
+  private setupMarketingServerFallback() {
+    try {
+      this.marketingWSS = new WebSocketServer({ port: 8191, path: '/marketing' });
+      
+      this.marketingWSS.on('connection', (ws: WebSocket) => {
+        ws.on('message', (data: Buffer) => {
+          try {
+            const message = JSON.parse(data.toString());
+            this.handleMarketingMessage(ws, message);
+          } catch (error) {
+            console.error('Marketing WebSocket error:', error);
+          }
+        });
+      });
+
+      console.log("AI marketing server started on fallback port 8191");
+    } catch (error) {
+      console.error('Failed to start marketing server on fallback port:', error);
+    }
   }
 
   private async loadContentTemplates() {

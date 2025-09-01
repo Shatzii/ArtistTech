@@ -27,6 +27,25 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Vendor chunks for better caching
+          'react-vendor': ['react', 'react-dom'],
+          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select'],
+          'utils-vendor': ['date-fns', 'clsx', 'tailwind-merge'],
+          'ai-vendor': ['openai', '@anthropic-ai/sdk'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000, // Increase limit to reduce warnings
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
   },
   server: {
     fs: {
