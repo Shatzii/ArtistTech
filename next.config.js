@@ -36,6 +36,20 @@ const nextConfig = {
   generateEtags: true,
   reactStrictMode: true,
   swcMinify: true,
+  async redirects() {
+    return [
+      {
+        source: '/unified-social-media-hub',
+        destination: '/studio/social-media',
+        permanent: true,
+      },
+      {
+        source: '/social-media-hub',
+        destination: '/studio/social-media',
+        permanent: true,
+      }
+    ]
+  },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production' ? {
       exclude: ['error', 'warn']

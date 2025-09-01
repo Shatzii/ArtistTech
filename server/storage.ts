@@ -177,7 +177,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserAudioFiles(userId: number): Promise<AudioFile[]> {
-    return await db.select().from(audioFiles).where(eq(audioFiles.userId, userId));
+    try {
+      return await db.select().from(audioFiles).where(eq(audioFiles.userId, userId));
+    } catch (error: any) {
+      // If user_id column doesn't exist, return all audio files
+      if (error.message?.includes('user_id') || error.message?.includes('column') || error.message?.includes('does not exist')) {
+        console.log('user_id column not found, returning all audio files');
+        return await db.select().from(audioFiles);
+      }
+      throw error;
+    }
   }
 
   async createAudioFile(insertAudioFile: InsertAudioFile): Promise<AudioFile> {

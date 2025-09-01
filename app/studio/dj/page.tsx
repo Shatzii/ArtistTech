@@ -124,7 +124,8 @@ export default function AdvancedStreamingDJ() {
 
   // WebSocket connection for streaming integration
   useEffect(() => {
-    const websocket = new WebSocket(`ws://${window.location.host}/streaming`)
+    // Connect to backend server on port 5000
+    const websocket = new WebSocket('ws://localhost:5000/streaming')
     
     websocket.onopen = () => {
       console.log('Connected to streaming integration')
@@ -141,6 +142,10 @@ export default function AdvancedStreamingDJ() {
     websocket.onclose = () => {
       console.log('Disconnected from streaming integration')
       setWs(null)
+    }
+
+    websocket.onerror = (error) => {
+      console.error('WebSocket error:', error)
     }
 
     return () => websocket.close()

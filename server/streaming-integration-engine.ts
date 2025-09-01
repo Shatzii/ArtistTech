@@ -77,8 +77,12 @@ export class StreamingIntegrationEngine {
   private cache: Map<string, DJTrack[]> = new Map();
   private activeStreams: Map<string, any> = new Map();
 
-  constructor() {
-    this.initializeEngine();
+  constructor(server?: any) {
+    if (server) {
+      this.setupIntegrationServer(server);
+    } else {
+      this.initializeEngine();
+    }
   }
 
   private async initializeEngine() {
@@ -87,21 +91,35 @@ export class StreamingIntegrationEngine {
     console.log('Streaming Integration Engine initialized');
   }
 
-  private setupIntegrationServer() {
-    const integrationServer = express();
-    integrationServer.use(express.json());
+  private setupIntegrationServer(server?: any) {
+    if (server) {
+      // Use the provided server instance
+      this.integrationWSS = new WebSocketServer({ server, path: '/streaming' });
+      this.setupWebSocketHandlers();
+      console.log('Streaming integration WebSocket server attached to main server');
+    } else {
+      // Fallback: create our own server (for backward compatibility)
+      const integrationServer = express();
+      integrationServer.use(express.json());
 
-    // OAuth callback routes for each service
-    integrationServer.get('/auth/spotify/callback', this.handleSpotifyCallback.bind(this));
-    integrationServer.get('/auth/soundcloud/callback', this.handleSoundCloudCallback.bind(this));
-    integrationServer.get('/auth/apple/callback', this.handleAppleCallback.bind(this));
+      // OAuth callback routes for each service
+      integrationServer.get('/auth/spotify/callback', this.handleSpotifyCallback.bind(this));
+      integrationServer.get('/auth/soundcloud/callback', this.handleSoundCloudCallback.bind(this));
+      integrationServer.get('/auth/apple/callback', this.handleAppleCallback.bind(this));
 
-    // WebSocket server for real-time streaming
-    const server = integrationServer.listen(8095, () => {
-      console.log('Streaming integration server started on port 8095');
-    });
+      // WebSocket server for real-time streaming
+      const httpServer = integrationServer.listen(8095, () => {
+        console.log('Streaming integration server started on port 8095');
+      });
 
-    this.integrationWSS = new WebSocketServer({ server, path: '/streaming' });
+      this.integrationWSS = new WebSocketServer({ server: httpServer, path: '/streaming' });
+      this.setupWebSocketHandlers();
+    }
+  }
+
+  private setupWebSocketHandlers() {
+    if (!this.integrationWSS) return;
+
     this.integrationWSS.on('connection', (ws: WebSocket) => {
       console.log('DJ streaming client connected');
       
@@ -547,7 +565,7 @@ export class StreamingIntegrationEngine {
       ws.send(JSON.stringify({
         type: 'error',
         message: 'Search failed',
-        error: error.message
+        error: error instanceof Error ? error.message : 'Unknown error'
       }));
     }
   }
@@ -567,7 +585,7 @@ export class StreamingIntegrationEngine {
       ws.send(JSON.stringify({
         type: 'error',
         message: 'Failed to load track',
-        error: error.message
+        error: error instanceof Error ? error.message : 'Unknown error'
       }));
     }
   }
