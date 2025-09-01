@@ -58,10 +58,11 @@ export interface IStorage {
   createVideoFile(videoFile: InsertVideoFile): Promise<VideoFile>;
   deleteVideoFile(id: number): Promise<boolean>;
 
-  // Student method (for backwards compatibility with routes.ts)
-  getStudent(id: number): Promise<User | undefined>;
-  
-  // Note: Educational features removed - tables not defined in schema
+  // Enterprise clients methods
+  getEnterpriseClients(): Promise<any[]>;
+  getEnterpriseClient(id: number): Promise<any | undefined>;
+  createEnterpriseClient(client: any): Promise<any>;
+  updateEnterpriseClient(id: number, client: Partial<any>): Promise<any | undefined>;
 
   // CMS Settings
   getCmsSetting(key: string): Promise<CmsSetting | undefined>;

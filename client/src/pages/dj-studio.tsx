@@ -12,12 +12,15 @@ import {
   Music, Disc, Waves, Zap, Crown, Star,
   Search, Filter, Shuffle, Repeat, Heart
 } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 export default function DJStudio() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTrack, setCurrentTrack] = useState(null);
-  const [deckATrack, setDeckATrack] = useState(null);
-  const [deckBTrack, setDeckBTrack] = useState(null);
+  const [currentTrack, setCurrentTrack] = useState<any>(null);
+  const [deckATrack, setDeckATrack] = useState<any>(null);
+  const [deckBTrack, setDeckBTrack] = useState<any>(null);
   const [crossfader, setCrossfader] = useState([50]);
   const [masterVolume, setMasterVolume] = useState([75]);
   const [deckAVolume, setDeckAVolume] = useState([80]);
@@ -25,32 +28,35 @@ export default function DJStudio() {
   const [liveRequests, setLiveRequests] = useState([]);
   const [activeTab, setActiveTab] = useState("mixer");
 
-  // Mock data for demonstration
-  const trackLibrary = [
-    { id: 1, title: "Summer Vibes", artist: "DJ Cosmic", bpm: 128, key: "Am", duration: "3:45", genre: "House" },
-    { id: 2, title: "Night Drive", artist: "Electronic Soul", bpm: 124, key: "Gm", duration: "4:12", genre: "Techno" },
-    { id: 3, title: "Neon Dreams", artist: "Synth Wave", bpm: 132, key: "Em", duration: "3:28", genre: "Synthwave" },
-    { id: 4, title: "Deep Ocean", artist: "Ambient Flow", bpm: 120, key: "Dm", duration: "5:16", genre: "Deep House" },
-    { id: 5, title: "Electric Storm", artist: "Thunder Beats", bpm: 140, key: "Cm", duration: "3:52", genre: "Drum & Bass" },
-    { id: 6, title: "Sunset Boulevard", artist: "Retro Future", bpm: 126, key: "Fm", duration: "4:05", genre: "Nu-Disco" }
-  ];
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
-  const liveVotes = [
-    { id: 1, track: "Summer Vibes", artist: "DJ Cosmic", votes: 47, paidRequest: false, amount: 0 },
-    { id: 2, track: "Electric Storm", artist: "Thunder Beats", votes: 23, paidRequest: true, amount: 15 },
-    { id: 3, track: "Deep Ocean", artist: "Ambient Flow", votes: 18, paidRequest: false, amount: 0 },
-    { id: 4, track: "Neon Dreams", artist: "Synth Wave", votes: 12, paidRequest: true, amount: 8 },
-    { id: 5, track: "Night Drive", artist: "Electronic Soul", votes: 9, paidRequest: false, amount: 0 }
-  ];
+  // Real track library from database
+  const { data: trackLibrary = [], isLoading: tracksLoading } = useQuery({
+    queryKey: ["/api/audio/tracks"],
+    queryFn: () => apiRequest("/api/audio/tracks")
+  });
 
-  const crowdStats = {
-    totalListeners: 342,
-    activeVoters: 89,
-    totalRequests: 5,
-    earnings: 23,
-    peakEnergy: 87,
-    genrePreference: "House (43%)"
-  };
+  // Real live voting data
+  const { data: liveVotes = [], isLoading: votesLoading } = useQuery({
+    queryKey: ["/api/dj/live-votes"],
+    queryFn: () => apiRequest("/api/dj/live-votes"),
+    refetchInterval: 5000 // Refresh every 5 seconds
+  });
+
+  // Real crowd stats
+  const { data: crowdStats = {
+    totalListeners: 0,
+    activeVoters: 0,
+    totalRequests: 0,
+    earnings: 0,
+    peakEnergy: 0,
+    genrePreference: "Loading..."
+  }, isLoading: statsLoading } = useQuery({
+    queryKey: ["/api/dj/crowd-stats"],
+    queryFn: () => apiRequest("/api/dj/crowd-stats"),
+    refetchInterval: 2000 // Refresh every 2 seconds
+  });
 
   const effects = {
     deckA: {

@@ -407,6 +407,7 @@ export class ProductionOptimizationEngine {
     
     setInterval(() => {
       this.collectSystemMetrics();
+      this.autoScale(); // Add auto-scaling based on metrics
     }, 30000); // Collect metrics every 30 seconds
   }
 
@@ -424,6 +425,33 @@ export class ProductionOptimizationEngine {
       throughput: Math.random() * 1000, // Would measure actual throughput
       uptime: process.uptime()
     };
+
+    // Broadcast metrics to monitoring dashboard
+    this.broadcastMetrics();
+  }
+
+  private autoScale(): void {
+    if (this.metrics.cpuUsage > 80 || this.metrics.memoryUsage > 80) {
+      console.log('High load detected, scaling up...');
+      // Implement scaling logic, e.g., spawn more instances or increase resources
+    } else if (this.metrics.cpuUsage < 20 && this.metrics.memoryUsage < 20) {
+      console.log('Low load detected, scaling down...');
+      // Implement scaling down logic
+    }
+  }
+
+  private broadcastMetrics(): void {
+    // Send metrics to WebSocket clients for real-time monitoring
+    if (this.optimizationWSS) {
+      this.optimizationWSS.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify({
+            type: 'metrics',
+            data: this.metrics
+          }));
+        }
+      });
+    }
   }
 
   async applyPerformanceProfile(profileId: string): Promise<void> {

@@ -21,60 +21,39 @@ export default function EnterpriseManagementStudio() {
   const queryClient = useQueryClient();
 
   // Fetch enterprise data
-  const { data: enterpriseData } = useQuery({
+  const { data: enterpriseData, isLoading: enterpriseLoading } = useQuery({
     queryKey: ["/api/enterprise/overview"],
-    enabled: true
+    queryFn: () => apiRequest("/api/enterprise/overview")
   });
 
-  const { data: clientsData } = useQuery({
+  const { data: clientsData, isLoading: clientsLoading } = useQuery({
     queryKey: ["/api/enterprise/clients"],
-    enabled: true
+    queryFn: () => apiRequest("/api/enterprise/clients")
   });
 
-  const mockEnterpriseData = {
-    totalClients: 47,
-    activeSubscriptions: 42,
-    monthlyRecurring: 2847500,
-    growthRate: 23.7,
-    contentGenerated: 89420,
-    platformsManaged: 156,
+  // Fallback data while loading
+  const mockEnterpriseData = enterpriseData || {
+    totalClients: 0,
+    activeSubscriptions: 0,
+    monthlyRecurring: 0,
+    growthRate: 0,
+    contentGenerated: 0,
+    platformsManaged: 0,
     aiEnginesActive: 19,
     studiosDeployed: 15
   };
 
-  const mockClients = [
+  const mockClients = clientsData?.length > 0 ? clientsData : [
     {
       id: 1,
-      name: "Global Music Academy",
-      type: "Educational Institution",
-      subscription: "Enterprise Pro",
-      users: 2847,
-      revenue: 89500,
-      status: "Active",
-      since: "2024-01-15",
-      features: ["All Studios", "White Label", "Custom Branding", "Priority Support"]
-    },
-    {
-      id: 2,
-      name: "NextGen Records",
-      type: "Record Label",
-      subscription: "Business Plus",
-      users: 156,
-      revenue: 67800,
-      status: "Active",
-      since: "2024-03-22",
-      features: ["A&R Tools", "Distribution", "Analytics", "Artist Management"]
-    },
-    {
-      id: 3,
-      name: "Creative Arts University",
-      type: "Educational Institution",
-      subscription: "Enterprise Pro",
-      users: 5423,
-      revenue: 134000,
-      status: "Active",
-      since: "2023-11-08",
-      features: ["All Studios", "Curriculum Integration", "Student Tracking", "Assessments"]
+      name: "Loading...",
+      type: "Loading...",
+      subscription: "Loading...",
+      users: 0,
+      revenue: 0,
+      status: "Loading...",
+      since: new Date().toISOString().split('T')[0],
+      features: ["Loading..."]
     }
   ];
 
