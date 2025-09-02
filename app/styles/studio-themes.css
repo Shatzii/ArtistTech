@@ -1,0 +1,328 @@
+/* ===========================================
+   STUDIO INTERFACE THEMES & STYLES
+   Professional CSS for ArtistTech Studios
+   =========================================== */
+
+/* ===== THEME VARIABLES ===== */
+:root {
+  /* Dark Professional */
+  --dark-bg-primary: linear-gradient(135deg, #111827 0%, #1f2937 50%, #111827 100%);
+  --dark-bg-secondary: rgba(31, 41, 55, 0.8);
+  --dark-text-primary: #ffffff;
+  --dark-text-secondary: #d1d5db;
+  --dark-accent: #06b6d4;
+  --dark-border: rgba(75, 85, 99, 0.5);
+  --dark-glow: rgba(6, 182, 212, 0.3);
+
+  /* Light Professional */
+  --light-bg-primary: linear-gradient(135deg, #f9fafb 0%, #ffffff 50%, #f3f4f6 100%);
+  --light-bg-secondary: rgba(255, 255, 255, 0.9);
+  --light-text-primary: #111827;
+  --light-text-secondary: #6b7280;
+  --light-accent: #0891b2;
+  --light-border: rgba(209, 213, 219, 0.8);
+  --light-glow: rgba(8, 145, 178, 0.2);
+
+  /* Neon Cyberpunk */
+  --neon-bg-primary: linear-gradient(135deg, #1e1b4b 0%, #7c3aed 50%, #06b6d4 100%);
+  --neon-bg-secondary: rgba(139, 92, 246, 0.1);
+  --neon-text-primary: #e879f9;
+  --neon-text-secondary: #a78bfa;
+  --neon-accent: #ec4899;
+  --neon-border: rgba(236, 72, 153, 0.5);
+  --neon-glow: rgba(236, 72, 153, 0.4);
+
+  /* Studio Professional */
+  --studio-bg-primary: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #581c87 100%);
+  --studio-bg-secondary: rgba(255, 255, 255, 0.1);
+  --studio-text-primary: #ffffff;
+  --studio-text-secondary: #e0e7ff;
+  --studio-accent: #fbbf24;
+  --studio-border: rgba(255, 255, 255, 0.2);
+  --studio-glow: rgba(251, 191, 36, 0.3);
+
+  /* Vintage Retro */
+  --vintage-bg-primary: linear-gradient(135deg, #fef3c7 0%, #fed7aa 50%, #fde68a 100%);
+  --vintage-bg-secondary: rgba(252, 211, 77, 0.1);
+  --vintage-text-primary: #92400e;
+  --vintage-text-secondary: #d97706;
+  --vintage-accent: #ea580c;
+  --vintage-border: rgba(234, 88, 12, 0.3);
+  --vintage-glow: rgba(234, 88, 12, 0.2);
+
+  /* Nature Organic */
+  --nature-bg-primary: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%);
+  --nature-bg-secondary: rgba(16, 185, 129, 0.1);
+  --nature-text-primary: #ecfdf5;
+  --nature-text-secondary: #a7f3d0;
+  --nature-accent: #10b981;
+  --nature-border: rgba(16, 185, 129, 0.4);
+  --nature-glow: rgba(16, 185, 129, 0.3);
+}
+
+/* ===== STUDIO THEME CLASSES ===== */
+.studio-theme-dark {
+  background: var(--dark-bg-primary);
+  color: var(--dark-text-primary);
+}
+
+.studio-theme-light {
+  background: var(--light-bg-primary);
+  color: var(--light-text-primary);
+}
+
+.studio-theme-neon {
+  background: var(--neon-bg-primary);
+  color: var(--neon-text-primary);
+}
+
+.studio-theme-studio {
+  background: var(--studio-bg-primary);
+  color: var(--studio-text-primary);
+}
+
+.studio-theme-vintage {
+  background: var(--vintage-bg-primary);
+  color: var(--vintage-text-primary);
+}
+
+.studio-theme-nature {
+  background: var(--nature-bg-primary);
+  color: var(--nature-text-primary);
+}
+
+/* ===== LAYOUT CLASSES ===== */
+.layout-compact {
+  padding: 0.5rem;
+  gap: 0.5rem;
+}
+
+.layout-compact .studio-card {
+  padding: 0.75rem;
+  margin: 0.25rem;
+}
+
+.layout-expanded {
+  padding: 1.5rem;
+  gap: 1rem;
+}
+
+.layout-expanded .studio-card {
+  padding: 1.5rem;
+  margin: 0.5rem;
+}
+
+.layout-minimal {
+  padding: 0.75rem;
+  gap: 0.25rem;
+  background: transparent;
+}
+
+.layout-minimal .studio-card {
+  padding: 0.5rem;
+  margin: 0.125rem;
+  border: none;
+  box-shadow: none;
+}
+
+.layout-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.layout-waveform {
+  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.1) 50%, transparent 100%);
+}
+
+.layout-classic {
+  background: linear-gradient(45deg, #1a1a1a 25%, transparent 25%),
+              linear-gradient(-45deg, #1a1a1a 25%, transparent 25%),
+              linear-gradient(45deg, transparent 75%, #1a1a1a 75%),
+              linear-gradient(-45deg, transparent 75%, #1a1a1a 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+
+.layout-modern {
+  background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+              radial-gradient(circle at 40% 40%, rgba(120, 219, 226, 0.3) 0%, transparent 50%);
+}
+
+.layout-theater {
+  background: linear-gradient(180deg, #000000 0%, #1a1a1a 30%, #000000 100%);
+  position: relative;
+}
+
+.layout-theater::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ffd700, #ffed4e, #ffd700);
+}
+
+/* ===== COMPONENT STYLES ===== */
+.studio-card {
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.studio-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.studio-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--studio-accent), transparent);
+}
+
+/* ===== VISUAL EFFECTS ===== */
+.studio-glow {
+  box-shadow: 0 0 20px var(--studio-glow);
+}
+
+.studio-glow-hover:hover {
+  box-shadow: 0 0 30px var(--studio-glow);
+  animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px var(--studio-glow); }
+  50% { box-shadow: 0 0 40px var(--studio-glow); }
+}
+
+/* ===== ANIMATIONS ===== */
+.studio-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.studio-slide-up {
+  animation: slideUp 0.6s ease-out;
+}
+
+.studio-scale-in {
+  animation: scaleIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .layout-expanded {
+    padding: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .layout-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .studio-card {
+    margin: 0.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .layout-compact,
+  .layout-expanded {
+    padding: 0.5rem;
+  }
+
+  .studio-card {
+    padding: 0.75rem;
+  }
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+  .studio-card,
+  .studio-glow-hover {
+    transition: none;
+    animation: none;
+  }
+
+  .studio-fade-in,
+  .studio-slide-up,
+  .studio-scale-in {
+    animation: none;
+  }
+}
+
+/* ===== HIGH CONTRAST MODE ===== */
+@media (prefers-contrast: high) {
+  .studio-card {
+    border: 2px solid currentColor;
+  }
+
+  .studio-glow,
+  .studio-glow-hover {
+    box-shadow: none;
+  }
+}
+
+/* ===== DARK MODE PREFERENCE ===== */
+@media (prefers-color-scheme: dark) {
+  .studio-theme-auto {
+    background: var(--dark-bg-primary);
+    color: var(--dark-text-primary);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .studio-theme-auto {
+    background: var(--light-bg-primary);
+    color: var(--light-text-primary);
+  }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .studio-card {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+
+  .studio-glow,
+  .studio-glow-hover {
+    box-shadow: none;
+  }
+}

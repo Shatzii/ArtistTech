@@ -6,23 +6,27 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { TrendingUp, Users, DollarSign, Target, Calendar, Music, Video, Share2, Brain, BarChart3, Briefcase, Zap, Settings } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function CareerManagement() {
   const [activeAgent, setActiveAgent] = useState("marketing");
   const [selectedGoal, setSelectedGoal] = useState("growth");
 
   const { data: careerAnalytics, isLoading } = useQuery({
-    queryKey: ["/api/career/analytics"],
+    queryKey: ["career-analytics"],
+    queryFn: () => apiRequest("/api/career/analytics"),
     enabled: true
   });
 
   const { data: recommendations } = useQuery({
-    queryKey: ["/api/career/recommendations"],
+    queryKey: ["career-recommendations"],
+    queryFn: () => apiRequest("/api/career/recommendations"),
     enabled: true
   });
 
   const { data: revenueData } = useQuery({
-    queryKey: ["/api/producer/revenue-streams"],
+    queryKey: ["career-revenue"],
+    queryFn: () => apiRequest("/api/career/revenue"),
     enabled: true
   });
 

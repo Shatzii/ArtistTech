@@ -56,7 +56,7 @@ export default function EnhancedStudioLanding() {
         'Professional piano with multi-octave support',
         'Infinite canvas for creative arrangement'
       ],
-      route: '/cutting-edge-music-studio',
+      route: '/ultimate-music-studio',
       preview: 'Enhanced Canvas + Professional Transport',
       stats: { tracks: '16+', plugins: '50+', users: '12.3K' }
     },

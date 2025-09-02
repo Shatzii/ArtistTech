@@ -1,23 +1,49 @@
-import { useState, useRef, useEffect } from 'react';
+'use client';
+
+import { useState, useRef, useEffect, useMemo, useCallback, memo, lazy, Suspense } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { 
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
   Mic, MicOff, Play, Pause, Square, SkipBack, SkipForward,
   Volume2, VolumeX, Settings, Users, Headphones, Radio,
   Upload, Download, Share2, Eye, MessageCircle, Heart,
   Zap, TrendingUp, DollarSign, Clock, Cpu, Wifi,
   Video, VideoOff, Camera, Monitor, Globe, Youtube,
   Instagram, Twitter, Facebook, Twitch, Music,
-  Edit3, Layers, Filter, Sparkles, BarChart3
+  Edit3, Layers, Filter, Sparkles, BarChart3,
+  Brain, Rocket, Target, Calendar, Bot, Hash,
+  Send, RefreshCw, CheckCircle, AlertCircle, Plus,
+  Minus, Search, Grid, Layout, ZoomIn, ZoomOut,
+  Hand, Crop, FlipHorizontal, FlipVertical, RotateCcw,
+  Undo, Redo, Save, Copy, Trash2, Link, ExternalLink,
+  ThumbsUp, Bookmark, Bell, User, Shield, Palette,
+  Speaker, Activity, FileAudio, BarChart3 as Waveform, Podcast,
+  Radio as RadioIcon, Headphones as HeadphonesIcon,
+  Mic2, Circle as Record, StopCircle, PlayCircle, PauseCircle,
+  SkipForward as SkipNext, SkipBack as SkipPrev,
+  Volume1, VolumeX as Mute, Settings2, Users2,
+  UserCheck, UserX, Crown, Star, Award, Trophy,
+  Flame, TrendingUp as Trending, DollarSign as Money,
+  Clock as Time, Cpu as Processor, Wifi as Wireless,
+  Video as VideoIcon, Camera as Cam, Monitor as Screen,
+  Globe as World, Youtube as YT, Instagram as IG,
+  Twitter as TW, Facebook as FB, Twitch as TWITCH,
+  Music as Song, Edit3 as Edit, Layers as Stack,
+  Filter as Funnel, Sparkles as Magic, BarChart3 as Chart
 } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 interface RecordingState {
   isRecording: boolean;
@@ -103,6 +129,69 @@ export default function PodcastStudio() {
     { name: 'Twitter', icon: Twitter, color: 'text-blue-500', connected: false }
   ];
 
+  // Enhanced state management
+  const [selectedTheme, setSelectedTheme] = useState("dark");
+  const [autoSave, setAutoSave] = useState(true);
+  const [realTimePreview, setRealTimePreview] = useState(true);
+  const [aiEnhancement, setAiEnhancement] = useState(true);
+  const [collaborationMode, setCollaborationMode] = useState(false);
+  const [episodeTitle, setEpisodeTitle] = useState("Episode #1 - Getting Started");
+  const [episodeDescription, setEpisodeDescription] = useState("");
+  const [showNotes, setShowNotes] = useState("");
+  const [tags, setTags] = useState(["podcast", "interview", "tech"]);
+  const [processingProgress, setProcessingProgress] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Enhanced API queries and mutations
+  const { data: podcastProjects } = useQuery({
+    queryKey: ["/api/studio/podcast/projects"],
+    enabled: true
+  });
+
+  const { data: episodesData } = useQuery({
+    queryKey: ["/api/studio/podcast/episodes"],
+    enabled: true
+  });
+
+  const { data: aiSuggestions } = useQuery({
+    queryKey: ["/api/studio/podcast/ai-suggestions"],
+    enabled: aiEnhancement
+  });
+
+  const { data: collaborationData } = useQuery({
+    queryKey: ["/api/studio/podcast/collaboration"],
+    enabled: collaborationMode
+  });
+
+  const queryClient = useQueryClient();
+
+  const saveEpisodeMutation = useMutation({
+    mutationFn: (data: any) => apiRequest("/api/studio/podcast/save", "POST", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/studio/podcast/projects"] });
+    }
+  });
+
+  const processAudioMutation = useMutation({
+    mutationFn: (data: any) => apiRequest("/api/studio/podcast/process", "POST", data),
+    onSuccess: () => {
+      setIsProcessing(false);
+      setProcessingProgress(100);
+      queryClient.invalidateQueries({ queryKey: ["/api/studio/podcast/episodes"] });
+    },
+    onError: () => {
+      setIsProcessing(false);
+      setProcessingProgress(0);
+    }
+  });
+
+  const publishEpisodeMutation = useMutation({
+    mutationFn: (data: any) => apiRequest("/api/studio/podcast/publish", "POST", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/studio/podcast/episodes"] });
+    }
+  });
+
   // Simulate recording timer
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -117,27 +206,99 @@ export default function PodcastStudio() {
     return () => clearInterval(interval);
   }, [recordingState.isRecording, recordingState.isPaused]);
 
-  const formatTime = (seconds: number) => {
+  const formatTime = useCallback((seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
+  }, []);
 
-  const handleStartRecording = () => {
+  const handleStartRecording = useCallback(() => {
     setRecordingState(prev => ({ ...prev, isRecording: true, isPaused: false }));
-  };
+  }, []);
 
-  const handlePauseRecording = () => {
+  const handlePauseRecording = useCallback(() => {
     setRecordingState(prev => ({ ...prev, isPaused: !prev.isPaused }));
-  };
+  }, []);
 
-  const handleStopRecording = () => {
+  const handleStopRecording = useCallback(() => {
     setRecordingState({ isRecording: false, isPaused: false, duration: 0, isPlaying: false });
-  };
+  }, []);
 
-  const handleGoLive = () => {
+  const handleGoLive = useCallback(() => {
     setStreamingState(prev => ({ ...prev, isLive: !prev.isLive }));
-  };
+  }, []);
+
+  const handleSaveEpisode = useCallback(async () => {
+    try {
+      await saveEpisodeMutation.mutateAsync({
+        title: episodeTitle,
+        description: episodeDescription,
+        showNotes: showNotes,
+        tags: tags,
+        duration: recordingState.duration
+      });
+    } catch (error) {
+      console.error("Error saving episode:", error);
+    }
+  }, [episodeTitle, episodeDescription, showNotes, tags, recordingState.duration, saveEpisodeMutation]);
+
+  const handleProcessAudio = useCallback(async () => {
+    setIsProcessing(true);
+    setProcessingProgress(0);
+    try {
+      await processAudioMutation.mutateAsync({
+        episodeId: episodeTitle,
+        features: aiFeatures.filter(f => f.enabled).map(f => f.id)
+      });
+    } catch (error) {
+      console.error("Error processing audio:", error);
+    }
+  }, [episodeTitle, aiFeatures, processAudioMutation]);
+
+  const handlePublishEpisode = useCallback(async () => {
+    try {
+      await publishEpisodeMutation.mutateAsync({
+        episodeId: episodeTitle,
+        platforms: platforms.filter((p: any) => p.connected).map((p: any) => p.name)
+      });
+    } catch (error) {
+      console.error("Error publishing episode:", error);
+    }
+  }, [episodeTitle, platforms, publishEpisodeMutation]);
+
+  const handleThemeChange = useCallback((theme: string) => {
+    setSelectedTheme(theme);
+  }, []);
+
+  const handleCollaborationToggle = useCallback(() => {
+    setCollaborationMode(!collaborationMode);
+  }, [collaborationMode]);
+
+  // Memoized expensive computations
+  const connectedPlatforms = useMemo(() => {
+    return platforms.filter(p => p.connected);
+  }, [platforms]);
+
+  const enabledAIFeatures = useMemo(() => {
+    return aiFeatures.filter(f => f.enabled);
+  }, [aiFeatures]);
+
+  const recordingStats = useMemo(() => {
+    return {
+      formattedDuration: formatTime(recordingState.duration),
+      isActive: recordingState.isRecording && !recordingState.isPaused,
+      progress: (recordingState.duration / 3600) * 100 // Assuming 1 hour max
+    };
+  }, [recordingState, formatTime]);
+
+  const streamingStats = useMemo(() => {
+    return {
+      isActive: streamingState.isLive,
+      quality: streamingState.quality,
+      formattedBitrate: `${streamingState.bitrate}kbps`,
+      viewerCount: streamingState.viewers.toLocaleString()
+    };
+  }, [streamingState]);
 
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -356,7 +517,7 @@ export default function PodcastStudio() {
                       </div>
                     )}
 
-                    <Separator className="bg-purple-500/20" />
+                    <div className="h-px bg-purple-500/20" />
 
                     <div className="space-y-2">
                       <label className="text-sm text-gray-300">Stream Title</label>

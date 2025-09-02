@@ -8,12 +8,14 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
-import { 
+import {
   Headphones, Zap, Gamepad2, Eye, Hand, Mic,
   Play, Pause, Square, Settings, Volume2, Maximize,
   Users, Globe, Layers, Sparkles, Camera, Monitor,
   Cpu, Radio, Target, BarChart3, RefreshCw, Share2
 } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 interface VREnvironment {
   id: string;
@@ -51,105 +53,60 @@ export default function VRStudio() {
   const [hapticFeedback, setHapticFeedback] = useState(85);
   const [participants, setParticipants] = useState(3);
 
-  const vrEnvironments: VREnvironment[] = [
-    {
-      id: 'music-studio',
-      name: 'Virtual Music Studio',
-      description: 'Professional recording environment with spatial audio mixing',
-      type: 'studio',
-      users: 4,
-      maxUsers: 8,
-      isActive: true
-    },
-    {
-      id: 'concert-stage',
-      name: 'Concert Stage',
-      description: 'Perform live for virtual audiences worldwide',
-      type: 'stage',
-      users: 147,
-      maxUsers: 1000,
-      isActive: true
-    },
-    {
-      id: 'art-gallery',
-      name: 'Digital Art Gallery',
-      description: 'Showcase and collaborate on visual artworks',
-      type: 'gallery',
-      users: 23,
-      maxUsers: 50,
-      isActive: true
-    },
-    {
-      id: 'cinema-theater',
-      name: 'Cinema Theater',
-      description: 'Private screening room for video presentations',
-      type: 'theater',
-      users: 12,
-      maxUsers: 100,
-      isActive: false
-    }
-  ];
+  const queryClient = useQueryClient();
 
-  const vrSessions: VRSession[] = [
-    {
-      id: '1',
-      title: 'Collaborative Beat Making',
-      participants: 4,
-      duration: '45:32',
-      isRecording: true,
-      quality: '4K'
-    },
-    {
-      id: '2',
-      title: 'Live Performance Practice',
-      participants: 2,
-      duration: '1:23:15',
-      isRecording: false,
-      quality: '1080p'
-    },
-    {
-      id: '3',
-      title: 'VR Music Video Shoot',
-      participants: 6,
-      duration: '2:45:07',
-      isRecording: true,
-      quality: '8K'
-    }
-  ];
+  // API Queries
+  const { data: environmentsData, isLoading: environmentsLoading } = useQuery({
+    queryKey: ['vr-environments'],
+    queryFn: () => apiRequest('/api/studio/vr/environments'),
+  });
 
-  const vrDevices: VRDevice[] = [
-    {
-      id: 'meta-quest-3',
-      name: 'Meta Quest 3',
-      type: 'headset',
-      connected: true,
-      battery: 87,
-      tracking: true
+  const { data: sessionsData, isLoading: sessionsLoading } = useQuery({
+    queryKey: ['vr-sessions'],
+    queryFn: () => apiRequest('/api/studio/vr/sessions'),
+  });
+
+  const { data: devicesData, isLoading: devicesLoading } = useQuery({
+    queryKey: ['vr-devices'],
+    queryFn: () => apiRequest('/api/studio/vr/devices'),
+  });
+
+  const { data: statsData, isLoading: statsLoading } = useQuery({
+    queryKey: ['vr-stats'],
+    queryFn: () => apiRequest('/api/studio/vr/stats'),
+  });
+
+  // API Mutations
+  const createSessionMutation = useMutation({
+    mutationFn: (data: any) => apiRequest('/api/studio/vr/session', 'POST', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vr-sessions'] });
+      queryClient.invalidateQueries({ queryKey: ['vr-stats'] });
     },
-    {
-      id: 'left-controller',
-      name: 'Left Controller',
-      type: 'controller',
-      connected: true,
-      battery: 92,
-      tracking: true
+  });
+
+  const controlSessionMutation = useMutation({
+    mutationFn: ({ sessionId, data }: { sessionId: string; data: any }) =>
+      apiRequest(`/api/studio/vr/session/${sessionId}/control`, 'POST', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vr-sessions'] });
     },
-    {
-      id: 'right-controller',
-      name: 'Right Controller',
-      type: 'controller',
-      connected: true,
-      battery: 89,
-      tracking: true
-    },
-    {
-      id: 'body-tracker-1',
-      name: 'Body Tracker',
-      type: 'tracker',
-      connected: false,
-      tracking: false
-    }
-  ];
+  });
+
+  // Transform API data to match component expectations
+  const vrEnvironments = environmentsData?.environments?.map((env: any) => ({
+    id: env.id,
+    name: env.name,
+    description: `${env.type} environment with ${env.assets} assets`,
+    type: env.type === 'music' ? 'studio' : env.type === 'performance' ? 'stage' : env.type === 'futuristic' ? 'gallery' : 'theater',
+    users: Math.floor(Math.random() * 50) + 1,
+    maxUsers: env.type === 'performance' ? 1000 : env.type === 'futuristic' ? 50 : 8,
+    isActive: true
+  })) || [];
+
+  const vrSessions = sessionsData?.sessions || [];
+
+  const vrDevices = devicesData?.devices || [];
 
   // Simulate real-time updates
   useEffect(() => {
@@ -221,26 +178,34 @@ export default function VRStudio() {
 
             {/* Environments Tab */}
             <TabsContent value="environments" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {vrEnvironments.map((environment) => {
-                  const IconComponent = getEnvironmentIcon(environment.type);
-                  return (
-                    <Card key={environment.id} className={`bg-black/40 border-purple-500/20 cursor-pointer transition-all ${
-                      selectedEnvironment === environment.id ? 'border-purple-500 bg-purple-500/10' : ''
-                    }`} onClick={() => setSelectedEnvironment(environment.id)}>
-                      <CardHeader>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <IconComponent className="w-6 h-6 text-purple-400" />
-                            <CardTitle className="text-white">{environment.name}</CardTitle>
+              {environmentsLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="text-center">
+                    <RefreshCw className="w-8 h-8 animate-spin text-purple-400 mx-auto mb-4" />
+                    <p className="text-gray-400">Loading VR environments...</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {vrEnvironments.map((environment) => {
+                    const IconComponent = getEnvironmentIcon(environment.type);
+                    return (
+                      <Card key={environment.id} className={`bg-black/40 border-purple-500/20 cursor-pointer transition-all ${
+                        selectedEnvironment === environment.id ? 'border-purple-500 bg-purple-500/10' : ''
+                      }`} onClick={() => setSelectedEnvironment(environment.id)}>
+                        <CardHeader>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                              <IconComponent className="w-6 h-6 text-purple-400" />
+                              <CardTitle className="text-white">{environment.name}</CardTitle>
+                            </div>
+                            <Badge variant={environment.isActive ? "default" : "outline"}>
+                              {environment.isActive ? "Active" : "Offline"}
+                            </Badge>
                           </div>
-                          <Badge variant={environment.isActive ? "default" : "outline"}>
-                            {environment.isActive ? "Active" : "Offline"}
-                          </Badge>
-                        </div>
-                        <CardDescription className="text-gray-400">
-                          {environment.description}
-                        </CardDescription>
+                          <CardDescription className="text-gray-400">
+                            {environment.description}
+                          </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-4">
                         <div className="flex justify-between items-center">
@@ -258,8 +223,17 @@ export default function VRStudio() {
                           <Button 
                             className="flex-1 bg-purple-500 hover:bg-purple-600 text-white"
                             disabled={!environment.isActive}
+                            onClick={() => createSessionMutation.mutate({
+                              environmentId: environment.id,
+                              mode: 'single',
+                              participants: 1
+                            })}
                           >
-                            <Globe className="w-4 h-4 mr-2" />
+                            {createSessionMutation.isPending ? (
+                              <RefreshCw className="w-4 h-4 animate-spin mr-2" />
+                            ) : (
+                              <Globe className="w-4 h-4 mr-2" />
+                            )}
                             Enter VR
                           </Button>
                           {environment.type === 'stage' && (
@@ -272,7 +246,8 @@ export default function VRStudio() {
                     </Card>
                   );
                 })}
-              </div>
+                </div>
+              )}
 
               {/* Quick Actions */}
               <Card className="bg-black/40 border-purple-500/20">
@@ -306,23 +281,23 @@ export default function VRStudio() {
             {/* Sessions Tab */}
             <TabsContent value="sessions" className="space-y-6">
               <div className="space-y-4">
-                {vrSessions.map((session) => (
-                  <Card key={session.id} className="bg-black/40 border-purple-500/20">
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <h3 className="text-white font-bold text-lg">{session.title}</h3>
-                          <div className="flex items-center space-x-4 text-sm text-gray-400 mt-2">
-                            <span className="flex items-center">
-                              <Users className="w-4 h-4 mr-1" />
-                              {session.participants} participants
-                            </span>
-                            <span className="flex items-center">
-                              <Clock className="w-4 h-4 mr-1" />
-                              {session.duration}
-                            </span>
-                            <Badge variant={session.isRecording ? "destructive" : "outline"}>
-                              {session.isRecording ? "Recording" : "Live"}
+                  {vrSessions.map((session) => (
+                    <Card key={session.id} className="bg-black/40 border-purple-500/20">
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <h3 className="text-white font-bold text-lg">{session.title}</h3>
+                            <div className="flex items-center space-x-4 text-sm text-gray-400 mt-2">
+                              <span className="flex items-center">
+                                <Users className="w-4 h-4 mr-1" />
+                                {session.participants} participants
+                              </span>
+                              <span className="flex items-center">
+                                <Clock className="w-4 h-4 mr-1" />
+                                {session.duration}
+                              </span>
+                              <Badge variant={session.isRecording ? "destructive" : "outline"}>
+                                {session.isRecording ? "Recording" : "Live"}
                             </Badge>
                             <Badge variant="secondary">
                               {session.quality}

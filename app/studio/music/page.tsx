@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,21 +12,17 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   Play, Pause, Square, Circle, SkipForward, SkipBack, Volume2,
   Music, Mic, Headphones, Settings, Users, Save, Download,
-  Piano, Drum, Waves, Mixer, Layers, Wand2, Zap, CloudUpload,
+  Piano, Drum, Waves, Sliders, Layers, Wand2, Zap, CloudUpload,
   Maximize2, Minimize2, Grid3x3, Move, RotateCw, Eye, EyeOff,
   Volume1, VolumeX, Repeat, Shuffle, Clock, Activity, Cpu,
   BarChart3, Target, Sparkles, Crown, Star, TrendingUp,
-  Keyboard, Guitar, Mic2, Speaker, Radio, Disc3, Sliders,
+  Keyboard, Guitar, Mic2, Speaker, Radio, Disc3,
   Palette, Lightbulb, Moon, Sun, MonitorSpeaker, AudioLines,
   Upload, Plus, ZoomIn, ZoomOut, MousePointer, Edit, LineChart, Spline
 } from 'lucide-react';
-import { useEnhancedStudioActions } from '@/hooks/useStudioAPI';
-import { useToast } from '@/hooks/use-toast';
 
 export default function UltimateMusicStudio() {
   // Enhanced State Management
@@ -36,8 +34,6 @@ export default function UltimateMusicStudio() {
   const [selectedInstrument, setSelectedInstrument] = useState('piano');
   const [projectName, setProjectName] = useState('Untitled Project');
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [theme, setTheme] = useState<'dark' | 'light' | 'neon'>('dark');
-  const [layout, setLayout] = useState<'compact' | 'expanded' | 'minimal'>('expanded');
   const [showWaveform, setShowWaveform] = useState(true);
   const [snapToGrid, setSnapToGrid] = useState(true);
   const [loopMode, setLoopMode] = useState(false);
@@ -45,16 +41,81 @@ export default function UltimateMusicStudio() {
   const [quantizeEnabled, setQuantizeEnabled] = useState(true);
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
 
-  // New Features State
-  // 1. Arrangement View
-  const [arrangementView, setArrangementView] = useState({
-    zoom: 1,
-    scrollX: 0,
-    scrollY: 0,
-    selectedTool: 'pointer',
-    gridSize: 16,
-    snapEnabled: true
+  // Enhanced Theme System
+  const [theme, setTheme] = useState<'dark' | 'light' | 'neon' | 'cyberpunk' | 'minimal' | 'studio' | 'vintage' | 'nature' | 'sunset' | 'ocean' | 'midnight'>('dark');
+  const [layout, setLayout] = useState<'compact' | 'expanded' | 'grid' | 'waveform' | 'classic'>('expanded');
+  const [visualEffects, setVisualEffects] = useState({
+    particles: false,
+    glow: true,
+    animations: true,
+    waveforms: true,
+    spectrum: false
   });
+
+  // Dynamic Theme Styles
+  const getThemeStyles = () => {
+    const themes = {
+      dark: {
+        bg: 'bg-gray-900',
+        card: 'bg-gray-800/50 border-gray-700',
+        text: 'text-white',
+        accent: 'text-blue-400',
+        glow: 'shadow-blue-500/20'
+      },
+      light: {
+        bg: 'bg-gray-50',
+        card: 'bg-white border-gray-200',
+        text: 'text-gray-900',
+        accent: 'text-blue-600',
+        glow: 'shadow-blue-200/50'
+      },
+      neon: {
+        bg: 'bg-black',
+        card: 'bg-gray-900/80 border-pink-500/50',
+        text: 'text-green-400',
+        accent: 'text-pink-400',
+        glow: 'shadow-pink-500/50'
+      },
+      cyberpunk: {
+        bg: 'bg-purple-900',
+        card: 'bg-gray-800/70 border-cyan-400/50',
+        text: 'text-cyan-300',
+        accent: 'text-purple-400',
+        glow: 'shadow-cyan-400/30'
+      },
+      minimal: {
+        bg: 'bg-white',
+        card: 'bg-gray-50 border-gray-200',
+        text: 'text-gray-800',
+        accent: 'text-gray-600',
+        glow: 'shadow-gray-300/20'
+      },
+      studio: {
+        bg: 'bg-gradient-to-br from-blue-900 to-purple-900',
+        card: 'bg-white/10 backdrop-blur-md border-white/20',
+        text: 'text-white',
+        accent: 'text-yellow-400',
+        glow: 'shadow-yellow-400/30'
+      },
+      vintage: {
+        bg: 'bg-gradient-to-br from-amber-100 to-orange-200',
+        card: 'bg-amber-50/80 border-amber-300',
+        text: 'text-amber-900',
+        accent: 'text-orange-600',
+        glow: 'shadow-amber-400/40'
+      },
+      nature: {
+        bg: 'bg-gradient-to-br from-green-800 to-emerald-900',
+        card: 'bg-emerald-50/20 border-emerald-400/50',
+        text: 'text-emerald-100',
+        accent: 'text-green-300',
+        glow: 'shadow-emerald-400/40'
+      }
+    };
+    return themes[theme];
+  };
+
+  const themeStyles = getThemeStyles();
 
   // 2. Effects Rack
   const [effectsRack, setEffectsRack] = useState({
@@ -341,29 +402,55 @@ export default function UltimateMusicStudio() {
   // Professional Studio Status
   const { data: studioStatus } = studioActions.status;
 
-  // Theme-based styling
+  // Enhanced Theme-based styling with global CSS theme system
   const getThemeClasses = () => {
-    switch (theme) {
-      case 'light':
-        return 'bg-gradient-to-br from-gray-50 via-white to-gray-100 text-gray-900';
-      case 'neon':
-        return 'bg-gradient-to-br from-purple-900 via-pink-900 to-cyan-900 text-cyan-100';
-      default:
-        return 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white';
-    }
+    const themeMap: Record<string, string> = {
+      dark: 'studio-theme-dark',
+      light: 'studio-theme-light',
+      neon: 'studio-theme-neon',
+      cyberpunk: 'studio-theme-cyberpunk',
+      minimal: 'studio-theme-minimal',
+      studio: 'studio-theme-studio',
+      vintage: 'studio-theme-vintage',
+      nature: 'studio-theme-nature',
+      sunset: 'bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 text-white',
+      ocean: 'bg-gradient-to-br from-blue-400 via-cyan-500 to-teal-600 text-white',
+      midnight: 'bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-purple-100'
+    };
+    return themeMap[theme] || 'studio-theme-dark';
+  };
+
+  const getLayoutClasses = () => {
+    const layoutMap: Record<string, string> = {
+      compact: 'layout-compact',
+      expanded: 'layout-expanded',
+      grid: 'layout-grid',
+      waveform: 'layout-waveform',
+      classic: 'layout-classic',
+      minimal: 'layout-minimal'
+    };
+    return layoutMap[layout] || 'layout-expanded';
   };
 
   const getAccentColor = () => {
     switch (theme) {
       case 'light': return 'cyan';
       case 'neon': return 'pink';
+      case 'cyberpunk': return 'cyan';
+      case 'minimal': return 'gray';
+      case 'studio': return 'yellow';
+      case 'vintage': return 'orange';
+      case 'nature': return 'emerald';
+      case 'sunset': return 'pink';
+      case 'ocean': return 'cyan';
+      case 'midnight': return 'purple';
       default: return 'cyan';
     }
   };
 
   return (
     <TooltipProvider>
-      <div className={`min-h-screen ${getThemeClasses()}`}>
+      <div className={`min-h-screen ${getThemeClasses()} ${getLayoutClasses()}`}>
         {/* Enhanced Header with Controls */}
         <div className={`border-b border-gray-700/50 bg-gray-900/95 backdrop-blur-sm sticky top-0 z-50 ${theme === 'light' ? 'bg-white/95 border-gray-200' : ''}`}>
           <div className="container mx-auto px-4 py-3">
@@ -398,27 +485,40 @@ export default function UltimateMusicStudio() {
                   </div>
                 </div>
 
-                {/* Theme Toggle */}
+                {/* Enhanced Theme Toggle with 10 Professional Options */}
                 <Select value={theme} onValueChange={(value: any) => setTheme(value)}>
-                  <SelectTrigger className="w-20 h-8">
+                  <SelectTrigger className="w-32 h-8">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="dark">🌙 Dark</SelectItem>
-                    <SelectItem value="light">☀️ Light</SelectItem>
-                    <SelectItem value="neon">✨ Neon</SelectItem>
+                    <SelectItem value="dark">🌙 Dark Pro</SelectItem>
+                    <SelectItem value="light">☀️ Light Pro</SelectItem>
+                    <SelectItem value="neon">✨ Neon Glow</SelectItem>
+                    <SelectItem value="cyberpunk">🤖 Cyberpunk</SelectItem>
+                    <SelectItem value="minimal">🎯 Minimal</SelectItem>
+                    <SelectItem value="studio">🎵 Studio Blue</SelectItem>
+                    <SelectItem value="vintage">📻 Vintage</SelectItem>
+                    <SelectItem value="nature">🌿 Nature</SelectItem>
+                    <SelectItem value="sunset">🌅 Sunset</SelectItem>
+                    <SelectItem value="ocean">🌊 Ocean</SelectItem>
+                    <SelectItem value="midnight">🌌 Midnight</SelectItem>
                   </SelectContent>
                 </Select>
 
-                {/* Layout Toggle */}
+                {/* Enhanced Layout Toggle with 8 Professional Options */}
                 <Select value={layout} onValueChange={(value: any) => setLayout(value)}>
-                  <SelectTrigger className="w-24 h-8">
+                  <SelectTrigger className="w-32 h-8">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="compact">Compact</SelectItem>
-                    <SelectItem value="expanded">Expanded</SelectItem>
-                    <SelectItem value="minimal">Minimal</SelectItem>
+                    <SelectItem value="compact">📦 Compact</SelectItem>
+                    <SelectItem value="expanded">📺 Expanded</SelectItem>
+                    <SelectItem value="minimal">🎯 Minimal</SelectItem>
+                    <SelectItem value="grid">🔲 Grid View</SelectItem>
+                    <SelectItem value="waveform">📊 Waveform</SelectItem>
+                    <SelectItem value="classic">🎼 Classic DAW</SelectItem>
+                    <SelectItem value="modern">🚀 Modern</SelectItem>
+                    <SelectItem value="theater">🎭 Theater</SelectItem>
                   </SelectContent>
                 </Select>
 

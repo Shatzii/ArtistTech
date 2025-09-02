@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { GraduationCap, Users, BookOpen, Video, Clock, Award, TrendingUp, Settings, Play, Pause } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function EducationManagement() {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -17,17 +18,20 @@ export default function EducationManagement() {
   const [currentLesson, setCurrentLesson] = useState("Music Theory Fundamentals");
 
   const { data: teacherStats } = useQuery({
-    queryKey: ["/api/education/teacher-stats"],
+    queryKey: ["education-teacher-stats"],
+    queryFn: () => apiRequest("/api/education/teacher-stats"),
     enabled: true
   });
 
   const { data: studentProgress } = useQuery({
-    queryKey: ["/api/education/student-progress"],
+    queryKey: ["education-student-progress"],
+    queryFn: () => apiRequest("/api/education/student-progress"),
     enabled: true
   });
 
   const { data: classSchedule } = useQuery({
-    queryKey: ["/api/education/schedule"],
+    queryKey: ["education-class-schedule"],
+    queryFn: () => apiRequest("/api/education/class-schedule"),
     enabled: true
   });
 

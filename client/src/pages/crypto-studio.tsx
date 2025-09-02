@@ -6,12 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
+import {
   Coins, TrendingUp, DollarSign, Zap, Users, Gift,
   Star, Crown, Flame, Award, Target, ArrowUp,
   Play, Heart, Share2, MessageCircle, Eye,
   Sparkles, Trophy, Gamepad2, BarChart3, Wallet
 } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 interface Challenge {
   id: string;
@@ -49,97 +51,50 @@ export default function CryptoStudio() {
   const [experience, setExperience] = useState(3420);
   const [nextLevelXp, setNextLevelXp] = useState(5000);
 
-  const challenges: Challenge[] = [
-    {
-      id: '1',
-      title: 'Watch 10 Music Videos',
-      reward: 100,
-      difficulty: 'easy',
-      progress: 60,
-      timeLeft: '5h 23m',
-      participants: 2847
-    },
-    {
-      id: '2',
-      title: 'Share 5 Artist Posts',
-      reward: 250,
-      difficulty: 'medium',
-      progress: 40,
-      timeLeft: '2d 14h',
-      participants: 1529
-    },
-    {
-      id: '3',
-      title: 'Discover New Artists',
-      reward: 500,
-      difficulty: 'hard',
-      progress: 80,
-      timeLeft: '6d 8h',
-      participants: 743
-    }
-  ];
+  const queryClient = useQueryClient();
 
-  const achievements: Achievement[] = [
-    {
-      id: '1',
-      title: 'Music Lover',
-      description: 'Listen to 100 hours of music',
-      reward: 1000,
-      unlocked: true,
-      rarity: 'common'
-    },
-    {
-      id: '2',
-      title: 'Viral Supporter',
-      description: 'Help a song reach 1M plays',
-      reward: 2500,
-      unlocked: true,
-      rarity: 'rare'
-    },
-    {
-      id: '3',
-      title: 'Community Builder',
-      description: 'Refer 50 friends to platform',
-      reward: 5000,
-      unlocked: false,
-      rarity: 'epic'
-    },
-    {
-      id: '4',
-      title: 'Crypto Pioneer',
-      description: 'Early adopter bonus',
-      reward: 10000,
-      unlocked: false,
-      rarity: 'legendary'
-    }
-  ];
+  // API Queries
+  const { data: balanceData, isLoading: balanceLoading } = useQuery({
+    queryKey: ['crypto-balance'],
+    queryFn: () => apiRequest('/api/studio/crypto/balance'),
+  });
 
-  const influencers: Influencer[] = [
-    {
-      id: '1',
-      name: 'TechGuru',
-      platform: 'YouTube',
-      followers: '2.5M',
-      contribution: 'Platform promotion & tutorials',
-      reward: 50000
+  const { data: challengesData, isLoading: challengesLoading } = useQuery({
+    queryKey: ['crypto-challenges'],
+    queryFn: () => apiRequest('/api/studio/crypto/challenges'),
+  });
+
+  const { data: achievementsData, isLoading: achievementsLoading } = useQuery({
+    queryKey: ['crypto-achievements'],
+    queryFn: () => apiRequest('/api/studio/crypto/achievements'),
+  });
+
+  const { data: influencersData, isLoading: influencersLoading } = useQuery({
+    queryKey: ['crypto-influencers'],
+    queryFn: () => apiRequest('/api/studio/crypto/influencers'),
+  });
+
+  // API Mutations
+  const claimRewardMutation = useMutation({
+    mutationFn: (data: any) => apiRequest('/api/studio/crypto/claim-reward', 'POST', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['crypto-balance'] });
+      queryClient.invalidateQueries({ queryKey: ['crypto-challenges'] });
     },
-    {
-      id: '2',
-      name: 'BeatMaker Pro',
-      platform: 'TikTok',
-      followers: '1.8M',
-      contribution: 'Music production content',
-      reward: 35000
+  });
+
+  const stakeMutation = useMutation({
+    mutationFn: (data: any) => apiRequest('/api/studio/crypto/stake', 'POST', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['crypto-balance'] });
     },
-    {
-      id: '3',
-      name: 'CryptoQueen',
-      platform: 'Instagram',
-      followers: '950K',
-      contribution: 'Cryptocurrency education',
-      reward: 25000
-    }
-  ];
+  });
+
+  // Transform API data to match component expectations
+  const challenges = challengesData?.challenges || [];
+  const achievements = achievementsData?.achievements || [];
+  const influencers = influencersData?.influencers || [];
+  const cryptoBalance = balanceData?.artistcoin || { balance: 0, usd_value: 0, change_24h: 0, staked: 0, rewards_pending: 0 };
 
   // Simulate real-time balance updates
   useEffect(() => {
@@ -198,7 +153,7 @@ export default function CryptoStudio() {
             <div className="text-sm text-gray-400">ArtistCoin Balance</div>
             <div className="text-2xl font-bold text-yellow-400 flex items-center">
               <Coins className="w-6 h-6 mr-2" />
-              {balance.toLocaleString()} AC
+              {cryptoBalance.balance.toLocaleString()} AC
             </div>
           </div>
           <Badge variant="default" className="bg-yellow-500 text-black animate-pulse">
@@ -584,7 +539,7 @@ export default function CryptoStudio() {
             <CardContent className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-gray-400">Current Balance</span>
-                <span className="text-yellow-400 font-bold">{balance.toLocaleString()} AC</span>
+                <span className="text-yellow-400 font-bold">{cryptoBalance.balance.toLocaleString()} AC</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Total Earned</span>

@@ -1,20 +1,40 @@
-import { useState, useEffect, useRef } from "react";
+'use client';
+
+import { useState, useEffect, useRef, useMemo, useCallback, memo, lazy, Suspense } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { 
-  Video, Play, Pause, Square, SkipBack, SkipForward, 
-  Volume2, Camera, Film, Edit, Layers, Palette, 
+import { Switch } from "@/components/ui/switch";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Video, Play, Pause, Square, SkipBack, SkipForward,
+  Volume2, Camera, Film, Edit, Layers, Palette,
   Sparkles, Upload, Download, Share, Settings,
-  Scissors, RotateCw, Maximize, Eye, Zap, Crown, 
-  FileVideo, Clock, MonitorPlay, Wand2, Stars
+  Scissors, RotateCw, Maximize, Eye, Zap, Crown,
+  FileVideo, Clock, MonitorPlay, Wand2, Stars,
+  Brain, Rocket, Target, BarChart3, Calendar,
+  Bot, Mic, Type, Hash, Send, RefreshCw,
+  CheckCircle, AlertCircle, Plus, Minus, Search,
+  Grid, Layout, ZoomIn, ZoomOut, Move, Hand,
+  Crop, FlipHorizontal, FlipVertical, RotateCcw,
+  Undo, Redo, Save, Copy, Trash2, Link,
+  ExternalLink, ThumbsUp, Bookmark, Bell, User,
+  Users, Shield, Palette as PaletteIcon, Brush,
+  Music, Radio, Headphones, Speaker, Activity,
+  TrendingUp, DollarSign, Heart, MessageCircle,
+  Instagram, Twitter, Youtube, Facebook
 } from "lucide-react";
+import { SiTiktok } from "react-icons/si";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function VideoStudio() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -25,6 +45,14 @@ export default function VideoStudio() {
   const [zoom, setZoom] = useState([100]);
   const [volume, setVolume] = useState([80]);
   const [projectTitle, setProjectTitle] = useState("My Video Project");
+  const [selectedTheme, setSelectedTheme] = useState("dark");
+  const [autoSave, setAutoSave] = useState(true);
+  const [realTimePreview, setRealTimePreview] = useState(true);
+  const [aiEnhancement, setAiEnhancement] = useState(true);
+  const [collaborationMode, setCollaborationMode] = useState(false);
+  const [exportQuality, setExportQuality] = useState("4k");
+  const [renderProgress, setRenderProgress] = useState(0);
+  const [isRendering, setIsRendering] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
 
@@ -38,20 +66,55 @@ export default function VideoStudio() {
     enabled: true
   });
 
+  const { data: effectsData } = useQuery({
+    queryKey: ["/api/studio/video/effects"],
+    enabled: true
+  });
+
+  const { data: aiSuggestions } = useQuery({
+    queryKey: ["/api/studio/video/ai-suggestions"],
+    enabled: aiEnhancement
+  });
+
+  const { data: collaborationData } = useQuery({
+    queryKey: ["/api/studio/video/collaboration"],
+    enabled: collaborationMode
+  });
+
   const queryClient = useQueryClient();
 
-  // API mutations for full video functionality
+  // Enhanced API mutations for full video functionality
   const renderMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const response = await fetch('/api/studio/video/render', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      return response.json();
+    mutationFn: (data: any) => apiRequest("/api/studio/video/render", "POST", data),
+    onSuccess: () => {
+      setIsRendering(false);
+      setRenderProgress(100);
+      queryClient.invalidateQueries({ queryKey: ["/api/studio/video/projects"] });
     },
+    onError: () => {
+      setIsRendering(false);
+      setRenderProgress(0);
+    }
+  });
+
+  const saveProjectMutation = useMutation({
+    mutationFn: (data: any) => apiRequest("/api/studio/video/save", "POST", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/studio/video/projects"] });
+    }
+  });
+
+  const applyEffectMutation = useMutation({
+    mutationFn: (data: any) => apiRequest("/api/studio/video/apply-effect", "POST", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/studio/video/effects"] });
+    }
+  });
+
+  const aiEnhanceMutation = useMutation({
+    mutationFn: (data: any) => apiRequest("/api/studio/video/ai-enhance", "POST", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/studio/video/ai-suggestions"] });
     }
   });
 
@@ -126,20 +189,22 @@ export default function VideoStudio() {
     { id: "square", name: "Square (Instagram)", resolution: "1080x1080", bitrate: "18 Mbps" }
   ];
 
-  // Playback controls
-  const handlePlayPause = () => {
+  // Playback controls with useCallback optimization
+  const handlePlayPause = useCallback(() => {
     setIsPlaying(!isPlaying);
-  };
+  }, [isPlaying]);
 
-  const handleSeek = (time: number) => {
+  const handleSeek = useCallback((time: number) => {
     setCurrentTime(time);
-  };
+  }, []);
 
-  const handleClipSelect = (clipId: number) => {
+  const handleClipSelect = useCallback((clipId: number) => {
     setSelectedClip(clipId);
-  };
+  }, []);
 
-  const handleExport = async (format: string = '4k') => {
+  const handleExport = useCallback(async (format: string = '4k') => {
+    setIsRendering(true);
+    setRenderProgress(0);
     try {
       const response = await renderMutation.mutateAsync({
         projectId: projectTitle,
@@ -150,6 +215,111 @@ export default function VideoStudio() {
     } catch (error) {
       console.error("Error exporting video:", error);
     }
+  }, [projectTitle, renderMutation]);
+
+  const handleSaveProject = useCallback(async () => {
+    try {
+      await saveProjectMutation.mutateAsync({
+        title: projectTitle,
+        clips: videoClips,
+        effects: effects,
+        duration: duration
+      });
+    } catch (error) {
+      console.error("Error saving project:", error);
+    }
+  }, [projectTitle, videoClips, effects, duration, saveProjectMutation]);
+
+  const handleApplyEffect = useCallback(async (effectId: string, intensity: number) => {
+    try {
+      await applyEffectMutation.mutateAsync({
+        effectId,
+        intensity,
+        clipId: selectedClip
+      });
+    } catch (error) {
+      console.error("Error applying effect:", error);
+    }
+  }, [selectedClip, applyEffectMutation]);
+
+  const handleAIEnhance = useCallback(async (featureId: string) => {
+    try {
+      await aiEnhanceMutation.mutateAsync({
+        featureId,
+        clipId: selectedClip
+      });
+    } catch (error) {
+      console.error("Error applying AI enhancement:", error);
+    }
+  }, [selectedClip, aiEnhanceMutation]);
+
+  // Memoized expensive computations
+  const totalProjectDuration = useMemo(() => {
+    return videoClips.reduce((total, clip) => total + clip.duration, 0);
+  }, [videoClips]);
+
+  const activeEffects = useMemo(() => {
+    return effects.filter(effect => effect.enabled);
+  }, [effects]);
+
+  const timelineData = useMemo(() => {
+    return {
+      videoClips,
+      audioTracks,
+      totalDuration: duration,
+      currentTime,
+      selectedClip
+    };
+  }, [videoClips, audioTracks, duration, currentTime, selectedClip]);
+
+  const exportOptions = useMemo(() => {
+    return exportFormats.map(format => ({
+      ...format,
+      estimatedSize: Math.round((parseInt(format.bitrate) * duration) / 8 / 1024) + 'MB'
+    }));
+  }, [exportFormats, duration]);
+
+// Loading component for lazy loaded components
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center p-8">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+  </div>
+);
+
+// Memoized Video Clip Component
+const VideoClip = memo(({ clip, isSelected, onSelect }: {
+  clip: any;
+  isSelected: boolean;
+  onSelect: (id: number) => void;
+}) => (
+  <div
+    className={`p-3 rounded-lg cursor-pointer transition-all border-2 ${
+      isSelected ? 'border-blue-500 bg-blue-500/20' : 'border-slate-600 bg-slate-800'
+    }`}
+    onClick={() => onSelect(clip.id)}
+  >
+    <div className="flex items-center space-x-3">
+      <div className={`w-4 h-4 rounded ${clip.color}`}></div>
+      <div>
+        <h4 className="font-medium text-white text-sm">{clip.name}</h4>
+        <p className="text-xs text-slate-400">{clip.duration}s</p>
+      </div>
+    </div>
+  </div>
+));
+
+VideoClip.displayName = 'VideoClip';
+
+  const handleThemeChange = (theme: string) => {
+    setSelectedTheme(theme);
+  };
+
+  const handleCollaborationToggle = () => {
+    setCollaborationMode(!collaborationMode);
+  };
+
+  const handleQualityChange = (quality: string) => {
+    setExportQuality(quality);
   };
 
   const handleAIProcess = async (featureId: string) => {
@@ -221,7 +391,7 @@ export default function VideoStudio() {
               <Upload className="w-4 h-4 mr-2" />
               Import
             </Button>
-            <Button onClick={handleExport} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={() => handleExport()} className="bg-blue-600 hover:bg-blue-700">
               <Download className="w-4 h-4 mr-2" />
               Export
             </Button>
@@ -479,7 +649,7 @@ export default function VideoStudio() {
                       </div>
                       
                       <div className="pt-4 border-t border-gray-600">
-                        <Button onClick={handleExport} className="w-full bg-blue-600 hover:bg-blue-700">
+                        <Button onClick={() => handleExport()} className="w-full bg-blue-600 hover:bg-blue-700">
                           <Download className="w-4 h-4 mr-2" />
                           Export Video
                         </Button>

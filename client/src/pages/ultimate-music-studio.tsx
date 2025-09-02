@@ -16,12 +16,12 @@ import {
   Play, Pause, Square, Circle, SkipForward, SkipBack, Volume2,
   Music, Mic, Headphones, Settings, Users, Save, Download,
   Piano, Drum, Waves, Mixer, Layers, Wand2, Zap, CloudUpload,
-  Maximize2, Minimize2, Grid3x3, Move, RotateCw, Eye, EyeOff,
+  Maximize2, Minimize2, Grid3x3, Move, RotateCw, RotateCcw, Eye, EyeOff,
   Volume1, VolumeX, Repeat, Shuffle, Clock, Activity, Cpu,
   BarChart3, Target, Sparkles, Crown, Star, TrendingUp,
   Keyboard, Guitar, Mic2, Speaker, Radio, Disc3, Sliders,
   Palette, Lightbulb, Moon, Sun, MonitorSpeaker, AudioLines,
-  Upload, Plus, ZoomIn, ZoomOut, MousePointer, Edit, LineChart, Spline
+  Upload, Plus, ZoomIn, ZoomOut, MousePointer, Edit, LineChart, Spline, Minus
 } from 'lucide-react';
 import { useEnhancedStudioActions } from '@/hooks/useStudioAPI';
 import { useToast } from '@/hooks/use-toast';
@@ -44,6 +44,15 @@ export default function UltimateMusicStudio() {
   const [metronomeEnabled, setMetronomeEnabled] = useState(false);
   const [quantizeEnabled, setQuantizeEnabled] = useState(true);
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
+
+  // Automation & Recording State
+  const [automationEnabled, setAutomationEnabled] = useState(false);
+  const [punchInEnabled, setPunchInEnabled] = useState(false);
+  const [countInEnabled, setCountInEnabled] = useState(true);
+  const [preRollEnabled, setPreRollEnabled] = useState(false);
+
+  // Tempo tap state
+  const [tempoTaps, setTempoTaps] = useState<number[]>([]);
 
   // New Features State
   // 1. Arrangement View
@@ -338,6 +347,24 @@ export default function UltimateMusicStudio() {
     ];
   };
 
+  // Handle tempo tap functionality
+  const handleTempoTap = () => {
+    const now = Date.now();
+    const taps = [...tempoTaps, now];
+    if (taps.length > 4) taps.shift();
+    setTempoTaps(taps);
+
+    if (taps.length >= 2) {
+      const intervals = [];
+      for (let i = 1; i < taps.length; i++) {
+        intervals.push(taps[i] - taps[i - 1]);
+      }
+      const avgInterval = intervals.reduce((a, b) => a + b) / intervals.length;
+      const newBpm = Math.round(60000 / avgInterval);
+      setBpm(Math.max(60, Math.min(200, newBpm)));
+    }
+  };
+
   // Professional Studio Status
   const { data: studioStatus } = studioActions.status;
 
@@ -465,204 +492,417 @@ export default function UltimateMusicStudio() {
             <TabsContent value="transport" className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Main Transport */}
-                <Card className={`bg-gradient-to-br ${theme === 'light' ? 'from-gray-50 to-white border-gray-200' : 'from-gray-800/90 to-gray-700/90'} border-${getAccentColor()}-400/30`}>
-                  <CardHeader>
+                <Card className={`bg-gradient-to-br ${theme === 'light' ? 'from-gray-50 to-white border-gray-200' : 'from-gray-800/90 to-gray-700/90'} border-${getAccentColor()}-400/30 relative overflow-hidden`}>
+                  {/* Transport Container Marker */}
+                  <div className="absolute top-2 left-2 bg-gradient-to-r from-green-500 to-cyan-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-lg">
+                    TRANSPORT
+                  </div>
+                  <CardHeader className="pt-8">
                     <CardTitle className={`flex items-center text-${getAccentColor()}-300`}>
                       <Play className="w-5 h-5 mr-2" />
                       Professional Transport Controls
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    {/* Time Display */}
-                    <div className="text-center">
-                      <div className="text-3xl font-mono font-bold text-white mb-2">
-                        {Math.floor(currentTime / 60)}:{(currentTime % 60).toFixed(2).padStart(5, '0')}
-                      </div>
-                      <div className="flex justify-center space-x-4 text-sm text-gray-400">
-                        <span>BPM: {bpm}</span>
-                        <span>•</span>
-                        <span>4/4</span>
-                        <span>•</span>
-                        <span>44.1kHz</span>
+                    {/* Time Display Container */}
+                    <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-600/50">
+                      <Label className="text-xs text-center text-gray-300 font-semibold mb-2 block">TIME DISPLAY</Label>
+                      <div className="text-center">
+                        <div className="text-3xl font-mono font-bold text-white mb-2 bg-gray-800/50 px-4 py-2 rounded border border-gray-600">
+                          {Math.floor(currentTime / 60)}:{(currentTime % 60).toFixed(2).padStart(5, '0')}
+                        </div>
+                        <div className="flex justify-center space-x-4 text-sm text-gray-400">
+                          <span className="bg-gray-800/30 px-2 py-1 rounded">BPM: {bpm}</span>
+                          <span className="bg-gray-800/30 px-2 py-1 rounded">4/4</span>
+                          <span className="bg-gray-800/30 px-2 py-1 rounded">44.1kHz</span>
+                        </div>
                       </div>
                     </div>
 
-                    {/* Main Transport Buttons */}
-                    <div className="flex items-center justify-center space-x-4">
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="lg"
-                            className="w-16 h-16 rounded-full border-gray-600 hover:border-cyan-400"
-                            onClick={() => setCurrentTime(Math.max(0, currentTime - 5000))}
-                          >
-                            <SkipBack className="w-6 h-6" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Rewind 5 seconds</TooltipContent>
-                      </Tooltip>
+                    {/* Main Transport Buttons Container */}
+                    <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-600/50">
+                      <Label className="text-xs text-center text-gray-300 font-semibold mb-4 block">TRANSPORT CONTROLS</Label>
+                      <div className="flex items-center justify-center space-x-4">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="lg"
+                              className="w-16 h-16 rounded-full border-gray-600 hover:border-cyan-400 hover:bg-cyan-600/10"
+                              onClick={() => setCurrentTime(Math.max(0, currentTime - 5000))}
+                            >
+                              <SkipBack className="w-6 h-6" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Rewind 5 seconds</TooltipContent>
+                        </Tooltip>
 
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            size="lg"
-                            className={`w-20 h-20 rounded-full transition-all duration-300 ${
-                              isPlaying
-                                ? 'bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-400 hover:to-red-500 shadow-lg shadow-orange-500/25'
-                                : 'bg-gradient-to-r from-green-500 to-cyan-600 hover:from-green-400 hover:to-cyan-500 shadow-lg shadow-green-500/25'
-                            }`}
-                            onClick={isPlaying ? handlePause : handlePlay}
-                            disabled={studioActions.music.transport.play.isPending || studioActions.music.transport.pause.isPending}
-                          >
-                            {studioActions.music.transport.play.isPending ? (
-                              <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            ) : isPlaying ? (
-                              <Pause className="w-8 h-8" />
-                            ) : (
-                              <Play className="w-8 h-8" />
-                            )}
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>{isPlaying ? 'Pause' : 'Play'}</TooltipContent>
-                      </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="lg"
+                              className={`w-20 h-20 rounded-full transition-all duration-300 shadow-lg ${
+                                isPlaying
+                                  ? 'bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-400 hover:to-red-500 shadow-orange-500/25'
+                                  : 'bg-gradient-to-r from-green-500 to-cyan-600 hover:from-green-400 hover:to-cyan-500 shadow-green-500/25'
+                              }`}
+                              onClick={isPlaying ? handlePause : handlePlay}
+                              disabled={studioActions.music.transport.play.isPending || studioActions.music.transport.pause.isPending}
+                            >
+                              {studioActions.music.transport.play.isPending ? (
+                                <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              ) : isPlaying ? (
+                                <Pause className="w-8 h-8" />
+                              ) : (
+                                <Play className="w-8 h-8" />
+                              )}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>{isPlaying ? 'Pause' : 'Play'}</TooltipContent>
+                        </Tooltip>
 
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="lg"
-                            className="w-16 h-16 rounded-full border-gray-600 hover:border-cyan-400"
-                            onClick={() => {
-                              setIsPlaying(false);
-                              setCurrentTime(0);
-                            }}
-                          >
-                            <Square className="w-6 h-6" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Stop</TooltipContent>
-                      </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="lg"
+                              className="w-16 h-16 rounded-full border-gray-600 hover:border-cyan-400 hover:bg-cyan-600/10"
+                              onClick={() => {
+                                setIsPlaying(false);
+                                setCurrentTime(0);
+                              }}
+                            >
+                              <Square className="w-6 h-6" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Stop</TooltipContent>
+                        </Tooltip>
 
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            size="lg"
-                            className={`w-16 h-16 rounded-full transition-all duration-300 ${
-                              isRecording
-                                ? 'bg-gradient-to-r from-red-500 to-red-600 animate-pulse shadow-lg shadow-red-500/25'
-                                : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 shadow-lg shadow-red-600/25'
-                            }`}
-                            onClick={handleRecord}
-                            disabled={studioActions.music.transport.record.isPending}
-                          >
-                            {studioActions.music.transport.record.isPending ? (
-                              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            ) : (
-                              <Circle className="w-6 h-6" />
-                            )}
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>{isRecording ? 'Stop Recording' : 'Start Recording'}</TooltipContent>
-                      </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="lg"
+                              className={`w-16 h-16 rounded-full transition-all duration-300 shadow-lg ${
+                                isRecording
+                                  ? 'bg-gradient-to-r from-red-500 to-red-600 animate-pulse shadow-red-500/25'
+                                  : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 shadow-red-600/25'
+                              }`}
+                              onClick={handleRecord}
+                              disabled={studioActions.music.transport.record.isPending}
+                            >
+                              {studioActions.music.transport.record.isPending ? (
+                                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              ) : (
+                                <Circle className="w-6 h-6" />
+                              )}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>{isRecording ? 'Stop Recording' : 'Start Recording'}</TooltipContent>
+                        </Tooltip>
 
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="lg"
-                            className="w-16 h-16 rounded-full border-gray-600 hover:border-cyan-400"
-                            onClick={() => setCurrentTime(currentTime + 5000)}
-                          >
-                            <SkipForward className="w-6 h-6" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Forward 5 seconds</TooltipContent>
-                      </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="lg"
+                              className="w-16 h-16 rounded-full border-gray-600 hover:border-cyan-400 hover:bg-cyan-600/10"
+                              onClick={() => setCurrentTime(currentTime + 5000)}
+                            >
+                              <SkipForward className="w-6 h-6" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Forward 5 seconds</TooltipContent>
+                        </Tooltip>
+                      </div>
                     </div>
 
-                    {/* Transport Options */}
-                    <div className="flex justify-center space-x-4">
-                      <Button
-                        variant={loopMode ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setLoopMode(!loopMode)}
-                        className={loopMode ? 'bg-purple-600 hover:bg-purple-700' : ''}
-                      >
-                        <Repeat className="w-4 h-4 mr-1" />
-                        Loop
-                      </Button>
-                      <Button
-                        variant={metronomeEnabled ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setMetronomeEnabled(!metronomeEnabled)}
-                        className={metronomeEnabled ? 'bg-blue-600 hover:bg-blue-700' : ''}
-                      >
-                        <Activity className="w-4 h-4 mr-1" />
-                        Metronome
-                      </Button>
-                      <Button
-                        variant={quantizeEnabled ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setQuantizeEnabled(!quantizeEnabled)}
-                        className={quantizeEnabled ? 'bg-green-600 hover:bg-green-700' : ''}
-                      >
-                        <Target className="w-4 h-4 mr-1" />
-                        Quantize
-                      </Button>
+                    {/* Transport Options Container */}
+                    <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-600/50">
+                      <Label className="text-xs text-center text-gray-300 font-semibold mb-3 block">TRANSPORT OPTIONS</Label>
+                      <div className="flex justify-center space-x-3">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant={loopMode ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => setLoopMode(!loopMode)}
+                              className={`${loopMode ? 'bg-purple-600 hover:bg-purple-700 shadow-lg shadow-purple-500/25' : 'hover:bg-purple-600/10 border-purple-500/50'}`}
+                            >
+                              <Repeat className="w-4 h-4 mr-1" />
+                              Loop
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Enable/Disable Loop Mode</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant={metronomeEnabled ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => setMetronomeEnabled(!metronomeEnabled)}
+                              className={`${metronomeEnabled ? 'bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/25' : 'hover:bg-blue-600/10 border-blue-500/50'}`}
+                            >
+                              <Activity className="w-4 h-4 mr-1" />
+                              Metronome
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Enable/Disable Metronome</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant={quantizeEnabled ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => setQuantizeEnabled(!quantizeEnabled)}
+                              className={`${quantizeEnabled ? 'bg-green-600 hover:bg-green-700 shadow-lg shadow-green-500/25' : 'hover:bg-green-600/10 border-green-500/50'}`}
+                            >
+                              <Target className="w-4 h-4 mr-1" />
+                              Quantize
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Enable/Disable Quantization</TooltipContent>
+                        </Tooltip>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
 
-                {/* BPM & Master Controls */}
-                <Card className={`bg-gradient-to-br ${theme === 'light' ? 'from-gray-50 to-white border-gray-200' : 'from-gray-800/90 to-gray-700/90'} border-${getAccentColor()}-400/30`}>
-                  <CardHeader>
-                    <CardTitle className={`text-${getAccentColor()}-300`}>Master Controls</CardTitle>
+                {/* Tempo & BPM Controls */}
+                <Card className={`bg-gradient-to-br ${theme === 'light' ? 'from-gray-50 to-white border-gray-200' : 'from-gray-800/90 to-gray-700/90'} border-${getAccentColor()}-400/30 relative overflow-hidden`}>
+                  {/* Tempo Container Marker */}
+                  <div className="absolute top-2 left-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-lg">
+                    TEMPO
+                  </div>
+                  <CardHeader className="pt-8">
+                    <CardTitle className={`flex items-center text-${getAccentColor()}-300`}>
+                      <Activity className="w-5 h-5 mr-2" />
+                      Tempo & BPM Control
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="space-y-4">
-                      <div>
-                        <Label className="text-sm font-medium">BPM</Label>
-                        <div className="flex items-center space-x-2 mt-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setBpm(Math.max(60, bpm - 1))}
-                            className="h-8 w-8 p-0"
-                          >
-                            -
-                          </Button>
-                          <Input
-                            type="number"
-                            value={bpm}
-                            onChange={(e) => setBpm(Number(e.target.value))}
-                            className="text-center h-8"
-                            min="60"
-                            max="200"
-                          />
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setBpm(Math.min(200, bpm + 1))}
-                            className="h-8 w-8 p-0"
-                          >
-                            +
-                          </Button>
+                    {/* BPM Display Container */}
+                    <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-600/50">
+                      <Label className="text-xs text-center text-gray-300 font-semibold mb-2 block">BPM DISPLAY</Label>
+                      <div className="text-center">
+                        <div className="text-4xl font-mono font-bold text-white mb-2 bg-gray-800/50 px-6 py-3 rounded border border-gray-600">
+                          {bpm}
                         </div>
+                        <div className="text-sm text-gray-400">BPM</div>
                       </div>
+                    </div>
 
-                      <div>
-                        <Label className="text-sm font-medium flex items-center justify-between">
-                          Master Volume
-                          <span className="text-xs text-gray-400">{masterVolume}%</span>
-                        </Label>
-                        <Slider
-                          value={[masterVolume]}
-                          onValueChange={(value) => setMasterVolume(value[0])}
-                          max={100}
-                          step={1}
-                          className="mt-2"
-                        />
+                    {/* BPM Controls Container */}
+                    <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-600/50">
+                      <Label className="text-xs text-center text-gray-300 font-semibold mb-4 block">BPM CONTROLS</Label>
+                      <div className="flex items-center justify-center space-x-4">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="lg"
+                              className="w-12 h-12 rounded-full border-gray-600 hover:border-purple-400 hover:bg-purple-600/10"
+                              onClick={() => setBpm(Math.max(60, bpm - 1))}
+                            >
+                              <Minus className="w-5 h-5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Decrease BPM by 1</TooltipContent>
+                        </Tooltip>
+
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="lg"
+                              className="w-12 h-12 rounded-full border-gray-600 hover:border-purple-400 hover:bg-purple-600/10"
+                              onClick={() => setBpm(Math.max(60, bpm - 5))}
+                            >
+                              <Minus className="w-5 h-5" />
+                              <Minus className="w-3 h-3 -ml-1" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Decrease BPM by 5</TooltipContent>
+                        </Tooltip>
+
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="lg"
+                              className="w-12 h-12 rounded-full border-gray-600 hover:border-purple-400 hover:bg-purple-600/10"
+                              onClick={() => setBpm(120)}
+                            >
+                              <RotateCcw className="w-5 h-5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Reset to 120 BPM</TooltipContent>
+                        </Tooltip>
+
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="lg"
+                              className="w-12 h-12 rounded-full border-gray-600 hover:border-purple-400 hover:bg-purple-600/10"
+                              onClick={() => setBpm(Math.min(200, bpm + 5))}
+                            >
+                              <Plus className="w-5 h-5" />
+                              <Plus className="w-3 h-3 -ml-1" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Increase BPM by 5</TooltipContent>
+                        </Tooltip>
+
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="lg"
+                              className="w-12 h-12 rounded-full border-gray-600 hover:border-purple-400 hover:bg-purple-600/10"
+                              onClick={() => setBpm(Math.min(200, bpm + 1))}
+                            >
+                              <Plus className="w-5 h-5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Increase BPM by 1</TooltipContent>
+                        </Tooltip>
+                      </div>
+                    </div>
+
+                    {/* Tempo Tap Container */}
+                    <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-600/50">
+                      <Label className="text-xs text-center text-gray-300 font-semibold mb-4 block">TEMPO TAP</Label>
+                      <div className="flex justify-center">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="lg"
+                              className="w-16 h-16 rounded-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 shadow-lg shadow-purple-500/25"
+                              onClick={handleTempoTap}
+                            >
+                              <Activity className="w-6 h-6" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Tap to set tempo</TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <div className="text-center mt-2 text-xs text-gray-400">
+                        Tap rhythmically to set BPM
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Automation & Recording */}
+                <Card className={`bg-gradient-to-br ${theme === 'light' ? 'from-gray-50 to-white border-gray-200' : 'from-gray-800/90 to-gray-700/90'} border-${getAccentColor()}-400/30 relative overflow-hidden`}>
+                  {/* Automation Container Marker */}
+                  <div className="absolute top-2 left-2 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-lg">
+                    AUTOMATION
+                  </div>
+                  <CardHeader className="pt-8">
+                    <CardTitle className={`flex items-center text-${getAccentColor()}-300`}>
+                      <Zap className="w-5 h-5 mr-2" />
+                      Automation & Recording
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Recording Status Container */}
+                    <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-600/50">
+                      <Label className="text-xs text-center text-gray-300 font-semibold mb-3 block">RECORDING STATUS</Label>
+                      <div className="flex items-center justify-center space-x-4">
+                        <div className={`w-4 h-4 rounded-full ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-gray-600'}`}></div>
+                        <span className={`text-sm font-medium ${isRecording ? 'text-red-400' : 'text-gray-400'}`}>
+                          {isRecording ? 'RECORDING' : 'STANDBY'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Automation Controls Container */}
+                    <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-600/50">
+                      <Label className="text-xs text-center text-gray-300 font-semibold mb-4 block">AUTOMATION CONTROLS</Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant={automationEnabled ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => setAutomationEnabled(!automationEnabled)}
+                              className={`${automationEnabled ? 'bg-orange-600 hover:bg-orange-700 shadow-lg shadow-orange-500/25' : 'hover:bg-orange-600/10 border-orange-500/50'}`}
+                            >
+                              <Zap className="w-4 h-4 mr-1" />
+                              Auto
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Enable/Disable Automation</TooltipContent>
+                        </Tooltip>
+
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant={punchInEnabled ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => setPunchInEnabled(!punchInEnabled)}
+                              className={`${punchInEnabled ? 'bg-red-600 hover:bg-red-700 shadow-lg shadow-red-500/25' : 'hover:bg-red-600/10 border-red-500/50'}`}
+                            >
+                              <Circle className="w-4 h-4 mr-1" />
+                              Punch
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Enable/Disable Punch In/Out</TooltipContent>
+                        </Tooltip>
+
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant={countInEnabled ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => setCountInEnabled(!countInEnabled)}
+                              className={`${countInEnabled ? 'bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/25' : 'hover:bg-blue-600/10 border-blue-500/50'}`}
+                            >
+                              <Activity className="w-4 h-4 mr-1" />
+                              Count
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Enable/Disable Count In</TooltipContent>
+                        </Tooltip>
+
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant={preRollEnabled ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => setPreRollEnabled(!preRollEnabled)}
+                              className={`${preRollEnabled ? 'bg-green-600 hover:bg-green-700 shadow-lg shadow-green-500/25' : 'hover:bg-green-600/10 border-green-500/50'}`}
+                            >
+                              <SkipBack className="w-4 h-4 mr-1" />
+                              Pre-Roll
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Enable/Disable Pre-Roll</TooltipContent>
+                        </Tooltip>
+                      </div>
+                    </div>
+
+                    {/* Session Info Container */}
+                    <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-600/50">
+                      <Label className="text-xs text-center text-gray-300 font-semibold mb-3 block">SESSION INFO</Label>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Duration:</span>
+                          <span className="text-white font-mono">
+                            {Math.floor(currentTime / 60)}:{(currentTime % 60).toFixed(2).padStart(5, '0')}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Tracks:</span>
+                          <span className="text-white">{tracks.length}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Status:</span>
+                          <span className={`font-medium ${isPlaying ? 'text-green-400' : 'text-gray-400'}`}>
+                            {isPlaying ? 'Playing' : 'Stopped'}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
@@ -706,39 +946,68 @@ export default function UltimateMusicStudio() {
             <TabsContent value="mixer" className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 {/* Master Section */}
-                <Card className={`bg-gradient-to-br ${theme === 'light' ? 'from-gray-50 to-white border-gray-200' : 'from-gray-800/90 to-gray-700/90'} border-${getAccentColor()}-400/30`}>
-                  <CardHeader>
-                    <CardTitle className={`text-${getAccentColor()}-300 text-center`}>Master</CardTitle>
+                <Card className={`bg-gradient-to-br ${theme === 'light' ? 'from-gray-50 to-white border-gray-200' : 'from-gray-800/90 to-gray-700/90'} border-${getAccentColor()}-400/30 relative overflow-hidden`}>
+                  {/* Container Marker */}
+                  <div className="absolute top-2 left-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-lg">
+                    MASTER BUS
+                  </div>
+                  <CardHeader className="pt-8">
+                    <CardTitle className={`text-${getAccentColor()}-300 text-center flex items-center justify-center`}>
+                      <Speaker className="w-5 h-5 mr-2" />
+                      Master Output
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="text-center">
-                      <div className="w-16 h-32 mx-auto bg-gray-700 rounded-lg relative overflow-hidden">
-                        <div
-                          className="absolute bottom-0 w-full bg-gradient-to-t from-green-500 to-yellow-500 to-red-500 transition-all duration-300"
-                          style={{ height: `${masterVolume}%` }}
-                        ></div>
-                        <div className="absolute inset-0 flex items-end justify-center pb-2">
-                          <span className="text-xs font-mono text-white">{masterVolume}</span>
-                        </div>
+                    {/* Volume Control Container */}
+                    <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-600/50">
+                      <div className="text-center mb-2">
+                        <Label className="text-xs text-gray-300 font-semibold">MASTER VOLUME</Label>
                       </div>
-                      <Slider
-                        value={[masterVolume]}
-                        onValueChange={(value) => setMasterVolume(value[0])}
-                        max={100}
-                        step={1}
-                        orientation="vertical"
-                        className="h-32 mt-2"
-                      />
+                      <div className="text-center">
+                        <div className="w-16 h-32 mx-auto bg-gray-700 rounded-lg relative overflow-hidden border-2 border-gray-600">
+                          <div
+                            className="absolute bottom-0 w-full bg-gradient-to-t from-green-500 to-yellow-500 to-red-500 transition-all duration-300 rounded-b-md"
+                            style={{ height: `${masterVolume}%` }}
+                          ></div>
+                          <div className="absolute inset-0 flex items-end justify-center pb-2">
+                            <span className="text-xs font-mono text-white font-bold drop-shadow-lg">{masterVolume}</span>
+                          </div>
+                          {/* Volume Markers */}
+                          <div className="absolute top-2 left-1 text-xs text-gray-400 font-mono">100</div>
+                          <div className="absolute top-1/2 left-1 text-xs text-gray-400 font-mono">50</div>
+                          <div className="absolute bottom-2 left-1 text-xs text-gray-400 font-mono">0</div>
+                        </div>
+                        <Slider
+                          value={[masterVolume]}
+                          onValueChange={(value) => setMasterVolume(value[0])}
+                          max={100}
+                          step={1}
+                          orientation="vertical"
+                          className="h-32 mt-2"
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label className="text-xs text-center">Master Bus</Label>
-                      <div className="flex justify-center space-x-1">
-                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                          <Volume1 className="w-3 h-3" />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                          <VolumeX className="w-3 h-3" />
-                        </Button>
+
+                    {/* Master Controls Container */}
+                    <div className="bg-gray-900/50 p-3 rounded-lg border border-gray-600/50">
+                      <Label className="text-xs text-center text-gray-300 font-semibold mb-2 block">MASTER CONTROLS</Label>
+                      <div className="flex justify-center space-x-2">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-green-600/20 border border-gray-600">
+                              <Volume1 className="w-4 h-4 text-green-400" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Master Volume</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-red-600/20 border border-gray-600">
+                              <VolumeX className="w-4 h-4 text-red-400" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Mute Master</TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
                   </CardContent>
@@ -746,105 +1015,146 @@ export default function UltimateMusicStudio() {
 
                 {/* Track Channels */}
                 {tracks.slice(0, 3).map((track, index) => (
-                  <Card key={track.id} className={`bg-gradient-to-br ${theme === 'light' ? 'from-gray-50 to-white border-gray-200' : 'from-gray-800/90 to-gray-700/90'} border-${getAccentColor()}-400/30`}>
-                    <CardHeader className="pb-2">
-                      <CardTitle className={`text-${getAccentColor()}-300 text-sm text-center truncate`} style={{ color: track.color }}>
+                  <Card key={track.id} className={`bg-gradient-to-br ${theme === 'light' ? 'from-gray-50 to-white border-gray-200' : 'from-gray-800/90 to-gray-700/90'} border-${getAccentColor()}-400/30 relative overflow-hidden`}>
+                    {/* Track Container Marker */}
+                    <div className="absolute top-2 left-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-lg">
+                      TRACK {index + 1}
+                    </div>
+                    <CardHeader className="pt-8 pb-2">
+                      <CardTitle className={`text-${getAccentColor()}-300 text-sm text-center truncate flex items-center justify-center`}>
+                        <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: track.color }}></div>
                         {track.name}
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      {/* Volume Fader */}
-                      <div className="text-center">
-                        <div className="w-12 h-24 mx-auto bg-gray-700 rounded relative overflow-hidden">
-                          <div
-                            className="absolute bottom-0 w-full bg-gradient-to-t from-green-500 to-yellow-500 transition-all duration-300"
-                            style={{ height: `${track.volume}%` }}
-                          ></div>
-                          <div className="absolute inset-0 flex items-end justify-center pb-1">
-                            <span className="text-xs font-mono text-white">{track.volume}</span>
+                      {/* Volume Control Container */}
+                      <div className="bg-gray-900/50 p-3 rounded-lg border border-gray-600/50">
+                        <Label className="text-xs text-center text-gray-300 font-semibold mb-2 block">VOLUME</Label>
+                        <div className="text-center">
+                          <div className="w-12 h-24 mx-auto bg-gray-700 rounded relative overflow-hidden border-2 border-gray-600">
+                            <div
+                              className="absolute bottom-0 w-full bg-gradient-to-t from-green-500 to-yellow-500 transition-all duration-300 rounded-b"
+                              style={{ height: `${track.volume}%` }}
+                            ></div>
+                            <div className="absolute inset-0 flex items-end justify-center pb-1">
+                              <span className="text-xs font-mono text-white font-bold">{track.volume}</span>
+                            </div>
+                            {/* Volume Scale Markers */}
+                            <div className="absolute top-1 left-0.5 text-xs text-gray-400 font-mono">100</div>
+                            <div className="absolute top-1/2 left-0.5 text-xs text-gray-400 font-mono">50</div>
+                            <div className="absolute bottom-1 left-0.5 text-xs text-gray-400 font-mono">0</div>
+                          </div>
+                          <Slider
+                            value={[track.volume]}
+                            onValueChange={(value) => {
+                              const newTracks = [...tracks];
+                              newTracks[index].volume = value[0];
+                              setTracks(newTracks);
+                            }}
+                            max={100}
+                            step={1}
+                            orientation="vertical"
+                            className="h-24 mt-1"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Pan Control Container */}
+                      <div className="bg-gray-900/50 p-3 rounded-lg border border-gray-600/50">
+                        <Label className="text-xs text-center text-gray-300 font-semibold mb-2 block">PAN</Label>
+                        <div className="space-y-1">
+                          <Slider
+                            value={[track.pan]}
+                            onValueChange={(value) => {
+                              const newTracks = [...tracks];
+                              newTracks[index].pan = value[0];
+                              setTracks(newTracks);
+                            }}
+                            min={-50}
+                            max={50}
+                            step={1}
+                            className="w-full"
+                          />
+                          <div className="flex justify-between text-xs text-gray-400">
+                            <span>L50</span>
+                            <span className="font-bold text-cyan-400">
+                              {track.pan > 0 ? `R${track.pan}` : track.pan < 0 ? `L${Math.abs(track.pan)}` : 'C'}
+                            </span>
+                            <span>R50</span>
                           </div>
                         </div>
-                        <Slider
-                          value={[track.volume]}
-                          onValueChange={(value) => {
-                            const newTracks = [...tracks];
-                            newTracks[index].volume = value[0];
-                            setTracks(newTracks);
-                          }}
-                          max={100}
-                          step={1}
-                          orientation="vertical"
-                          className="h-24 mt-1"
-                        />
                       </div>
 
-                      {/* Pan Control */}
-                      <div className="space-y-1">
-                        <Label className="text-xs text-center">Pan</Label>
-                        <Slider
-                          value={[track.pan]}
-                          onValueChange={(value) => {
-                            const newTracks = [...tracks];
-                            newTracks[index].pan = value[0];
-                            setTracks(newTracks);
-                          }}
-                          min={-50}
-                          max={50}
-                          step={1}
-                          className="w-full"
-                        />
-                        <div className="text-xs text-center text-gray-400">{track.pan > 0 ? `R${track.pan}` : track.pan < 0 ? `L${Math.abs(track.pan)}` : 'C'}</div>
+                      {/* Channel Controls Container */}
+                      <div className="bg-gray-900/50 p-3 rounded-lg border border-gray-600/50">
+                        <Label className="text-xs text-center text-gray-300 font-semibold mb-2 block">CONTROLS</Label>
+                        <div className="flex justify-center space-x-2">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant={track.muted ? "destructive" : "ghost"}
+                                size="sm"
+                                className={`h-8 w-8 p-0 border ${track.muted ? 'border-red-500 bg-red-600/20' : 'border-gray-600 hover:border-red-400'}`}
+                                onClick={() => {
+                                  const newTracks = [...tracks];
+                                  newTracks[index].muted = !newTracks[index].muted;
+                                  setTracks(newTracks);
+                                }}
+                              >
+                                <VolumeX className="w-4 h-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Mute Track</TooltipContent>
+                          </Tooltip>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant={track.solo ? "default" : "ghost"}
+                                size="sm"
+                                className={`h-8 w-8 p-0 border ${track.solo ? 'border-yellow-500 bg-yellow-600/20' : 'border-gray-600 hover:border-yellow-400'}`}
+                                onClick={() => {
+                                  const newTracks = [...tracks];
+                                  newTracks[index].solo = !newTracks[index].solo;
+                                  setTracks(newTracks);
+                                }}
+                              >
+                                <Headphones className="w-4 h-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Solo Track</TooltipContent>
+                          </Tooltip>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant={track.armed ? "destructive" : "ghost"}
+                                size="sm"
+                                className={`h-8 w-8 p-0 border ${track.armed ? 'border-red-500 bg-red-600/20' : 'border-gray-600 hover:border-red-400'}`}
+                                onClick={() => {
+                                  const newTracks = [...tracks];
+                                  newTracks[index].armed = !newTracks[index].armed;
+                                  setTracks(newTracks);
+                                }}
+                              >
+                                <Circle className="w-4 h-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Arm for Recording</TooltipContent>
+                          </Tooltip>
+                        </div>
                       </div>
 
-                      {/* Channel Controls */}
-                      <div className="flex justify-center space-x-1">
-                        <Button
-                          variant={track.muted ? "destructive" : "ghost"}
-                          size="sm"
-                          className="h-6 w-6 p-0"
-                          onClick={() => {
-                            const newTracks = [...tracks];
-                            newTracks[index].muted = !newTracks[index].muted;
-                            setTracks(newTracks);
-                          }}
-                        >
-                          <VolumeX className="w-3 h-3" />
-                        </Button>
-                        <Button
-                          variant={track.solo ? "default" : "ghost"}
-                          size="sm"
-                          className="h-6 w-6 p-0"
-                          onClick={() => {
-                            const newTracks = [...tracks];
-                            newTracks[index].solo = !newTracks[index].solo;
-                            setTracks(newTracks);
-                          }}
-                        >
-                          <Headphones className="w-3 h-3" />
-                        </Button>
-                        <Button
-                          variant={track.armed ? "destructive" : "ghost"}
-                          size="sm"
-                          className="h-6 w-6 p-0"
-                          onClick={() => {
-                            const newTracks = [...tracks];
-                            newTracks[index].armed = !newTracks[index].armed;
-                            setTracks(newTracks);
-                          }}
-                        >
-                          <Circle className="w-3 h-3" />
-                        </Button>
-                      </div>
-
-                      {/* Mini Waveform */}
-                      <div className="h-8 bg-gray-800 rounded flex items-end justify-center space-x-px">
-                        {track.waveform.map((height, i) => (
-                          <div
-                            key={i}
-                            className="bg-cyan-400 w-1 rounded-sm"
-                            style={{ height: `${height * 100}%` }}
-                          ></div>
-                        ))}
+                      {/* Mini Waveform Container */}
+                      <div className="bg-gray-900/50 p-2 rounded-lg border border-gray-600/50">
+                        <Label className="text-xs text-center text-gray-300 font-semibold mb-1 block">WAVEFORM</Label>
+                        <div className="h-8 bg-gray-800 rounded flex items-end justify-center space-x-px border border-gray-700">
+                          {track.waveform.map((height, i) => (
+                            <div
+                              key={i}
+                              className="bg-cyan-400 w-1 rounded-sm transition-all duration-300 hover:bg-cyan-300"
+                              style={{ height: `${height * 100}%` }}
+                            ></div>
+                          ))}
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -1188,11 +1498,11 @@ export default function UltimateMusicStudio() {
                       <div className="flex-1">
                         <div className="font-medium text-sm">{effect.name}</div>
                         <div className="text-xs text-gray-400">
-                          {effect.id === 'reverb' && `Wet: ${(effect.wet * 100).toFixed(0)}%`}
-                          {effect.id === 'delay' && `Time: ${(effect.time * 1000).toFixed(0)}ms`}
-                          {effect.id === 'chorus' && `Rate: ${(effect.rate * 100).toFixed(0)}Hz`}
-                          {effect.id === 'compressor' && `Ratio: ${effect.ratio}:1`}
-                          {effect.id === 'eq' && `${effect.bands.length} bands`}
+                          {effect.id === 'reverb' && effect.wet !== undefined && `Wet: ${(effect.wet * 100).toFixed(0)}%`}
+                          {effect.id === 'delay' && effect.time !== undefined && `Time: ${(effect.time * 1000).toFixed(0)}ms`}
+                          {effect.id === 'chorus' && effect.rate !== undefined && `Rate: ${(effect.rate * 100).toFixed(0)}Hz`}
+                          {effect.id === 'compressor' && effect.ratio !== undefined && `Ratio: ${effect.ratio}:1`}
+                          {effect.id === 'eq' && effect.bands !== undefined && `${effect.bands.length} bands`}
                         </div>
                       </div>
                       <Button variant="ghost" size="sm" className="w-8 h-8 p-0">

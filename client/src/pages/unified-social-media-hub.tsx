@@ -27,22 +27,26 @@ export default function UnifiedSocialMediaHub() {
 
   // API queries
   const { data: platformStats } = useQuery({
-    queryKey: ["/api/social/platform-stats"],
+    queryKey: ["social-platform-stats"],
+    queryFn: () => apiRequest("/api/social/platform-stats"),
     enabled: true
   });
 
   const { data: contentAnalytics } = useQuery({
-    queryKey: ["/api/social/analytics"],
+    queryKey: ["social-analytics"],
+    queryFn: () => apiRequest("/api/social/analytics"),
     enabled: true
   });
 
   const { data: trendsData } = useQuery({
-    queryKey: ["/api/social/trends"],
+    queryKey: ["social-trends"],
+    queryFn: () => apiRequest("/api/social/trends"),
     enabled: true
   });
 
   const { data: aiAgents } = useQuery({
-    queryKey: ["/api/social/ai-agents"],
+    queryKey: ["social-ai-agents"],
+    queryFn: () => apiRequest("/api/social/ai-agents"),
     enabled: true
   });
 

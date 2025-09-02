@@ -12,7 +12,6 @@ import NotFound from "./pages/not-found";
 
 // Core Studios
 import UltimateMusicStudio from "./pages/ultimate-music-studio";
-import CuttingEdgeMusicStudio from "./pages/cutting-edge-music-studio";
 import CuttingEdgeDJStudio from "./pages/cutting-edge-dj-studio";
 import VideoStudio from "./pages/video-studio";
 import VisualStudio from "./pages/visual-studio";
@@ -27,7 +26,6 @@ import NFTMarketplace from "./pages/nft-marketplace";
 // Management Suites
 import CareerManagement from "./pages/career-management";
 import UltimateDJSuite from "./pages/ultimate-dj-suite";
-import SocialMediaManagement from "./pages/social-media-management";
 import EducationManagement from "./pages/education-management";
 import AdminControlCenter from "./pages/admin-control-center";
 
@@ -38,7 +36,6 @@ import GenreRemixer from "./pages/genre-remixer";
 import GenreRemixerStudio from "./pages/genre-remixer-studio";
 import ArtistCollaboration from "./pages/artist-collaboration";
 import ArtistCollaborationStudio from "./pages/artist-collaboration-studio";
-import SocialMediaHub from "./pages/social-media-hub";
 import CollaborativeDemo from "./pages/collaborative-demo";
 import CreativeStudiosHub from "./pages/creative-studios-hub";
 import MonetizationHub from "./pages/monetization-hub";
@@ -80,9 +77,9 @@ function App() {
       <Route path="/content-generator" component={OneClickSocialGenerator} />
       
       {/* Core Studios - Unified */}
-      <Route path="/music-studio" component={CuttingEdgeMusicStudio} />
-      <Route path="/ultimate-music-studio" component={CuttingEdgeMusicStudio} />
-      <Route path="/cutting-edge-music-studio" component={CuttingEdgeMusicStudio} />
+      <Route path="/music-studio" component={UltimateMusicStudio} />
+      <Route path="/ultimate-music-studio" component={UltimateMusicStudio} />
+      <Route path="/cutting-edge-music-studio" component={UltimateMusicStudio} />
       <Route path="/video-studio" component={VideoStudio} />
       <Route path="/visual-studio" component={VisualStudio} />
       <Route path="/collaborative-studio" component={CollaborativeStudio} />

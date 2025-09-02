@@ -9278,7 +9278,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/studio/vr/session', (req, res) => {
     const { environmentId, mode = 'single', participants = 1 } = req.body;
-    res.json({ 
+    res.json({
       sessionId: `vr_${Date.now()}`,
       environmentId,
       mode,
@@ -9291,9 +9291,114 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  app.get('/api/studio/vr/sessions', (req, res) => {
+    const sessions = [
+      {
+        id: 'session_1',
+        title: 'Collaborative Beat Making',
+        participants: 4,
+        duration: '45:32',
+        isRecording: true,
+        quality: '4K',
+        environment: 'music-studio',
+        status: 'active'
+      },
+      {
+        id: 'session_2',
+        title: 'Live Performance Practice',
+        participants: 2,
+        duration: '1:23:15',
+        isRecording: false,
+        quality: '1080p',
+        environment: 'concert-stage',
+        status: 'active'
+      },
+      {
+        id: 'session_3',
+        title: 'VR Music Video Shoot',
+        participants: 6,
+        duration: '2:45:07',
+        isRecording: true,
+        quality: '8K',
+        environment: 'cinema-theater',
+        status: 'recording'
+      }
+    ];
+    res.json({ sessions, total: sessions.length });
+  });
+
+  app.get('/api/studio/vr/devices', (req, res) => {
+    const devices = [
+      {
+        id: 'meta-quest-3',
+        name: 'Meta Quest 3',
+        type: 'headset',
+        connected: true,
+        battery: 87,
+        tracking: true,
+        firmware: 'v1.2.3'
+      },
+      {
+        id: 'left-controller',
+        name: 'Left Controller',
+        type: 'controller',
+        connected: true,
+        battery: 92,
+        tracking: true,
+        firmware: 'v1.1.8'
+      },
+      {
+        id: 'right-controller',
+        name: 'Right Controller',
+        type: 'controller',
+        connected: true,
+        battery: 89,
+        tracking: true,
+        firmware: 'v1.1.8'
+      },
+      {
+        id: 'body-tracker-1',
+        name: 'Body Tracker',
+        type: 'tracker',
+        connected: false,
+        tracking: false,
+        firmware: 'v1.0.5'
+      }
+    ];
+    res.json({ devices, total: devices.length });
+  });
+
+  app.post('/api/studio/vr/session/:sessionId/control', (req, res) => {
+    const { sessionId } = req.params;
+    const { action, quality, recording } = req.body;
+    res.json({
+      sessionId,
+      action,
+      quality,
+      recording,
+      status: 'updated',
+      timestamp: new Date().toISOString()
+    });
+  });
+
+  app.get('/api/studio/vr/stats', (req, res) => {
+    res.json({
+      activeSessions: 3,
+      totalParticipants: 12,
+      averageSessionDuration: '1:24:15',
+      totalRecordingTime: '8:45:22',
+      popularEnvironments: ['music-studio', 'concert-stage', 'art-gallery'],
+      deviceHealth: {
+        headsets: { online: 2, offline: 1 },
+        controllers: { online: 4, offline: 0 },
+        trackers: { online: 1, offline: 3 }
+      }
+    });
+  });
+
   // Crypto Studio APIs
   app.get('/api/studio/crypto/balance', (req, res) => {
-    res.json({ 
+    res.json({
       artistcoin: {
         balance: 15742.85,
         usd_value: 2361.43,
@@ -9305,6 +9410,122 @@ export async function registerRoutes(app: Express): Promise<Server> {
         { type: 'earned', amount: 25.5, source: 'content_view', timestamp: new Date() },
         { type: 'staked', amount: 1000, source: 'staking_pool', timestamp: new Date(Date.now() - 86400000) }
       ]
+    });
+  });
+
+  app.get('/api/studio/crypto/challenges', (req, res) => {
+    const challenges = [
+      {
+        id: 'daily_post',
+        title: 'Daily Content Creator',
+        reward: 50,
+        difficulty: 'easy',
+        progress: 75,
+        timeLeft: '18h 32m',
+        participants: 1247
+      },
+      {
+        id: 'viral_hit',
+        title: 'Viral Sensation',
+        reward: 500,
+        difficulty: 'hard',
+        progress: 30,
+        timeLeft: '2d 14h',
+        participants: 89
+      },
+      {
+        id: 'engagement_master',
+        title: 'Engagement Master',
+        reward: 200,
+        difficulty: 'medium',
+        progress: 60,
+        timeLeft: '1d 8h',
+        participants: 456
+      }
+    ];
+    res.json({ challenges, total: challenges.length });
+  });
+
+  app.get('/api/studio/crypto/achievements', (req, res) => {
+    const achievements = [
+      {
+        id: 'first_post',
+        title: 'First Steps',
+        description: 'Post your first piece of content',
+        reward: 10,
+        unlocked: true,
+        rarity: 'common'
+      },
+      {
+        id: 'viral_artist',
+        title: 'Viral Artist',
+        description: 'Reach 10,000 views on a single post',
+        reward: 100,
+        unlocked: true,
+        rarity: 'rare'
+      },
+      {
+        id: 'community_builder',
+        title: 'Community Builder',
+        description: 'Build a following of 1,000 fans',
+        reward: 250,
+        unlocked: false,
+        rarity: 'epic'
+      }
+    ];
+    res.json({ achievements, total: achievements.length });
+  });
+
+  app.get('/api/studio/crypto/influencers', (req, res) => {
+    const influencers = [
+      {
+        id: 'artist_1',
+        name: 'Luna Beats',
+        platform: 'TikTok',
+        followers: '2.1M',
+        contribution: 'Music Production',
+        reward: 150
+      },
+      {
+        id: 'artist_2',
+        name: 'Visual Flow',
+        platform: 'Instagram',
+        followers: '890K',
+        contribution: 'Video Editing',
+        reward: 120
+      },
+      {
+        id: 'artist_3',
+        name: 'Sound Master',
+        platform: 'YouTube',
+        followers: '1.5M',
+        contribution: 'Audio Engineering',
+        reward: 200
+      }
+    ];
+    res.json({ influencers, total: influencers.length });
+  });
+
+  app.post('/api/studio/crypto/claim-reward', (req, res) => {
+    const { challengeId, achievementId } = req.body;
+    res.json({
+      success: true,
+      reward: 50,
+      newBalance: 15792.85,
+      message: 'Reward claimed successfully!',
+      timestamp: new Date().toISOString()
+    });
+  });
+
+  app.post('/api/studio/crypto/stake', (req, res) => {
+    const { amount } = req.body;
+    res.json({
+      success: true,
+      stakedAmount: amount,
+      newBalance: 15742.85 - amount,
+      rewards: amount * 0.12,
+      unlockDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      timestamp: new Date().toISOString()
     });
   });
 

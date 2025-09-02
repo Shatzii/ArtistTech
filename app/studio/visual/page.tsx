@@ -1,18 +1,41 @@
-import { useState, useEffect, useRef } from "react";
+'use client';
+
+import { useState, useEffect, useRef, useMemo, useCallback, memo, lazy, Suspense } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { 
-  Palette, Brush, Layers, Image, Wand2, Sparkles, 
-  Upload, Download, Save, Undo, Redo, Move, 
-  Circle, Square, Triangle, Type, Pipette, 
-  Zap, Crown, Star, Share, Settings, Eye
+import { Switch } from "@/components/ui/switch";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Palette, Brush, Layers, Image, Wand2, Sparkles,
+  Upload, Download, Save, Undo, Redo, Move,
+  Circle, Square, Triangle, Type, Pipette,
+  Zap, Crown, Star, Share, Settings, Eye,
+  Brain, Rocket, Target, BarChart3, Calendar,
+  Bot, Mic, Hash, Send, RefreshCw,
+  CheckCircle, AlertCircle, Plus, Minus, Search,
+  Grid, Layout, ZoomIn, ZoomOut, Hand,
+  Crop, FlipHorizontal, FlipVertical, RotateCcw,
+  Copy, Trash2, Link, ExternalLink, ThumbsUp,
+  Bookmark, Bell, User, Users, Shield,
+  Palette as PaletteIcon, Music, Radio, Headphones,
+  Speaker, Activity, TrendingUp, DollarSign,
+  Heart, MessageCircle, Edit, FileImage,
+  Scissors, Maximize, Minimize, Monitor,
+  Smartphone, Tablet, Laptop, Wifi, Battery,
+  Signal, Sun, Moon, Volume2, Camera, Film,
+  Play, Pause, SkipForward, SkipBack, RotateCw,
+  MousePointer, Eraser, PenTool, Shapes
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function VisualStudio() {
   const [activeTab, setActiveTab] = useState("canvas");
@@ -22,6 +45,14 @@ export default function VisualStudio() {
   const [selectedColor, setSelectedColor] = useState("#3b82f6");
   const [projectTitle, setProjectTitle] = useState("Untitled Artwork");
   const [isDrawing, setIsDrawing] = useState(false);
+  const [selectedTheme, setSelectedTheme] = useState("dark");
+  const [autoSave, setAutoSave] = useState(true);
+  const [realTimePreview, setRealTimePreview] = useState(true);
+  const [aiEnhancement, setAiEnhancement] = useState(true);
+  const [collaborationMode, setCollaborationMode] = useState(false);
+  const [zoom, setZoom] = useState([100]);
+  const [canvasWidth, setCanvasWidth] = useState(1920);
+  const [canvasHeight, setCanvasHeight] = useState(1080);
   const [layers, setLayers] = useState([
     { id: 1, name: "Background", visible: true, opacity: 100 },
     { id: 2, name: "Sketch", visible: true, opacity: 80 },
@@ -41,16 +72,45 @@ export default function VisualStudio() {
   });
 
   const enhanceMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const response = await fetch('/api/studio/visual/ai-enhance', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      return response.json();
-    },
+    mutationFn: (data: any) => apiRequest("/api/studio/visual/ai-enhance", "POST", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/studio/visual/projects"] });
+    }
+  });
+
+  const { data: assetsData } = useQuery({
+    queryKey: ["/api/studio/visual/assets"],
+    enabled: true
+  });
+
+  const { data: aiSuggestions } = useQuery({
+    queryKey: ["/api/studio/visual/ai-suggestions"],
+    enabled: aiEnhancement
+  });
+
+  const { data: collaborationData } = useQuery({
+    queryKey: ["/api/studio/visual/collaboration"],
+    enabled: collaborationMode
+  });
+
+  const saveProjectMutation = useMutation({
+    mutationFn: (data: any) => apiRequest("/api/studio/visual/save", "POST", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/studio/visual/projects"] });
+    }
+  });
+
+  const applyFilterMutation = useMutation({
+    mutationFn: (data: any) => apiRequest("/api/studio/visual/apply-filter", "POST", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/studio/visual/assets"] });
+    }
+  });
+
+  const generateArtMutation = useMutation({
+    mutationFn: (data: any) => apiRequest("/api/studio/visual/generate", "POST", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/studio/visual/ai-suggestions"] });
     }
   });
 
@@ -110,21 +170,21 @@ export default function VisualStudio() {
     }
   }, []);
 
-  const handleToolSelect = (toolId: string) => {
+  const handleToolSelect = useCallback((toolId: string) => {
     setSelectedTool(toolId);
-  };
+  }, []);
 
-  const handleColorSelect = (color: string) => {
+  const handleColorSelect = useCallback((color: string) => {
     setSelectedColor(color);
-  };
+  }, []);
 
-  const handleLayerToggle = (layerId: number) => {
+  const handleLayerToggle = useCallback((layerId: number) => {
     setLayers(layers.map(layer => 
       layer.id === layerId ? { ...layer, visible: !layer.visible } : layer
     ));
-  };
+  }, [layers]);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     if (canvasRef.current) {
       const dataURL = canvasRef.current.toDataURL();
       
@@ -153,9 +213,9 @@ export default function VisualStudio() {
       link.href = dataURL;
       link.click();
     }
-  };
+  }, [projectTitle, layers, queryClient]);
 
-  const handleAIEnhance = async (featureId: string) => {
+  const handleAIEnhance = useCallback(async (featureId: string) => {
     try {
       const response = await enhanceMutation.mutateAsync({
         imageId: projectTitle,
@@ -166,25 +226,53 @@ export default function VisualStudio() {
     } catch (error) {
       console.error("Error enhancing image:", error);
     }
-  };
+  }, [projectTitle, enhanceMutation]);
 
-  const handleUndo = () => {
+  const handleUndo = useCallback(() => {
     if (historyIndex > 0) {
       setHistoryIndex(historyIndex - 1);
       // Restore canvas state
     }
-  };
+  }, [historyIndex]);
 
-  const handleRedo = () => {
+  const handleRedo = useCallback(() => {
     if (historyIndex < history.length - 1) {
       setHistoryIndex(historyIndex + 1);
       // Restore canvas state
     }
-  };
+  }, [historyIndex, history.length]);
 
-  const handleAIProcess = (featureId: string) => {
+  const handleAIProcess = useCallback((featureId: string) => {
     console.log("Processing AI feature:", featureId);
-  };
+  }, []);
+
+  // Memoized expensive computations
+  const visibleLayers = useMemo(() => {
+    return layers.filter(layer => layer.visible);
+  }, [layers]);
+
+  const canvasDimensions = useMemo(() => {
+    return {
+      width: canvasWidth,
+      height: canvasHeight,
+      aspectRatio: canvasWidth / canvasHeight,
+      area: canvasWidth * canvasHeight
+    };
+  }, [canvasWidth, canvasHeight]);
+
+  const activeFilters = useMemo(() => {
+    return filters.filter(filter => filter.value !== 0);
+  }, [filters]);
+
+  const toolConfig = useMemo(() => {
+    return {
+      selectedTool,
+      brushSize: brushSize[0],
+      opacity: opacity[0],
+      selectedColor,
+      zoom: zoom[0]
+    };
+  }, [selectedTool, brushSize, opacity, selectedColor, zoom]);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     setIsDrawing(true);

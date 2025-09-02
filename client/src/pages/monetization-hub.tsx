@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DollarSign, TrendingUp, Users, Zap, Star, Trophy, Target, Gift } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function MonetizationHub() {
   const [activeTab, setActiveTab] = useState("artistcoin");
@@ -16,12 +17,14 @@ export default function MonetizationHub() {
   const [fanCount, setFanCount] = useState(24589);
 
   const { data: revenueStats } = useQuery({
-    queryKey: ["/api/monetization/revenue-stats"],
+    queryKey: ["monetization-revenue"],
+    queryFn: () => apiRequest("/api/monetization/revenue-stats"),
     enabled: true
   });
 
   const { data: fanEngagement } = useQuery({
-    queryKey: ["/api/monetization/fan-engagement"],
+    queryKey: ["monetization-fan-engagement"],
+    queryFn: () => apiRequest("/api/monetization/fan-engagement"),
     enabled: true
   });
 
