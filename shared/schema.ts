@@ -27,7 +27,12 @@ export const sessions = pgTable(
 export const users = pgTable("users", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   email: varchar("email", { length: 255 }).unique().notNull(),
-  password: varchar("password", { length: 255 }).notNull(),
+  username: varchar("username", { length: 100 }).unique().notNull(),
+  passwordHash: varchar("password_hash", { length: 255 }).notNull(),
+  role: varchar("role", { length: 50 }).notNull().default('user'), // user, admin, enterprise
+  mfaEnabled: boolean("mfa_enabled").default(false),
+  mfaSecret: varchar("mfa_secret", { length: 255 }),
+  lastLogin: timestamp("last_login"),
   name: varchar("name", { length: 255 }).notNull(),
   userType: varchar("user_type", { length: 50 }).notNull().default('student'),
   subscriptionTier: varchar("subscription_tier", { length: 50 }).notNull().default('free'),

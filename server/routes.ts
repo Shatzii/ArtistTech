@@ -50,6 +50,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { nanoid } from "nanoid";
+import authRoutes from "./auth-routes";
 
 // Configure multer for file uploads
 const uploadDir = path.join(process.cwd(), 'uploads');
@@ -8912,6 +8913,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api/ai-career', aiCareerRoutes);
   app.use('/api/artistcoin', artistcoinRoutes);
   app.use('/api/genre-remixer', genreRemixerRoutes);
+  app.use('/api/auth', authRoutes);
 
   // Voice Control API Routes
   app.get('/api/voice/commands', async (req, res) => {

@@ -2,6 +2,29 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { initializeCollaborativeEngine } from "./collaborative-engine";
 import { setupVite, serveStatic, log } from "./vite";
+import {
+  requestLogger,
+  errorLogger,
+  createHealthCheck,
+  createMetricsEndpoint,
+  createAlertsEndpoint,
+  logger
+} from "./monitoring";
+import { createAPIDocumentationRoutes, createV1APIRoutes } from "./api-routes";
+import {
+  securityHeaders,
+  secureCors,
+  validateInput,
+  rateLimit,
+  authenticateToken,
+  requireRole,
+  auditLog,
+  gdprCompliance,
+  secureErrorHandler,
+  requestSizeLimit
+} from "./middleware";
+import { performanceOptimization, performanceMonitor } from "./performance";
+import { DatabaseOptimizer, databaseOptimizationMiddleware } from "./database-optimization";
 
 // Initialize all advanced AI engines
 import { aiAutoMixingEngine } from "./ai-auto-mixing-engine";
@@ -24,6 +47,13 @@ import "./database-migration-fix";
 
 const app = express();
 
+// Security middleware (applied first)
+app.use(securityHeaders);
+app.use(secureCors(['http://localhost:3000', 'https://artist-tech.com']));
+app.use(requestSizeLimit('10mb'));
+app.use(validateInput);
+app.use(rateLimit(1000, 15 * 60 * 1000)); // 1000 requests per 15 minutes
+
 // Configure CORS for development
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -39,6 +69,10 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Add monitoring middleware
+app.use(requestLogger);
+app.use(performanceOptimization());
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -72,6 +106,40 @@ app.use((req, res, next) => {
 
 (async () => {
   const server = await registerRoutes(app);
+
+  // Add API documentation routes
+  app.use('/api/docs', createAPIDocumentationRoutes());
+
+  // Add versioned API routes
+  app.use('/api/v1', createV1APIRoutes());
+
+  // Add monitoring endpoints
+  app.get('/api/health', createHealthCheck(null)); // TODO: Pass database connection
+  app.get('/api/metrics', createMetricsEndpoint());
+  app.get('/api/alerts', createAlertsEndpoint());
+
+  // Add performance monitoring endpoints
+  app.get('/api/performance', (req, res) => {
+    const report = performanceMonitor.getPerformanceReport();
+    res.json(report);
+  });
+
+  app.get('/api/performance/cache', (req, res) => {
+    const cacheStats = performanceMonitor.getCacheStats();
+    res.json(cacheStats);
+  });
+
+  // Protected routes examples
+  app.get('/api/user/profile', authenticateToken, gdprCompliance, auditLog('VIEW_PROFILE', 'user'), (req: any, res: any) => {
+    res.json({ user: req.user });
+  });
+
+  app.get('/api/admin/users', authenticateToken, requireRole('admin'), auditLog('LIST_USERS', 'admin'), (req: any, res: any) => {
+    res.json({ message: 'Admin access granted' });
+  });
+
+  app.use(errorLogger);
+  app.use(secureErrorHandler);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
