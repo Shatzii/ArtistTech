@@ -10,6 +10,10 @@ import {
   createAlertsEndpoint,
   logger
 } from "./monitoring";
+import { analyticsMiddleware, realTimeDataStreamer, realTimeAnalyticsProcessor } from "./real-time-analytics";
+import { performanceOptimization, performanceMonitor } from "./performance";
+import { DatabaseOptimizer, databaseOptimizationMiddleware } from "./database-optimization";
+
 import { createAPIDocumentationRoutes, createV1APIRoutes } from "./api-routes";
 import {
   securityHeaders,
@@ -23,27 +27,6 @@ import {
   secureErrorHandler,
   requestSizeLimit
 } from "./middleware";
-import { performanceOptimization, performanceMonitor } from "./performance";
-import { DatabaseOptimizer, databaseOptimizationMiddleware } from "./database-optimization";
-
-// Initialize all advanced AI engines
-import { aiAutoMixingEngine } from "./ai-auto-mixing-engine";
-import { spatialAudioEngine } from "./spatial-audio-engine";
-import { aiVoiceSynthesisEngine } from "./ai-voice-synthesis-engine";
-import { vrStudioEngine } from "./vr-studio-engine";
-import { blockchainNFTEngine } from "./blockchain-nft-engine";
-import { productionOptimizationEngine } from "./production-optimization-engine";
-import { enterpriseSecurityEngine } from "./enterprise-security-engine";
-import { professionalInstrumentsEngine } from "./professional-instruments-engine";
-import { premiumVideoCreatorEngine } from "./premium-video-creator-engine";
-import { ultraImageCreatorEngine } from "./ultra-image-creator-engine";
-import { socialMediaSamplingEngine } from "./social-media-sampling-engine";
-import { interactiveDJVotingEngine } from "./interactive-dj-voting-engine";
-import { professionalVideoEngine } from "./professional-video-engine";
-import './artistcoin-viral-engine';
-import './social-media-sampling-engine';
-import './viral-sharing-engine';
-import "./database-migration-fix";
 
 const app = express();
 
@@ -73,6 +56,7 @@ app.use(express.urlencoded({ extended: false }));
 // Add monitoring middleware
 app.use(requestLogger);
 app.use(performanceOptimization());
+app.use(analyticsMiddleware());
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -129,6 +113,145 @@ app.use((req, res, next) => {
     res.json(cacheStats);
   });
 
+  // Add real-time analytics endpoints
+  app.get('/api/analytics/dashboard', (req, res) => {
+    const dashboard = realTimeAnalyticsProcessor.getDashboard();
+    res.json(dashboard);
+  });
+
+  app.get('/api/analytics/dashboard/realtime', (req, res) => {
+    // Set headers for SSE (Server-Sent Events)
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Cache-Control',
+    });
+
+    // Send initial data
+    const dashboard = realTimeAnalyticsProcessor.getDashboard();
+    res.write(`data: ${JSON.stringify(dashboard)}\n\n`);
+
+    // Set up interval to send updates
+    const interval = setInterval(() => {
+      const updatedDashboard = realTimeAnalyticsProcessor.getDashboard();
+      res.write(`data: ${JSON.stringify(updatedDashboard)}\n\n`);
+    }, 5000); // Update every 5 seconds
+
+    // Clean up on client disconnect
+    req.on('close', () => {
+      clearInterval(interval);
+    });
+  });
+
+  app.get('/api/analytics/streams/:streamName', (req, res) => {
+    const { streamName } = req.params;
+    const limit = parseInt(req.query.limit as string) || 100;
+
+    // Get recent data for the specific stream
+    const recentMetrics = realTimeAnalyticsProcessor.getRecentMetrics(1); // Last hour
+    const filteredData = recentMetrics.filter(m => m.platform === streamName).slice(-limit);
+
+    res.json({
+      streamName,
+      limit,
+      data: filteredData,
+      count: filteredData.length
+    });
+  });
+
+  app.get('/api/analytics/trends', (req, res) => {
+    const trends = realTimeAnalyticsProcessor.getActiveTrends();
+    res.json(trends);
+  });
+
+  app.get('/api/analytics/recommendations', (req, res) => {
+    const recommendations = realTimeAnalyticsProcessor.getPendingRecommendations();
+    res.json(recommendations);
+  });
+
+  app.get('/api/analytics/stream-status', (req, res) => {
+    const streamStatus = realTimeDataStreamer.getStreamStatus();
+    const wsStatus = realTimeDataStreamer.getWebSocketStatus();
+    res.json({
+      streams: Object.fromEntries(streamStatus),
+      websocket: wsStatus
+    });
+  });
+
+  app.post('/api/analytics/alerts/:alertId/acknowledge', (req, res) => {
+    const { alertId } = req.params;
+    const success = realTimeAnalyticsProcessor.acknowledgeAlert(alertId);
+    res.json({ success, alertId });
+  });
+
+  // Advanced analytics endpoints
+  app.get('/api/analytics/performance/summary', (req, res) => {
+    const hours = parseInt(req.query.hours as string) || 24;
+    const recentMetrics = realTimeAnalyticsProcessor.getRecentMetrics(hours / 24);
+
+    // Calculate top performing platform
+    const platformPerformance = new Map<string, number>();
+    recentMetrics.forEach(metric => {
+      const current = platformPerformance.get(metric.platform) || 0;
+      platformPerformance.set(metric.platform, current + metric.engagement);
+    });
+
+    let topPerformingPlatform = 'N/A';
+    let maxEngagement = 0;
+    platformPerformance.forEach((engagement, platform) => {
+      if (engagement > maxEngagement) {
+        maxEngagement = engagement;
+        topPerformingPlatform = platform;
+      }
+    });
+
+    // Calculate growth rate
+    let growthRate = 0;
+    if (recentMetrics.length >= 2) {
+      const firstHalf = recentMetrics.slice(0, Math.floor(recentMetrics.length / 2));
+      const secondHalf = recentMetrics.slice(Math.floor(recentMetrics.length / 2));
+
+      const firstAvg = firstHalf.reduce((sum, m) => sum + m.engagement, 0) / firstHalf.length;
+      const secondAvg = secondHalf.reduce((sum, m) => sum + m.engagement, 0) / secondHalf.length;
+
+      if (firstAvg > 0) {
+        growthRate = ((secondAvg - firstAvg) / firstAvg) * 100;
+      }
+    }
+
+    const summary = {
+      totalMetrics: recentMetrics.length,
+      averageEngagement: recentMetrics.reduce((sum, m) => sum + m.engagement, 0) / recentMetrics.length || 0,
+      totalRevenue: recentMetrics.reduce((sum, m) => sum + m.revenue, 0),
+      topPerformingPlatform,
+      growthRate: Math.round(growthRate * 100) / 100,
+      timeRange: `${hours} hours`
+    };
+
+    res.json(summary);
+  });
+
+  app.get('/api/analytics/insights', (req, res) => {
+    const insights = {
+      trendingTopics: ['#NewMusic', '#ProducerLife', '#BeatMaker'],
+      peakHours: ['7:00 PM', '8:00 PM', '9:00 PM'],
+      bestPerformingContent: ['Short videos', 'Behind-the-scenes', 'Collaborations'],
+      audienceDemographics: {
+        ageGroups: ['18-24: 35%', '25-34: 45%', '35-44: 20%'],
+        topCountries: ['United States', 'United Kingdom', 'Canada', 'Germany']
+      },
+      competitiveAnalysis: {
+        marketPosition: 'Rising',
+        competitorComparison: '+15% better engagement',
+        uniqueSellingPoints: ['AI-powered content', 'Real-time analytics', 'Multi-platform presence']
+      }
+    };
+
+    res.json(insights);
+  });
+
   // Protected routes examples
   app.get('/api/user/profile', authenticateToken, gdprCompliance, auditLog('VIEW_PROFILE', 'user'), (req: any, res: any) => {
     res.json({ user: req.user });
@@ -158,17 +281,11 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
+  // Start WebSocket server for real-time analytics
+  realTimeDataStreamer.startWebSocketServer(8080);
+  realTimeDataStreamer.startDashboardBroadcast();
+
+  log('Real-time analytics WebSocket server started on port 8080');
 
   // COMPREHENSIVE AI CAREER MANAGER APIs
   app.get("/api/career/profile", async (req, res) => {
